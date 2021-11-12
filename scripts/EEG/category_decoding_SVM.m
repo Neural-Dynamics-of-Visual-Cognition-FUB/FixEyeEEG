@@ -26,6 +26,7 @@ elseif isunix
     addpath('/home/haebeg19/toolbox/libsvm/matlab');
     addpath('/home/haebeg19/MATLAB/fieldtrip/')
     BASE = '/scratch/haebeg19/';
+    ft_defaults
 end
 %% load data
 %%%%TODO add the subject information for the loop here 
