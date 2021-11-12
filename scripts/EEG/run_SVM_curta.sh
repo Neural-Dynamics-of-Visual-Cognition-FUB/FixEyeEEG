@@ -10,7 +10,7 @@
 declare -a permutations
 i
 ndex=1
-for sub in 9
+for sub in 12 
 do
     permutations[$index]="$sub" 
     index=$((index + 1))
@@ -20,11 +20,11 @@ done
 params=(${permutations[${SLURM_ARRAY_TASK_ID}]})
 sub=${params[0]}
 
-echo subn $subn
+echo sub $sub
 
 ### Set up runtime environment
 
-module add MATLAB/2018b
+module add MATLAB/2021a
 
 # wait a bit so it doesn't crash
 sleep 50
@@ -36,7 +36,7 @@ echo changed directories
 
 ### Start job
 
-matlab -nosplash -noFigureWindows -r "category_decoding_SVM(${subn})" > serial.out #this worked
+matlab -nosplash -noFigureWindows -r "/home/haebeg19/FixEyeEEG/scripts/EEG/category_decoding_SVM(${sub})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 
