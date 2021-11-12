@@ -10,7 +10,7 @@
 declare -a permutations
 i
 ndex=1
-for sub in 12 
+for sub in 15 16 
 do
     permutations[$index]="$sub" 
     index=$((index + 1))
