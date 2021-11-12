@@ -31,9 +31,6 @@ sleep 50
 
 cd /scratch/haebeg19/
 
-cd /home/agnek95/SMST/PDM_PILOT_2/ANALYSIS_Full_experiment/MVPA/First-level/ # insert just directory name
-echo changed directories
-
 ### Start job
 
 matlab -nosplash -noFigureWindows -r "/home/haebeg19/FixEyeEEG/scripts/EEG/category_decoding_SVM(${sub})" > serial.out #this worked
