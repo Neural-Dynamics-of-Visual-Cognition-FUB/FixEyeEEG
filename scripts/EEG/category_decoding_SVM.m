@@ -22,7 +22,7 @@ if ismac
     BASE = '/Users/ghaeberle/scratch/';
 elseif isunix
     addpath('/home/haebeg19/FixEyeEEG/scripts/');
-    addpath('/home/haebeg19/FixEyeEEG/EEG/scripts/MEG_SVM_decoding_MVNN/');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
     addpath('/home/haebeg19/toolbox/libsvm/matlab');
     addpath('/home/haebeg19/toolbox/fieldtrip/')
     BASE = '/scratch/haebeg19/';
