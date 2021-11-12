@@ -35,6 +35,7 @@ end
 %else 
     %filepath_preprocessed_data = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/noICA/preprocessed_noICA_timelocked.mat';
     %subj = '9'
+    subj = num2str(subj);
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
 %end
 results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/decoding/%s', BASE,subj);
