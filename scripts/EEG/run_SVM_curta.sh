@@ -33,7 +33,7 @@ cd /scratch/haebeg19/
 
 ### Start job
 
-matlab -nodisplay -nosplash -nodesktop -r "run(/home/haebeg19/FixEyeEEG/scripts/EEG/category_decoding_SVM(${sub}))" > serial.out #this worked
+matlab -nodisplay -nosplash -nodesktop -r "/home/haebeg19/FixEyeEEG/scripts/EEG/category_decoding_SVM(${sub})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 
