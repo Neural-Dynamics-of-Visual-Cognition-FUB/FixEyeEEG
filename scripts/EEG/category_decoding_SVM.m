@@ -13,11 +13,20 @@ function [] = category_decoding_SVM(subj)
 %close all;
 
 %% set up prereqs
-addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/');
-addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/MEG_SVM_decoding_MVNN/');
-addpath('/Users/ghaeberle/Documents/MATLAB/libsvm/matlab');
-addpath('/Users/ghaeberle/Documents/MATLAB/fieldtrip-20210928/')
-ft_defaults
+if ismac
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/');
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
+    addpath('/Users/ghaeberle/Documents/MATLAB/libsvm/matlab');
+    addpath('/Users/ghaeberle/Documents/MATLAB/fieldtrip-20210928/')
+    ft_defaults
+    BASE = '/Users/ghaeberle/scratch/';
+elseif isunix
+    addpath('/home/haebeg19/FixEyeEEG/scripts/');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/MEG_SVM_decoding_MVNN/');
+    addpath('/home/haebeg19/toolbox/libsvm/matlab');
+    addpath('/home/haebeg19/MATLAB/fieldtrip/')
+    BASE = '/scratch/haebeg19/';
+end
 %% load data
 %%%%TODO add the subject information for the loop here 
 %if ICA == True 
@@ -25,9 +34,9 @@ ft_defaults
 %else 
     %filepath_preprocessed_data = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/noICA/preprocessed_noICA_timelocked.mat';
     %subj = '9'
-    filepath_preprocessed_data = sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',subj);
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
 %end
-results_dir = sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/eeg/decoding/%s', subj);
+results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/decoding/%s', BASE,subj);
 
 if ~isfolder(results_dir)
     mkdir(results_dir);
