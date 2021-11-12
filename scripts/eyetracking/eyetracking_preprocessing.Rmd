@@ -1,0 +1,210 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+# Preprocessing of eyetracking eyelink data 
+- exclusion of : 
+  - blinks and 100ms before and after these data samples 
+  - data samples outside of the screen range 
+  - coordinates smaller than 1 degree 			
+  - exclude catch trials 
+- screen coordinates [pixels] were converted to spherical angles [degree]
+
+
+```{r}
+  library("eyelinker")
+  library("intervals")
+  library("dplyr")
+  library("R.matlab")
+n_sub = 30 
+  # load behavioural data 
+# prepare data frame for collecting responses to empty categories 
+
+category_to_be_deleted_all_subjects <- data.frame(matrix(ncol = 7, nrow = 0))
+x <- c("sub", "block", "trial", "cond",  "exemplar", "response", "category")
+colnames(category_to_be_deleted_all_subjects) <- x
+percentage_deleted = double(30)
+for (sub in 1:n_sub){
+  #file_beh <- paste("/Users/ghaeberle/Downloads/FixCrossExp_s1cfgdata.mat")
+  
+  file_beh <- paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main/behav_data/FixCrossExp_s",
+                    sub,"cfgdata.mat",sep="")
+  dat_cfg <- readMat(file_beh)
+  exp_data <- dat_cfg$data #data collected during the experiment
+  ntrials <- 3000
+
+  # create data frame for behavioral data 
+  behav_data <- data.frame(sub=rep(sub,ntrials),
+                       block=NA,
+                       trial=rep(1:ntrials),
+                       cond=NA,
+                       exemplar=NA,
+                       response=NA,
+                       category=NA)
+  
+  behav_data$block <- t(dat_cfg$block)
+  behav_data$cond <- as.factor(dat_cfg$cond) #standard(2) or bullseye(1)
+  resp <- dat_cfg$data[8] #keyboard press
+  behav_data$response <- t(resp[[1]])
+  behav_data$exemplar <- exp_data[[7]] 
+  behav_data$category <- t(exp_data[[9]])
+
+  # load eyetracking data and preprocess 
+  file_eye =  '/Users/ghaeberle/Downloads/eye1.asc'
+  file_eye <- paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main//eyetracking/raw/eye",sub,".asc",sep="")
+  dat = read.asc(file_eye)
+  raw = dat$raw # raw eyemovement data 
+  catch = behav_data$trial[behav_data$category == 999]
+  raw_without_catch =raw[!raw$block %in% catch,]
+
+  #exclusion of pauses 
+  msg = dat$msg
+  head(msg)
+  pauses_start = msg$time[which(msg$text=="PAUSE")]
+  pauses_end = msg$time[which(msg$text=="PAUSE")+2]
+  pauses = cbind(pauses_start, pauses_end)
+
+  raw_without_pauses = raw_without_catch %>% filter(!(between(time, pauses[,1],pauses[,2])))
+
+  # exclusion of blinks + 100ms before and after 
+  blinks = cbind(dat$blinks$stime, dat$blinks$etime) # Define a set of intervals
+  blinks_df = filter(raw_without_pauses, time %In% blinks)
+  length(unique(blinks_df[["block"]]))
+
+  hundretMS_blinks = Intervals(blinks) %>% expand(100, "absolute")
+
+  #exclusion of out of range values 
+  out_of_range_cx = na.omit(raw_without_pauses[raw_without_pauses$xp>1680,])
+  out_of_range_cy = na.omit(raw_without_pauses[raw_without_pauses$yp>1050,])
+  tmp_cx = cbind(out_of_range_cx$time,out_of_range_cx$time)
+  tmp_cy = cbind(out_of_range_cy$time,out_of_range_cy$time)
+  hundreths_cx = Intervals(tmp_cx) %>% expand(100, "absolute")
+  hundreths_cy = Intervals(tmp_cy) %>% expand(100, "absolute")
+  
+  # exclusion of negative values 
+  negative_cx = na.omit(raw_without_pauses[raw_without_pauses$xp<0,])
+  negative_cy = na.omit(raw_without_pauses[raw_without_pauses$yp<0,])
+  tmp_ncx = cbind(negative_cx$time,negative_cx$time)
+  tmp_ncy = cbind(negative_cy$time, negative_cy$time)
+  hundreths_ncx = Intervals(tmp_ncx) %>% expand(100, "absolute")
+  hundreths_ncy = Intervals(tmp_ncy) %>% expand(100, "absolute")
+  
+  # exclusion of catch trails 
+ # catch_trials = behav_data %>% filter(category == 999)
+  
+  # actual exclusion of all values 
+ # raw_without_pauses = raw_without_catch %>% filter(!(between(time, pauses[,1],pauses[,2])))
+  df_eyetracking_cleaned = raw_without_pauses %>% 
+    filter(!(between(time,hundretMS_blinks[,1], hundretMS_blinks[,2]))) %>% 
+    filter(!(between(time,hundreths_cx[,1], hundreths_cx[,2]))) %>% 
+    filter(!(between(time,hundreths_cy[,1], hundreths_cy[,2]))) %>% 
+    filter(!(between(time,hundreths_ncx[,1], hundreths_ncx[,2]))) %>% 
+    filter(!(between(time,hundreths_ncy[,1], hundreths_ncy[,2]))) 
+  # check how many trials we would in principle lose 
+
+  # how many trials are remaining after deleting these trials 
+  remaining = length(unique(df_eyetracking_cleaned$block)) - 
+    length(unique(blinks_df$block))- 
+    length(unique(out_of_range_cx$block)) -
+    length(unique(out_of_range_cy$block)) - 
+    length(unique(negative_cx$block)) - 
+    length(unique(negative_cy$block)) 
+  
+  throw_away =  length(unique(blinks_df$block))+ 
+    length(unique(out_of_range_cx$block)) +
+    length(unique(out_of_range_cy$block)) + 
+    length(unique(negative_cx$block)) +
+    length(unique(negative_cy$block))
+  
+  # percentage left over trials 
+  100/length(unique(df_eyetracking_cleaned$block))*remaining
+  
+  
+  # find out which trials need to be deleted: 
+  trial_numbers_to_be_deleted = c(unique(blinks_df$block),
+                               unique(out_of_range_cx$block),
+                               unique(out_of_range_cy$block),
+                               unique(negative_cx$block),
+                               unique(negative_cy$block))
+  
+  # find out which category and exemplar these belong to: 
+  category_to_be_deleted = behav_data[behav_data$trial %in% trial_numbers_to_be_deleted,]
+  category_to_be_deleted$exemplar = category_to_be_deleted$exemplar %>% unlist()
+  category_to_be_deleted_all_subjects = rbind(category_to_be_deleted_all_subjects,category_to_be_deleted)
+  percentage_deleted[sub] = 100/length(unique(df_eyetracking_cleaned$block))*length(category_to_be_deleted$exemplar)
+  
+  
+  # remove trials from continous eyetracking data 
+  df_eyetracking_cleaned_witout_trials_with_missing_timepoints = df_eyetracking_cleaned[!df_eyetracking_cleaned$block %in%  trial_numbers_to_be_deleted,]
+  
+  
+  # save data
+  
+  #behavioural data 
+  save(behav_data, file =paste("behav_data_",sub,".Rda",sep=""))
+  
+  # cleaned eyetracking data with all trials included 
+  save(df_eyetracking_cleaned, 
+       file=paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/allTrials/eyetracking_cleaned_sub00",sub,".Rda",sep=""))
+  #cleaned eyetracking data with trials that contain missing time points excluded 
+  save(df_eyetracking_cleaned_witout_trials_with_missing_timepoints, 
+       file=paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/eyetracking_cleaned_wo_artifacts_sub00",sub,".Rda",sep=""))
+  
+  # categories that have been deleted for all subjects 
+  #writeMat('/Users/ghaeberle/Downloads/eyetracking_data.mat', eyetracking_cleaned = df_eyetracking_cleaned)
+  write.csv(category_to_be_deleted, 
+            file=paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/deleted_categories_sub00",sub,".csv",sep=""))
+  
+  # trial numbers that need to be deleted 
+  write.csv(trial_numbers_to_be_deleted, 
+            file=paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/deleted_trial_numbers_sub00",sub,".csv",sep=""))
+
+  remove(category_to_be_deleted)
+  remove(df_eyetracking_cleaned)
+  remove(df_eyetracking_cleaned_witout_trials_with_missing_timepoints)
+  remove(trial_numbers_to_be_deleted)
+  }
+
+save(category_to_be_deleted_all_subjects, 
+       file=paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/deleted_categories_all_subs.Rda",sep=""))
+# trial numbers that need to be deleted 
+  
+write.csv(percentage_deleted, 
+            file=paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/percentage_deleted.csv",sep=""))
+  
+  
+```
+
+
+### evaluate missing trials for presentation with Radek 
+
+```{r}
+library(plyr)
+
+
+load("/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/deleted_categories_all_subs.Rda")
+
+head(category_to_be_deleted_all_subjects)
+plyr::count(category_to_be_deleted_all_subjects, "sub")
+category_to_be_deleted = category_to_be_deleted_all_subjects[category_to_be_deleted_all_subjects$sub == 1,]
+
+plyr::count(category_to_be_deleted, "exemplar")
+plyr::count(category_to_be_deleted, "category")
+plyr::count(category_to_be_deleted, "cond")
+
+category_to_be_deleted_all_subjects$cond = recode(category_to_be_deleted_all_subjects$cond,
+                                                  '1' = "bullseye", '2' = "standard")
+
+category_to_be_deleted_all_subjects$category = recode(category_to_be_deleted_all_subjects$category, 
+                                                      '0' = "inanimate", '1' = "animate")
+
+with(category_to_be_deleted_all_subjects, table(sub, category))
+with(category_to_be_deleted_all_subjects, table(sub, cond))
+with(category_to_be_deleted_all_subjects, table(sub, category, cond))
+options(max.print=1000000)
+with(category_to_be_deleted_all_subjects, table(sub, exemplar, cond))
+
+with(category_to_be_deleted_all_subjects, table( exemplar, cond))
+
+```
+
