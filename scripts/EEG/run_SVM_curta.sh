@@ -8,7 +8,6 @@
 #SBATCH --qos=prio
 
 declare -a permutations
-i
 ndex=1
 for sub in 15 16 
 do
