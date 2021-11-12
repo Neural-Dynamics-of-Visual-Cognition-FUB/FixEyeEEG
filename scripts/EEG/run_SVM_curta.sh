@@ -8,7 +8,7 @@
 #SBATCH --qos=prio
 
 declare -a permutations
-index=1
+index=0
 for sub in 15 16 
 do
     permutations[$index]="$sub" 
@@ -32,7 +32,7 @@ cd /scratch/haebeg19/
 
 ### Start job
 
-matlab -nodisplay -nosplash -nodesktop -r "/home/haebeg19/FixEyeEEG/scripts/EEG/category_decoding_SVM(${sub})" > serial.out #this worked
+matlab -nosplash -noFigureWindows -r "/home/haebeg19/FixEyeEEG/scripts/EEG/category_decoding_SVM(${sub})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 
