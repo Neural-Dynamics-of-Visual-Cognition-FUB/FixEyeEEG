@@ -28,11 +28,11 @@ module add MATLAB/2021a
 # wait a bit so it doesn't crash
 sleep 50
 
-cd /scratch/haebeg19/
+cd /home/haebeg19/FixEyeEEG/scripts/EEG/
 
 ### Start job
 
-matlab -nosplash -noFigureWindows -r "/home/haebeg19/FixEyeEEG/scripts/EEG/category_decoding_SVM(${sub})" > serial.out #this worked
+matlab -nosplash -noFigureWindows -r "category_decoding_SVM(${sub})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 
