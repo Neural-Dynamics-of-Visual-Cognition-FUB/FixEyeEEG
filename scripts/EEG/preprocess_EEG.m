@@ -173,7 +173,7 @@ function [] = preprocess_EEG(subj)
     cfg.component = input('Which components do you want to remove? '); % fill in the to be removed component(s)
     cfg.demean='no';
     data_rej_channel_trial_comp =ft_rejectcomponent(cfg, comp, data_rej_channel);
-    subjectinfo{subj}.reject_comp  = cfg.component;
+    subjectinfo.reject_comp  = cfg.component;
 
 
     %% interpolate missing channels 
