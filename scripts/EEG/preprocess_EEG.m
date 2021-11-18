@@ -12,31 +12,33 @@ function [] = preprocess_EEG(subj)
     - Multivariate Noise Normalisation  
 
     %}
-    %% load data 
-    %clear; 
-    %close all; 
-    %subj = '20'
-    % set path for saving preprocessed data 
-    %filepath_clean_data_noICA = '/scratch/haebeg19/data/FixEyeEEG/eeg/preprocessed/noICA/';
-    %filepath_clean_data_ICA = '/scratch/haebeg19/data/FixEyeEEG/eeg/preprocessed/ICA/';
-    %filepath_behav_data = '/scratch/haebeg19/data/FixEyeEEG/behav/';
 
-    filepath_clean_data_noICA = sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/eeg/preprocessed/%s/noICA/', subj);
-    filepath_clean_data_ICA = '/Users/ghaeberle/scratch/data/FixEyeEEG/main/eeg/preprocessed/ICA/';
-    
+    %% set up prereqs
+    if ismac
+        addpath('/Users/ghaeberle/Documents/MATLAB/fieldtrip-20210928/')
+        ft_defaults
+        BASE = '/Users/ghaeberle/scratch/';
+    elseif isunix
+        addpath('/home/haebeg19/toolbox/fieldtrip/')
+        BASE = '/scratch/haebeg19/';
+        ft_defaults
+    end
+
+    filepath_clean_data_noICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/', BASE, subj);
+    filepath_clean_data_ICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/ICA/',BASE,subj);
+    filepath_raw_EEGdata = [sprintf('%sdata/FixEyeEEG_pelin_thesis/main/eeg/raw/%s/fix_new%s', BASE, num2str(subj), num2str(subj)) '.eeg'];
+    filepath_behav_data = sprintf('%sdata/FixEyeEEG/main/behav_data/FixCrossExp_s%scfgdata.mat', BASE, subj); 
+
     if ~isfolder(filepath_clean_data_noICA)
     mkdir(filepath_clean_data_noICA);
     end
+    eyetracking_removed = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/deleted_trial_numbers_sub00%s.csv', BASE,subj), 'Range', 'B2');
 
-    %filepath_clean_data_noICA = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/noICA/';
-    %filepath_clean_data_ICA = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/ICA/';
-    %filepath_behav_data = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/behav/';
+  
 
     % read in EEG data 
-    filepath_raw_EEGdata = [sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG_pelin_thesis/main/eeg/raw/%s/fix_new%s', num2str(subj), num2str(subj)) '.eeg'];
     %filepath_raw_EEGdata = ['/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/fix_new0' num2str(subj) '.eeg'];
     %filepath_behav_data = ['/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/FixCrossExp_s' num2str(subj) 'cfgdata.mat']; 
-    filepath_behav_data = ['/Users/ghaeberle/scratch/data/FixEyeEEG/main/behav_data/FixCrossExp_s' num2str(subj) 'cfgdata.mat']; 
 
     %load behavioral data 
     behav_dat = load(filepath_behav_data);
@@ -93,7 +95,6 @@ function [] = preprocess_EEG(subj)
     % remove trials that got rejected during the eyetracking cleaning
     % read csv without indeces
     %eyetracking_removed = readmatrix('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/trial_n_to_be_deleted.csv', 'Range', 'B2');
-    eyetracking_removed = readmatrix(sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/deleted_trial_numbers_sub00%s.csv', subj), 'Range', 'B2');
     for idx=1:size(eyetracking_removed,1)
         idx_trials_removed(idx) = find(data_wo_target_trials.trialinfo(:,2)== num2str(eyetracking_removed(idx)));
     end
