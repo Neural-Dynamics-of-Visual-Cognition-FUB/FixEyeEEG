@@ -59,7 +59,8 @@ data_bulls = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
     
 % minimum number of trials
 
-min_number_of_trials = get_min_trial_per_object(data_standard);
+min_number_of_trials_standard = get_min_trial_per_object(data_standard);
+min_number_of_trials_bulls = get_min_trial_per_object(data_bulls);
 
 
 % Preallocate 
@@ -71,13 +72,25 @@ for perm = 1:n_permutations
         for objB = objA+1:n_conditions
             %calculate minimum number of trials possible for this specific
             %pair 
-            min_num_trial = min(min_number_of_trials(objA),min_number_of_trials(objB));
-            data_objA_objB= create_data_matrix(2, min_num_trial, data_standard, objA, objB);
             
-            num_trials_per_bin = round(min_number_of_trials/n_pseudotrials);
-            pseudo_trials_standard = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB);
+            %% standard 
+            min_num_trial_standard = min(min_number_of_trials_standard(objA),min_number_of_trials_standard(objB));
+            data_objA_objB_standard= create_data_matrix(2, min_num_trial_standard, data_standard, objA, objB);
+            
+            num_trials_per_bin_standard = round(min_number_of_trials_standard/n_pseudotrials);
+            pseudo_trials_standard = create_pseudotrials(2, num_trials_per_bin_standard, n_pseudotrials, data_objA_objB_standard);
+            
+            %% bulls eye 
+            
+            min_num_trial_bulls = min(min_number_of_trials_bulls(objA),min_number_of_trials_bulls(objB));
+            data_objA_objB_bulls= create_data_matrix(2, min_num_trial_bulls, data_bulls, objA, objB);
+            
+            num_trials_per_bin_bulls = round(min_number_of_trials_bulls/n_pseudotrials);
+            pseudo_trials_bulls = create_pseudotrials(2, num_trials_per_bin_bulls, n_pseudotrials, data_objA_objB_bulls);
+            
             
             for time = 1:time_points
+            %% standard    
             training_data_standard=[squeeze(pseudo_trials_standard(1,1:end-1,:,time)) ; squeeze(pseudo_trials_standard(2,1:end-1,:,time))];
             testing_data_standard=[squeeze(pseudo_trials_standard(1,end,:,time))' ; squeeze(pseudo_trials_standard(2,end,:,time))'];
             labels_train_standard  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
@@ -89,17 +102,33 @@ for perm = 1:n_permutations
 
             disp('Test the SVM');
             [~, accuracy_standard, ~] = svmpredict(labels_test_standard',testing_data_standard,model_standard);  
-            decodingAccuracy_standard_object(perm,objA, objB, time)=accuracy_standard(1);     
+            decodingAccuracy_standard_object(perm,objA, objB, time)=accuracy_standard(1); 
+            
+            %% bullseye 
+            
+            training_data_bulls=[squeeze(pseudo_trials_bulls(1,1:end-1,:,time)) ; squeeze(pseudo_trials_bulls(2,1:end-1,:,time))];
+            testing_data_bulls=[squeeze(pseudo_trials_bulls(1,end,:,time))' ; squeeze(pseudo_trials_bulls(2,end,:,time))'];
+            labels_train_bulls  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
+            labels_test_bulls   = [1 2];
+
+            disp('Train the SVM');
+            train_param_str=  '-s 0 -t 0 -b 0 -c 1 -q';
+            model_bulls=svmtrain(labels_train_bulls',training_data_bulls,train_param_str); 
+
+            disp('Test the SVM');
+            [~, accuracy_bulls, ~] = svmpredict(labels_test_bulls',testing_data_bulls,model_bulls);  
+            decodingAccuracy_bulls_object(perm,objA, objB, time)=accuracy_bulls(1); 
+            
             end
         end
     end
 end
  %% Save the decision values + decoding accuracy
     decodingAccuracy_standard_object_avg = squeeze(mean(decodingAccuracy_standard_object,1)); 
-    decodingAccuracy_avg_bulls_avg = squeeze(mean(decodingAccuracy_bulls,1));
+    decodingAccuracy_avg_bulls_avg = squeeze(mean(decodingAccuracy_bulls_object,1));
     filename = 'animate_inanimate_category';
     save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_standard.mat',filename)),'decodingAccuracy_standard_object_avg');
-    save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_bulls.mat',filename)),'decodingAccuracy_avg_bulls');
-    save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_min_number_trials.mat',filename)),'min_number_of_trials');  
+    save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_bulls.mat',filename)),'decodingAccuracy_avg_bulls_avg');
+    %save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_min_number_trials.mat',filename)),'min_number_of_trials');  
 end
 
