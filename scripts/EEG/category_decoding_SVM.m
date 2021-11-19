@@ -1,7 +1,7 @@
 function [] = category_decoding_SVM(subj)
  %{ 
     - Multivariate Noise Normalisation 
-    - object decoding for both fixation crosses for animate versus
+    - category decoding for both fixation crosses for animate versus
     inanimate objects 
     - decoding on all channels 
     - decoding on pseudotrials 
@@ -9,8 +9,6 @@ function [] = category_decoding_SVM(subj)
     - decode with SVM 
     - ICA FLAG determines whether decoding is run on ICA or no ICA data 
     %}
-%clear;
-%close all;
 
 %% set up prereqs
 if ismac
@@ -85,8 +83,8 @@ for perm = 1:n_permutations
     %   number of conditioins, M is the number of trials, E is the number of
     %   electrodes and TP is the number of timepoints.
     
-    data_MVNN_standard = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_standard);
-    data_MVNN_bulls = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_bulls);
+    data_MVNN_standard = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_standard, 'category');
+    data_MVNN_bulls = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_bulls, 'category');
     
     
     % actually do the MVNN 
@@ -143,7 +141,7 @@ for perm = 1:n_permutations
         model_standard=svmtrain(labels_train_standard',training_data_standard,train_param_str); 
         
         disp('Test the SVM');
-        [~, accuracy_standard, decision_values_standard] = svmpredict(labels_test_standard',testing_data_standard,model_standard);  
+        [~, accuracy_standard, ~] = svmpredict(labels_test_standard',testing_data_standard,model_standard);  
         decodingAccuracy_standard(perm,time)=accuracy_standard(1);     
         
         %% bulls
