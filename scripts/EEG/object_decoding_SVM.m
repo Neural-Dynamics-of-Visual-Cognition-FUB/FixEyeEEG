@@ -28,7 +28,7 @@ elseif isunix
     ft_defaults
 end
 
-fixation_condition = num2str(fixation_condition);
+%fixation_condition = num2str(fixation_condition);
 subj = num2str(subj);
 filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
 %end
