@@ -48,7 +48,7 @@ end
 load(filepath_preprocessed_data);
 
 %% define required information 
-n_permutations = 1;
+n_permutations = 100;
 n_pseudotrials = 6;
 n_conditions = 40; %objects to decode
 time_points = size(data_rej_channel_interpolated_timelocked.time,2);
