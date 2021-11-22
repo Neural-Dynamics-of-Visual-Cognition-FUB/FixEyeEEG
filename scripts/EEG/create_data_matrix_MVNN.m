@@ -1,4 +1,4 @@
-function [data] = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_timelock, decoding, indivdual_objects)
+function [data] = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_timelock, decoding, individual_objects)
     
     if strcmp(decoding, 'category') == 1
         % preallocate data matrix 
