@@ -48,12 +48,12 @@ n_conditions = 40; %objects to decode
 time_points = size(data_rej_channel_interpolated_timelocked.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
 
-if strcmp(fixation_condition, 'standard')
+if strcmp(fixation_condition, 'standard') == 1
     % standard 
     cfg = [];
     cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='2');
     data = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
-elseif strcmp(fixation_condition, 'bulls')
+elseif strcmp(fixation_condition, 'bulls') == 1
     cfg = [];
     cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='1');
     data = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
