@@ -1,4 +1,4 @@
-function [] = object_decoding_SVM(subj)
+function [] = object_decoding_SVM(subj, fixation_condition)
  %{ 
     - Multivariate Noise Normalisation 
     - object decoding for both fixation crosses for animate versus
@@ -28,11 +28,11 @@ elseif isunix
     ft_defaults
 end
 
-
+fixation_condition = num2str(fixation_condition);
 subj = num2str(subj);
 filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
 %end
-results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/decoding/%s', BASE,subj);
+results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/decoding/%s/objects', BASE,subj);
 
 if ~isfolder(results_dir)
     mkdir(results_dir);
@@ -42,93 +42,89 @@ end
 load(filepath_preprocessed_data);
 
 %% define required information 
-n_permutations = 100;
+n_permutations = 1;
 n_pseudotrials = 6;
 n_conditions = 40; %objects to decode
 time_points = size(data_rej_channel_interpolated_timelocked.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
-% standard 
-cfg = [];
-cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='2');
-data_standard = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
-    
-% bullseye 
-cfg = [];
-cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='1');
-data_bulls = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
+
+if strcmp(fixation_condition, 'standard')
+    % standard 
+    cfg = [];
+    cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='2');
+    data = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
+elseif strcmp(fixation_condition, 'bulls')
+    cfg = [];
+    cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='1');
+    data = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
+end  
+
     
 % minimum number of trials
 
-min_number_of_trials_standard = get_min_trial_per_object(data_standard);
-min_number_of_trials_bulls = get_min_trial_per_object(data_bulls);
-
+[min_number_of_trials, individual_objects] = get_min_trial_per_object(data);
 
 % Preallocate 
-decodingAccuracy_standard_object=NaN(n_permutations, n_conditions, n_conditions, time_points);
-decodingAccuracy_bulls_object=NaN(n_permutations, n_conditions, n_conditions, time_points);
+decodingAccuracy_objects=NaN(n_permutations, n_conditions, n_conditions, time_points);
 
 for perm = 1:n_permutations
+    %% TODO ASK SOMEONE WHETHER THIS WORKS LIKE THIS create data matrix for smallest possible amount of trials 
+    % the idea: calculate inverse covariance matrix for minimum amount of
+    % trials for all conditions and use this matrix to normalize the
+    % differing amounts of trials for each image ---> I am not sure whether
+    % this is mathematically sound WHO TO ASK? 
+    min_num_trials_all_conditions = min(min_number_of_trials);
+    data_matrix_MVNN = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data, 'object', individual_objects); 
+    % get inverted covariance matrix
+    [~, inverted_sigma] = multivariate_noise_normalization(data_matrix_MVNN);
+   
+    %%
     for objA = 1:n_conditions - 1
         for objB = objA+1:n_conditions
             %calculate minimum number of trials possible for this specific
             %pair 
             
             %% standard 
-            min_num_trial_standard = min(min_number_of_trials_standard(objA),min_number_of_trials_standard(objB));
-            data_objA_objB_standard= create_data_matrix(2, min_num_trial_standard, data_standard, objA, objB);
+            min_num_trial = min(min_number_of_trials(objA),min_number_of_trials(objB));
+            data_objA_objB= create_data_matrix(2, min_num_trial, data, objA, objB, individual_objects);
             
-            num_trials_per_bin_standard = round(min_number_of_trials_standard/n_pseudotrials);
-            pseudo_trials_standard = create_pseudotrials(2, num_trials_per_bin_standard, n_pseudotrials, data_objA_objB_standard);
-            
-            %% bulls eye 
-            
-            min_num_trial_bulls = min(min_number_of_trials_bulls(objA),min_number_of_trials_bulls(objB));
-            data_objA_objB_bulls= create_data_matrix(2, min_num_trial_bulls, data_bulls, objA, objB);
-            
-            num_trials_per_bin_bulls = round(min_number_of_trials_bulls/n_pseudotrials);
-            pseudo_trials_bulls = create_pseudotrials(2, num_trials_per_bin_bulls, n_pseudotrials, data_objA_objB_bulls);
-            
+            %% TODO ASK SOMEONE WHETHER THIS WORKS LIKE THIS normalise data matrix with inverted covariance matrix (MVNN)
+            data_objA_objB_MVNN = NaN(size(data_objA_objB));
+            for t = 1:time_points %and for each condition
+                for c = 1:2
+                    for tr = 1:min_num_trial
+                        X = squeeze(data_objA_objB(c,tr,:,t))'; 
+                        data_objA_objB_MVNN(c,tr,:,t) = X*inverted_sigma;
+                    end
+                end
+            end
+            %%
+            num_trials_per_bin = round(min_num_trial/n_pseudotrials);
+            %pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB);
+            pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
             
             for time = 1:time_points
             %% standard    
-            training_data_standard=[squeeze(pseudo_trials_standard(1,1:end-1,:,time)) ; squeeze(pseudo_trials_standard(2,1:end-1,:,time))];
-            testing_data_standard=[squeeze(pseudo_trials_standard(1,end,:,time))' ; squeeze(pseudo_trials_standard(2,end,:,time))'];
-            labels_train_standard  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
-            labels_test_standard   = [1 2];
+            training_data =[squeeze(pseudo_trials(1,1:end-1,:,time)) ; squeeze(pseudo_trials(2,1:end-1,:,time))];
+            testing_data  =[squeeze(pseudo_trials(1,end,:,time))' ; squeeze(pseudo_trials(2,end,:,time))'];
+            labels_train  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
+            labels_test   = [1 2];
 
             disp('Train the SVM');
             train_param_str=  '-s 0 -t 0 -b 0 -c 1 -q';
-            model_standard=svmtrain(labels_train_standard',training_data_standard,train_param_str); 
+            model=svmtrain(labels_train',training_data,train_param_str); 
 
             disp('Test the SVM');
-            [~, accuracy_standard, ~] = svmpredict(labels_test_standard',testing_data_standard,model_standard);  
-            decodingAccuracy_standard_object(perm,objA, objB, time)=accuracy_standard(1); 
-            
-            %% bullseye 
-            
-            training_data_bulls=[squeeze(pseudo_trials_bulls(1,1:end-1,:,time)) ; squeeze(pseudo_trials_bulls(2,1:end-1,:,time))];
-            testing_data_bulls=[squeeze(pseudo_trials_bulls(1,end,:,time))' ; squeeze(pseudo_trials_bulls(2,end,:,time))'];
-            labels_train_bulls  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
-            labels_test_bulls   = [1 2];
-
-            disp('Train the SVM');
-            train_param_str=  '-s 0 -t 0 -b 0 -c 1 -q';
-            model_bulls=svmtrain(labels_train_bulls',training_data_bulls,train_param_str); 
-
-            disp('Test the SVM');
-            [~, accuracy_bulls, ~] = svmpredict(labels_test_bulls',testing_data_bulls,model_bulls);  
-            decodingAccuracy_bulls_object(perm,objA, objB, time)=accuracy_bulls(1); 
+            [~, accuracy, ~] = svmpredict(labels_test',testing_data,model);  
+            decodingAccuracy_objects(perm,objB, objA, time)=accuracy(1); 
             
             end
         end
     end
 end
  %% Save the decision values + decoding accuracy
-    decodingAccuracy_standard_object_avg = squeeze(mean(decodingAccuracy_standard_object,1)); 
-    decodingAccuracy_avg_bulls_avg = squeeze(mean(decodingAccuracy_bulls_object,1));
-    filename = 'animate_inanimate_category';
-    save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_standard.mat',filename)),'decodingAccuracy_standard_object_avg');
-    save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_bulls.mat',filename)),'decodingAccuracy_avg_bulls_avg');
+    decodingAccuracy_object_avg = squeeze(mean(decodingAccuracy_objects,1)); 
+    filename = sprintf('objects_%s',fixation_condition);
+    save(fullfile(results_dir,sprintf('%s_decodingAccuracy.mat',filename)),'decodingAccuracy_object_avg');
     %save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_min_number_trials.mat',filename)),'min_number_of_trials');  
 end
-

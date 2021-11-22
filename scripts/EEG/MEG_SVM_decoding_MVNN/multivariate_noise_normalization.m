@@ -1,4 +1,4 @@
-function x = multivariate_noise_normalization(dataMatrix) 
+function [x, inverted_sigma_covariance] = multivariate_noise_normalization(dataMatrix) 
 %MULTIVARIATE_NOISE_NORMALIZATION Perform MVNN on the data.
 %
 %Input: 
