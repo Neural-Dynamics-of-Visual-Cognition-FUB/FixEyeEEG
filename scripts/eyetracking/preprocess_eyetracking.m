@@ -63,7 +63,7 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
             trial{idx} = [data_eye_csv(start_idx-prestim:start_idx,9)' ,data_eye_csv(start_idx:end,9)';
                           data_eye_csv(start_idx-prestim:start_idx,10)' ,data_eye_csv(start_idx:end,10)'];
             sampleinfo(idx,1) = data_eye_csv(start_idx-prestim, 2);
-            sampleinfo(idx,2) = data_eye_csv(start_idx:end, 2);
+            sampleinfo(idx,2) = data_eye_csv(end, 2);
             time{idx} = -.2:0.001:(length(trial{n_trials})/1000-0.201);
         end 
         
