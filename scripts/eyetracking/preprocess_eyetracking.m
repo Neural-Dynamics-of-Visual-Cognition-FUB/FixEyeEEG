@@ -13,7 +13,7 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
     
     %% load preprocessed eyetracking data from R & behavioral data
     subj = num2str(subj);
-    filename_asc = sprintf('%sdata/FixEyeEEG/main/eyetracking/raw/eye1.asc',BASE, subj);
+    filename_asc = sprintf('%sdata/FixEyeEEG/main/eyetracking/raw/eye1.asc',BASE);
     %data_eye_csv = readmatrix('/Users/ghaeberle/Downloads/tmp/eyetracking_cleaned_wo_artifacts_sub001.csv');
     data_eye_csv = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/eyetracking_cleaned_wo_artifacts_and_visual_degree_sub00%s.csv',BASE,subj));
     % remove index column 
