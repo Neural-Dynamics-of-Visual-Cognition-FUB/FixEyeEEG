@@ -55,7 +55,7 @@ if ~isfolder(results_dir)
 end
 
 %% define required information 
-n_permutations = 10;
+n_permutations = 100;
 n_pseudotrials = 6;
 n_conditions = 40; %objects to decode
 time_points = size(preprocessed_data.time,2);
