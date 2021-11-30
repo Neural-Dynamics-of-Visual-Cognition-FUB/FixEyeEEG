@@ -65,14 +65,16 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
             sampleinfo(idx,1) = data_eye_csv(start_idx-prestim, 2);
             sampleinfo(idx,2) = data_eye_csv(end, 2);
             time{idx} = -.2:0.001:(length(trial{n_trials})/1000-0.201);
-        end 
+        else
         
-        time{idx} = -.2:0.001:0.999 ;
-        start_idx = find(data_eye_csv(:,2) == timepoint_start_kept_trials(idx));
-        trial{idx} = [data_eye_csv(start_idx-prestim:start_idx,9)' ,data_eye_csv(start_idx:(start_idx+poststim),9)';
-                      data_eye_csv(start_idx-prestim:start_idx,10)' ,data_eye_csv(start_idx:(start_idx+poststim),10)'];
-        sampleinfo(idx,1) = data_eye_csv(start_idx-prestim, 2);
-        sampleinfo(idx,2) = data_eye_csv(start_idx+poststim, 2);
+            time{idx} = -.2:0.001:0.999 ;
+            start_idx = find(data_eye_csv(:,2) == timepoint_start_kept_trials(idx));
+            trial{idx} = [data_eye_csv(start_idx-prestim:start_idx,9)' ,data_eye_csv(start_idx:(start_idx+poststim),9)';
+                          data_eye_csv(start_idx-prestim:start_idx,10)' ,data_eye_csv(start_idx:(start_idx+poststim),10)'];
+            sampleinfo(idx,1) = data_eye_csv(start_idx-prestim, 2);
+            sampleinfo(idx,2) = data_eye_csv(start_idx+poststim, 2);
+        
+        end
         
     end
     %% create fieldtrip data structure without fieldtrip reading functions 
