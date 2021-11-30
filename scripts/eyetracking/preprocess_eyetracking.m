@@ -21,7 +21,11 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/', BASE, subj);
     filepath_behav_data = sprintf('%sdata/FixEyeEEG/main/behav_data/FixCrossExp_s%scfgdata.mat', BASE, subj); 
     %filepath_behav_data = '/Users/ghaeberle/Downloads/tmp/FixCrossExp_s1cfgdata.mat';
-
+    
+    if ~isfolder(filepath_preprocessed_data)
+        mkdir(filepath_preprocessed_data);
+    end
+    
     behav = load(filepath_behav_data);
     
     behav_data = behav.data;
