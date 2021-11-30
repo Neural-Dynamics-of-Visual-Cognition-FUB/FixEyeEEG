@@ -1,4 +1,4 @@
-function [] = category_decoding_SVM(subj)
+function [] = category_decoding_SVM(subj, method)
  %{ 
     - Multivariate Noise Normalisation 
     - category decoding for both fixation crosses for animate versus
@@ -12,54 +12,65 @@ function [] = category_decoding_SVM(subj)
 
 %% set up prereqs
 if ismac
-    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/');
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG');
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
     addpath('/Users/ghaeberle/Documents/MATLAB/libsvm/matlab');
     addpath('/Users/ghaeberle/Documents/MATLAB/fieldtrip-20210928/')
     ft_defaults
     BASE = '/Users/ghaeberle/scratch/';
 elseif isunix
-    addpath('/home/haebeg19/FixEyeEEG/scripts/');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/EEG');
     addpath('/home/haebeg19/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
     addpath('/home/haebeg19/toolbox/libsvm/matlab');
     addpath('/home/haebeg19/toolbox/fieldtrip/')
     BASE = '/scratch/haebeg19/';
     ft_defaults
 end
+
+
+    
 %% load data
 %%%%TODO add the subject information for the loop here 
-%if ICA == True 
- %   filepath_preprocessed_data = '/scratch/haebeg19/data/FixEyeEEG/eeg/preprocessed/ICA/preprocessed_ICA_timelocked.mat';
-%else 
-    %filepath_preprocessed_data = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/noICA/preprocessed_noICA_timelocked.mat';
-    %subj = '9'
-    subj = num2str(subj);
+
+subj = num2str(subj);
+n_permutations = 100;
+n_pseudotrials = 6;
+num_conditions = 2; %categories to decode
+
+% 1 = EEG, 2 = Eyetracking 
+if method == 1
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
-%end
-results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/decoding/%s', BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/category_decoding/%s', BASE,subj);
+    load(filepath_preprocessed_data)
+    data = data_rej_channel_interpolated_timelocked;
+elseif method == 2 
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/category_decoding/%s', BASE,subj);
+    load(filepath_preprocessed_data)
+    data = eye_data_baseline_timelocked;
+end
+    
+
 
 if ~isfolder(results_dir)
     mkdir(results_dir);
 end
 
-% load eeg data 
-load(filepath_preprocessed_data);
+
 
 %% define required information 
-n_permutations = 100;
-n_pseudotrials = 6;
-num_conditions = 2; %categories to decode
-time_points = size(data_rej_channel_interpolated_timelocked.time,2);
+
+time_points = size(data.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
 % standard 
 cfg = [];
-cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='2');
-data_standard = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
+cfg.trials = find(data.trialinfo(:,5)=='2');
+data_standard = ft_selectdata(cfg, data);
     
 % bullseye 
 cfg = [];
-cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='1');
-data_bulls = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
+cfg.trials = find(data.trialinfo(:,5)=='1');
+data_bulls = ft_selectdata(cfg, data);
     
 % minimum number of trials standard 
 number_of_trial_animate_standard = sum(data_standard.trialinfo(:,3)=='1','all');
@@ -88,8 +99,8 @@ for perm = 1:n_permutations
     
     
     % actually do the MVNN 
-    data_MVNN_standard = multivariate_noise_normalization(data_MVNN_standard); 
-    data_MVNN_bulls = multivariate_noise_normalization(data_MVNN_bulls); 
+    [data_MVNN_standard, ~] = multivariate_noise_normalization(data_MVNN_standard); 
+    [data_MVNN_bulls, ~] = multivariate_noise_normalization(data_MVNN_bulls); 
     %% split data into animate and inanimate trials
     data_animate_standard = data_MVNN_standard(1,:,:,:); 
     data_inanimate_standard = data_MVNN_standard(2,:,:,:);

@@ -1,4 +1,4 @@
-function [] = object_decoding_SVM(subj, fixation_condition)
+function [] = object_decoding_SVM(subj, fixation_condition, method)
  %{ 
     - Multivariate Noise Normalisation 
     - object decoding for both fixation crosses for animate versus
@@ -33,36 +33,43 @@ if fixation_condition == 2
 elseif fixation_condition == 1
     fixation_condition = 'bulls';
 end 
-    
-%fixation_condition = num2str(fixation_condition);
+
 subj = num2str(subj);
-filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
-%end
-results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/decoding/%s/objects', BASE,subj);
+
+% 1 == EEG, 2 == eyetracking 
+if method == 1
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/object_decoding/%s/', BASE,subj);
+    load(filepath_preprocessed_data)
+    preprocessed_data = data_rej_channel_interpolated_timelocked;
+elseif method == 2
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/object_decoding/%s', BASE,subj);
+    load(filepath_preprocessed_data)
+    preprocessed_data = eye_data_baseline_timelocked;
+end
+
 
 if ~isfolder(results_dir)
     mkdir(results_dir);
 end
 
-% load eeg data 
-load(filepath_preprocessed_data);
-
 %% define required information 
-n_permutations = 100;
+n_permutations = 10;
 n_pseudotrials = 6;
 n_conditions = 40; %objects to decode
-time_points = size(data_rej_channel_interpolated_timelocked.time,2);
+time_points = size(preprocessed_data.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
 
 if strcmp(fixation_condition, 'standard') == 1
     % standard 
     cfg = [];
-    cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='2');
-    data = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
+    cfg.trials = find(preprocessed_data.trialinfo(:,5)=='2');
+    data = ft_selectdata(cfg, preprocessed_data);
 elseif strcmp(fixation_condition, 'bulls') == 1
     cfg = [];
-    cfg.trials = find(data_rej_channel_interpolated_timelocked.trialinfo(:,5)=='1');
-    data = ft_selectdata(cfg, data_rej_channel_interpolated_timelocked);
+    cfg.trials = find(preprocessed_data.trialinfo(:,5)=='1');
+    data = ft_selectdata(cfg, preprocessed_data);
 end  
 
     
