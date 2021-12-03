@@ -136,8 +136,16 @@ for perm = 1:n_permutations
     end
 end
  %% Save the decision values + decoding accuracy
-    decodingAccuracy_object_avg = squeeze(mean(decodingAccuracy_objects,1)); 
+ if strcmp(fixation_condition, 'standard') == 1
+    decodingAccuracy_object_standard_avg = squeeze(mean(decodingAccuracy_objects,1)); 
     filename = sprintf('objects_%s',fixation_condition);
-    save(fullfile(results_dir,sprintf('%s_decodingAccuracy.mat',filename)),'decodingAccuracy_object_avg');
-    %save(fullfile(results_dir,sprintf('%s_decodingAccuracy_objects_min_number_trials.mat',filename)),'min_number_of_trials');  
+    save(fullfile(results_dir,sprintf('%s_decodingAccuracy.mat',filename)),'decodingAccuracy_object_standard_avg');
+ elseif strcmp(fixation_condition, 'bulls') == 1
+    decodingAccuracy_object_bulls_avg = squeeze(mean(decodingAccuracy_objects,1)); 
+    filename = sprintf('objects_%s',fixation_condition);
+    save(fullfile(results_dir,sprintf('%s_decodingAccuracy.mat',filename)),'decodingAccuracy_object_bulls_avg');
+ end 
+ 
+ 
+   
 end
