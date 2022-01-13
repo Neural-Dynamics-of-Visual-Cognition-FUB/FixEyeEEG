@@ -24,7 +24,7 @@ done
 params=(${permutations[${SLURM_ARRAY_TASK_ID}]})
 sub=${params[0]}
 cond=${params[1]}
-method=${params[2]}
+methods=${params[2]}
 
 echo sub $sub
 echo cond $cond
