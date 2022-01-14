@@ -98,7 +98,7 @@ for perm = 1:n_permutations
             for time = 1:time_points
                 for pseudo = 1:n_pseudotrials
                 %% standard
-                rdm(n_permutations,pseudo, n_conditions,n_conditions,time_points) = 1-corr(squeeze(pseudo_trials(objA,pseudo,:,time)),squeeze(pseudo_trials(objB,pseudo,:,time)),'type','Pearson');
+                rdm(n_permutations,pseudo, objA,objB,time_points) = 1-corr(squeeze(pseudo_trials(objA,pseudo,:,time)),squeeze(pseudo_trials(objB,pseudo,:,time)),'type','Pearson');
                 end
             end
         end
@@ -106,7 +106,7 @@ for perm = 1:n_permutations
 end
 
 if strcmp(fixation_condition, 'standard') == 1
-    rdm_avg_standard = squeeze(mean(mean(rdm,1),2)); %average over permutations and pseudotrials
+    rdm_avg_standard = squeeze(nanmean(nanmean(rdm,1),2)); %average over permutations and pseudotrials
     filename = sprintf('objects_%s',fixation_condition);
     save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_standard');
 elseif strcmp(fixation_condition, 'bulls') == 1
