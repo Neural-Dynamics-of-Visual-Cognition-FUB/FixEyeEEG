@@ -98,7 +98,7 @@ for perm = 1:n_permutations
             for time = 1:time_points
                 for pseudo = 1:n_pseudotrials
                 %% standard
-                rdm(n_permutations,pseudo, objA,objB,time_points) = 1-corr(squeeze(pseudo_trials(objA,pseudo,:,time)),squeeze(pseudo_trials(objB,pseudo,:,time)),'type','Pearson');
+                rdm(perm,pseudo, objA,objB,time_points) = 1-corr(squeeze(pseudo_trials(objA,pseudo,:,time)),squeeze(pseudo_trials(objB,pseudo,:,time)),'type','Pearson');
                 end
             end
         end
