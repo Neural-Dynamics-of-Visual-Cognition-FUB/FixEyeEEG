@@ -58,7 +58,10 @@ function [] = preprocess_EEG(subj, ICA)
         cfg.dataset = filepath_raw_EEGdata;
 
         %% epoching 
-        cfg.trialdef.eventtype='Stimulus';
+        % only extracat the triggers we are actually interested in
+        cfg.trialfun = 'ft_trialfun_general';
+        cfg.trialdef.eventtype = 'Stimulus';
+        cfg.trialdef.eventvalue='S 99';
         cfg.trialdef.prestim=0.2;
         cfg.trialdef.poststim=1;
         cfg=ft_definetrial(cfg);
@@ -98,6 +101,7 @@ function [] = preprocess_EEG(subj, ICA)
         % remove trials that got rejected during the eyetracking cleaning
         % read csv without indeces
         %eyetracking_removed = readmatrix('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/trial_n_to_be_deleted.csv', 'Range', 'B2');
+        idx_trials_removed = NaN(size(eyetracking_removed,1),1);
         for idx=1:size(eyetracking_removed,1)
             idx_trials_removed(idx) = find(data_wo_target_trials.trialinfo(:,2)== num2str(eyetracking_removed(idx)));
         end
@@ -194,7 +198,7 @@ function [] = preprocess_EEG(subj, ICA)
         neighbours        = ft_prepare_neighbours(cfg_neighb);
 
         cfg = [];
-        cfg.missingchannel = subjectinfo{1,subj}.reject_channel;
+        cfg.missingchannel = subjectinfo.reject_channel;
         % weighted neighbours approach cannot be used, because missing channels are
         % lying next to each other! 
         cfg.method = 'average';
