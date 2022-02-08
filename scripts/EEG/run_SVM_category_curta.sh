@@ -4,7 +4,7 @@
 #SBATCH --job-name=category 
 #SBATCH --mail-type=end
 #SBATCH --mem=9000
-#SBATCH --time=10:00:00
+#SBATCH --time=5:00:00
 #SBATCH --qos=prio
 
 declare -a permutations

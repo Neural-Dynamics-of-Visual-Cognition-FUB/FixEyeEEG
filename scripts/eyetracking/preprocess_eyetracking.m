@@ -10,12 +10,12 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
         BASE = '/scratch/haebeg19/';
         ft_defaults
     end
-    
+    n_trials = 4200;
     %% load preprocessed eyetracking data from R & behavioral data
     subj = num2str(subj);
-    filename_asc = sprintf('%sdata/FixEyeEEG/main/eyetracking/raw/eye%s.asc',BASE, subj);
+    filename_asc = sprintf('%sdata/FixEyeEEG/main/eyetracking/raw/%s/eye%s.asc',BASE, subj, subj);
     %data_eye_csv = readmatrix('/Users/ghaeberle/Downloads/tmp/eyetracking_cleaned_wo_artifacts_sub003.csv');
-    data_eye_csv = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/eyetracking_cleaned_wo_artifacts_and_visual_degree_sub00%s.csv',BASE,subj));
+    data_eye_csv = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_wo_artifacts_and_visual_degree_sub00%s.csv',BASE,subj));
     % remove index column 
     data_eye_csv = data_eye_csv(:,2:end);
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/', BASE, subj);
@@ -32,7 +32,7 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
     exemplar = string(behav_data.category)';
     % the first line in the trialinfo (repmat(3,1,3000)') is jsut there to
     % replicate the trialinfo structure of the eeg data 
-    trialinfo = [repmat(3,1,3000)' (1:3000)' behav_data.catlabel' exemplar behav_data.cond'];
+    trialinfo = [repmat(3,1,n_trials)' (1:n_trials)' behav_data.catlabel' exemplar behav_data.cond'];
     
     %% get info about start of each trial 
     hdr_eye = ft_read_header(filename_asc);
@@ -42,9 +42,9 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
 
     split_messages = cellfun(@(x) strsplit(x, {'\t', ' '}), msg_start_trial, 'UniformOutput', false);
     split_messages = vertcat(split_messages{:}); % To remove nesting of cell array newA
-    timepoint_start_trial = str2num(vertcat(split_messages{:,2}));
-    
-   
+    for idx =1:size(split_messages,1)
+    timepoint_start_trial(idx) = str2num(split_messages{idx,2});
+    end
     
     %% remove trials
       idx_kept_trials = unique(data_eye_csv(:,1));
@@ -52,7 +52,7 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
       trialinfo_kept_trials = trialinfo(idx_kept_trials,:);
       
  %% create trialand time structures for fieldtrip
-    n_trials = size(timepoint_start_kept_trials,1);
+    n_trials = size(timepoint_start_kept_trials,2);
     time = cell(1,n_trials);
     trial = cell(1,n_trials);
     %pre and post stimulus in ms (-1 for pre and post as 0 also counts as a timepoint )
