@@ -27,7 +27,7 @@ function [] = preprocess_EEG(subj, ICA)
 
     filepath_clean_data_noICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/', BASE, subj);
     filepath_clean_data_ICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/ICA/',BASE,subj);
-    filepath_raw_EEGdata = [sprintf('%sdata/FixEyeEEG_pelin_thesis/main/eeg/raw/%s/fix_new%s', BASE, num2str(subj), num2str(subj)) '.eeg'];
+    filepath_raw_EEGdata = [sprintf('%sdata/FixEyeEEG/main/eeg/raw/%s/fixeye000%s', BASE, num2str(subj), num2str(subj)) '.eeg'];
     filepath_behav_data = sprintf('%sdata/FixEyeEEG/main/behav_data/FixCrossExp_s%scfgdata.mat', BASE, subj); 
     
     if ICA == 0
@@ -35,7 +35,7 @@ function [] = preprocess_EEG(subj, ICA)
         mkdir(filepath_clean_data_noICA);
         end
 
-        eyetracking_removed = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/trials_wo_artefacts/deleted_trial_numbers_sub00%s.csv', BASE,subj), 'Range', 'B2');
+        eyetracking_removed = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/cleaned/deleted_trial_numbers_sub00%s.csv', BASE,subj), 'Range', 'B2');
 
 
 
@@ -69,7 +69,7 @@ function [] = preprocess_EEG(subj, ICA)
         % add trial,category and condition information and exemplar information to eeg data 
         exemplar = string(behav_dat.data.category)';
         data.trialinfo;
-        data.trialinfo = [data.trialinfo (1:3000)' behav_dat.data.catlabel' exemplar behav_dat.data.cond'];
+        data.trialinfo = [data.trialinfo (1:4200)' behav_dat.data.catlabel' exemplar behav_dat.data.cond'];
         size(data.trialinfo)
         size((1:3000)')
         size(exemplar)
