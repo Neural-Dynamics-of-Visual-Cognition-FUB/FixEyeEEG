@@ -41,3 +41,6 @@ vignettes/*.pdf
 # mac specific
 .DS
 .DS_Store
+
+# slurm specific
+*slurm*
