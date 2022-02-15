@@ -40,12 +40,12 @@ num_conditions = 2; %categories to decode
 % 1 = EEG, 2 = Eyetracking
 if method == 1
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
-    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/decoding_train_on_standard_test_on_bulls_category/%s', BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/time_time_category/%s', BASE,subj);
     load(filepath_preprocessed_data)
     data = data_rej_channel_interpolated_timelocked;
 elseif method == 2
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
-    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/decoding_train_on_standard_test_on_bulls_category/%s', BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/time_time_category/%s', BASE,subj);
     load(filepath_preprocessed_data)
     data = eye_data_baseline_timelocked;
 end
