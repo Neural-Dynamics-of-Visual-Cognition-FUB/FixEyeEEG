@@ -9,18 +9,20 @@
 
 declare -a permutations
 index=0
-for sub in 15 16 
+for sub in 5 6 7 8 9 10 11 
 do
-    permutations[$index]="$sub" 
+	for method in 1
+do
+    permutations[$index]="$sub $method" 
     index=$((index + 1))
+	done
 done
-
 #Extract parameters
 params=(${permutations[${SLURM_ARRAY_TASK_ID}]})
 sub=${params[0]}
-
+methods=${params[1]}
 echo sub $sub
-
+echo methods $methods
 ### Set up runtime environment
 
 module add MATLAB/2021a
@@ -32,7 +34,7 @@ cd /home/haebeg19/FixEyeEEG/scripts/EEG/
 
 ### Start job
 
-matlab -nosplash -noFigureWindows -r "category_decoding_SVM(${sub})" > serial.out #this worked
+matlab -nosplash -noFigureWindows -r "category_decoding_SVM(${sub}, ${methods})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 
