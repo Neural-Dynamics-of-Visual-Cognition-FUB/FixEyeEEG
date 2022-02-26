@@ -12,15 +12,15 @@ function [outputArg1,outputArg2] = time_time_category_decoding(subj, method)
 
 %% set up prereqs
 if ismac
-    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG');
-    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/decoding');
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/decoding/MEG_SVM_decoding_MVNN/');
     addpath('/Users/ghaeberle/Documents/MATLAB/libsvm/matlab');
     addpath('/Users/ghaeberle/Documents/MATLAB/fieldtrip-20210928/')
     ft_defaults
     BASE = '/Users/ghaeberle/scratch/';
 elseif isunix
-    addpath('/home/haebeg19/FixEyeEEG/scripts/EEG');
-    addpath('/home/haebeg19/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/decoding');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/decoding/MEG_SVM_decoding_MVNN/');
     addpath('/home/haebeg19/toolbox/libsvm/matlab');
     addpath('/home/haebeg19/toolbox/fieldtrip/')
     BASE = '/scratch/haebeg19/';
@@ -40,12 +40,12 @@ num_conditions = 2; %categories to decode
 % 1 = EEG, 2 = Eyetracking
 if method == 1
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
-    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/time_time_category/%s', BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/category_time_time/%s', BASE,subj);
     load(filepath_preprocessed_data)
     data = data_rej_channel_interpolated_timelocked;
 elseif method == 2
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
-    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/time_time_category/%s', BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/category_time_time/%s', BASE,subj);
     load(filepath_preprocessed_data)
     data = eye_data_baseline_timelocked;
 end
