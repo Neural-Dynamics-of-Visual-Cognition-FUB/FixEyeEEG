@@ -12,15 +12,15 @@ function [outputArg1,outputArg2] = train_on_standard_test_on_bulls_SVM_category(
 
 %% set up prereqs
 if ismac
-    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG');
-    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/decoding');
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/decoding/MEG_SVM_decoding_MVNN/');
     addpath('/Users/ghaeberle/Documents/MATLAB/libsvm/matlab');
     addpath('/Users/ghaeberle/Documents/MATLAB/fieldtrip-20210928/')
     ft_defaults
     BASE = '/Users/ghaeberle/scratch/';
 elseif isunix
-    addpath('/home/haebeg19/FixEyeEEG/scripts/EEG');
-    addpath('/home/haebeg19/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/decoding');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/decoding/MEG_SVM_decoding_MVNN/');
     addpath('/home/haebeg19/toolbox/libsvm/matlab');
     addpath('/home/haebeg19/toolbox/fieldtrip/')
     BASE = '/scratch/haebeg19/';
