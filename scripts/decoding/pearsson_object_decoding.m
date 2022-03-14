@@ -13,15 +13,15 @@ function [] = pearsson_object_decoding(subj, fixation_condition, method)
 
 %% set up prereqs
 if ismac
-    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG');
-    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/decoding');
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/decoding/MEG_SVM_decoding_MVNN/');
     addpath('/Users/ghaeberle/Documents/MATLAB/libsvm/matlab');
     addpath('/Users/ghaeberle/Documents/MATLAB/fieldtrip-20210928/')
     ft_defaults
     BASE = '/Users/ghaeberle/scratch/';
 elseif isunix
-    addpath('/home/haebeg19/FixEyeEEG/scripts/EEG');
-    addpath('/home/haebeg19/FixEyeEEG/scripts/EEG/MEG_SVM_decoding_MVNN/');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/decoding');
+    addpath('/home/haebeg19/FixEyeEEG/scripts/decoding/MEG_SVM_decoding_MVNN/');
     addpath('/home/haebeg19/toolbox/libsvm/matlab');
     addpath('/home/haebeg19/toolbox/fieldtrip/')
     BASE = '/scratch/haebeg19/';
@@ -98,7 +98,7 @@ for perm = 1:n_permutations
             for time = 1:time_points
                 for pseudo = 1:n_pseudotrials
                 %% standard
-                rdm(perm,pseudo, objA,objB,time) = 1-corr(squeeze(pseudo_trials(objA, ,:,time)),squeeze(pseudo_trials(objB,pseudo,:,time)),'type','Pearson');
+                rdm(perm,pseudo, objA,objB,time) = 1-corr(squeeze(pseudo_trials(objA,pseudo,:,time)),squeeze(pseudo_trials(objB,pseudo,:,time)),'type','Pearson');
                 end
             end
         end
