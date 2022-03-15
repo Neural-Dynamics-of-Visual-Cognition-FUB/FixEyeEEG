@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = train_on_standard_test_on_bulls_SVM_category(subj, method)
+function [] = train_on_standard_test_on_bulls_SVM_category(subj, method, train)
  %{ 
     - Multivariate Noise Normalisation 
     - category decoding for both fixation crosses for animate versus
@@ -134,12 +134,21 @@ for perm = 1:n_permutations
     num_trials_per_bin = round(min_number_of_trials/n_pseudotrials);
     pseudo_trials_bulls = create_pseudotrials(num_conditions, num_trials_per_bin, n_pseudotrials, data_both_categories_bulls);
     
+    if train == 1 
+        training_data = pseudo_trials_standard;
+        testing_data = pseudo_trials_bulls;
+    filename = 'animate_inanimate_standard_bulls_category';
+    elseif train == 2
+        training_data = pseudo_trials_bulls;
+        testing_data = pseudo_trials_standard;  
+        filename = 'animate_inanimate_bulls_standard_category';
+    end
     %% do the actual decoding 
     for time = 1:time_points
         
         %% standard 
         % split into trainung and testing 
-        training_data_standard=[squeeze(pseudo_trials_standard(1,1:end-1,:,time)) ; squeeze(pseudo_trials_standard(2,1:end-1,:,time))];
+        training_data_standard=[squeeze(training_data(1,1:end-1,:,time)) ; squeeze(training_data(2,1:end-1,:,time))];
         % create labels for the SVM 
         labels_train_standard  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
         
@@ -147,7 +156,7 @@ for perm = 1:n_permutations
         train_param_str=  '-s 0 -t 0 -b 0 -c 1 -q';
         model_standard=svmtrain(labels_train_standard',training_data_standard,train_param_str); 
         
-        testing_data_bulls=[squeeze(pseudo_trials_bulls(1,end,:,time))' ; squeeze(pseudo_trials_bulls(2,end,:,time))'];
+        testing_data_bulls=[squeeze(testing_data(1,end,:,time))' ; squeeze(testing_data(2,end,:,time))'];
         labels_test_bulls   = [1 2];
 
         disp('Test the SVM');
@@ -158,7 +167,6 @@ end
 
     %% Save the decision values + decoding accuracy
     decodingAccuracy_avg = squeeze(mean(decodingAccuracy,1)); 
-    filename = 'animate_inanimate_category';
     save(fullfile(results_dir,sprintf('%s_decodingAccuracy_train_standard.mat',filename)),'decodingAccuracy_avg');
     save(fullfile(results_dir,sprintf('%s_decodingAccuracy_min_number_trials.mat',filename)),'min_number_of_trials');      
    
