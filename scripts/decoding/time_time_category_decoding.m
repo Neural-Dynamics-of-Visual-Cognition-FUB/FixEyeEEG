@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = time_time_category_decoding(subj, method)
+function [outputArg1,outputArg2] = time_time_category_decoding(subj, method, within)
 %{
     - Multivariate Noise Normalisation
     - category decoding for both fixation crosses for animate versus
@@ -7,7 +7,11 @@ function [outputArg1,outputArg2] = time_time_category_decoding(subj, method)
     - decoding on pseudotrials
     - leave one pseudotrial out cross validation
     - decode with SVM
-    - ICA FLAG determines whether decoding is run on ICA or no ICA data
+    - within 0 = train on standard test on bulls 
+    - within 1 = train on bulls test on standard
+    - within 2 = within standard 
+    - within 3 = within bulls 
+    
 %}
 
 %% set up prereqs
@@ -134,12 +138,21 @@ for perm = 1:n_permutations
     num_trials_per_bin = round(min_number_of_trials/n_pseudotrials);
     pseudo_trials_bulls = create_pseudotrials(num_conditions, num_trials_per_bin, n_pseudotrials, data_both_categories_bulls);
     
+    if within == 0 
+        training_data = pseudo_trials_standard;
+        testing_data = pseudo_trials_bulls;
+        filename = 'standard_bulls_category';
+    elseif within == 1
+        training_data = pseudo_trials_bulls;
+        testing_data = pseudo_trials_standard;  
+        filename = 'bulls_standard_category';
+    end
     %% do the actual decoding
     for time1 = 1:time_points
         
         %% standard
         % split into trainung and testing
-        training_data_standard=[squeeze(pseudo_trials_standard(1,1:end-1,:,time1)) ; squeeze(pseudo_trials_standard(2,1:end-1,:,time1))];
+        training_data_standard=[squeeze(training_data(1,1:end-1,:,time1)) ; squeeze(training_data(2,1:end-1,:,time1))];
         % create labels for the SVM
         labels_train_standard  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
         
@@ -147,11 +160,11 @@ for perm = 1:n_permutations
         train_param_str=  '-s 0 -t 0 -b 0 -c 1 -q';
         model_standard=svmtrain(labels_train_standard',training_data_standard,train_param_str);
         for time2 = 1:time_points
-            testing_data_bulls=[squeeze(pseudo_trials_bulls(1,end,:,time2))' ; squeeze(pseudo_trials_bulls(2,end,:,time2))'];
-            labels_test_bulls   = [1 2];
+            testing_data_bulls=[squeeze(testing_data(1,end,:,time2))' ; squeeze(testing_data(2,end,:,time2))'];
+            labels_test   = [1 2];
             
             disp('Test the SVM');
-            [~, accuracy_standard, ~] = svmpredict(labels_test_bulls',testing_data_bulls,model_standard);
+            [~, accuracy_standard, ~] = svmpredict(labels_test',testing_data_bulls,model_standard);
             decodingAccuracy(perm,time1,time2)=accuracy_standard(1);
         end
     end
@@ -159,7 +172,6 @@ end
 
 %% Save the decision values + decoding accuracy
 decodingAccuracy_avg = squeeze(mean(decodingAccuracy,1));
-filename = 'time_time_category';
 save(fullfile(results_dir,sprintf('%s_decodingAccuracy_time_time.mat',filename)),'decodingAccuracy_avg');
 save(fullfile(results_dir,sprintf('%s_decodingAccuracy_min_number_trials.mat',filename)),'min_number_of_trials');
 
