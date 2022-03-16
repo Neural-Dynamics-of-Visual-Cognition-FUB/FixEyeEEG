@@ -1,4 +1,4 @@
-function [] = time_time_object_decoding(subj, method,within)
+function [] = time_time_object_decoding(subj, fixation_condition, method)
 %{
     - Multivariate Noise Normalisation
     - object decoding for both fixation crosses for animate versus
@@ -61,51 +61,39 @@ n_conditions = 40; %objects to decode
 time_points = size(preprocessed_data.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
 
-if within == 1
+if strcmp(fixation_condition, 'standard') == 1
     % standard
     cfg = [];
     cfg.trials = find(preprocessed_data.trialinfo(:,5)=='2');
-    data_train = ft_selectdata(cfg, preprocessed_data);
-    
+    data = ft_selectdata(cfg, preprocessed_data);
+elseif strcmp(fixation_condition, 'bulls') == 1
     cfg = [];
     cfg.trials = find(preprocessed_data.trialinfo(:,5)=='1');
-    data_test = ft_selectdata(cfg, preprocessed_data);
-elseif within == 2
-    cfg = [];
-    cfg.trials = find(preprocessed_data.trialinfo(:,5)=='2');
-    data_test = ft_selectdata(cfg, preprocessed_data);
-    cfg = [];
-    cfg.trials = find(preprocessed_data.trialinfo(:,5)=='1');
-    data_train = ft_selectdata(cfg, preprocessed_data);
+    data = ft_selectdata(cfg, preprocessed_data);
 end
 
 
 % minimum number of trials
 
-[min_number_of_trials_test, individual_objects_test] = get_min_trial_per_object(data_test);
-[min_number_of_trials_train, individual_objects_train] = get_min_trial_per_object(data_train);
-min_number_of_trials = min(min_number_of_trials_test,min_number_of_trials_train);
+[min_number_of_trials, individual_objects] = get_min_trial_per_object(data);
+
 % Preallocate
 decodingAccuracy_objects_time_time=NaN(n_permutations, n_conditions, n_conditions, time_points, time_points);
 
 for perm = 1:n_permutations
     %% MVNN 
     min_num_trials_all_conditions = min(min_number_of_trials);
-    data_matrix_MVNN_train = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data, 'object', individual_objects_train);
-    data_matrix_MVNN_test = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data, 'object', individual_objects_test);
+    data_matrix_MVNN = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data, 'object', individual_objects);
     % get inverted covariance matrix
-    [data_objA_objB_MVNN_train, ~] = multivariate_noise_normalization(data_matrix_MVNN_train);
-    [data_objA_objB_MVNN_test, ~] = multivariate_noise_normalization(data_matrix_MVNN_test);
+    [data_objA_objB_MVNN, ~] = multivariate_noise_normalization(data_matrix_MVNN);
     
     num_trials_per_bin = round(min_num_trials_all_conditions/n_pseudotrials);
-    pseudo_trials_train = create_pseudotrials(n_conditions, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN_train);
-    pseudo_trials_test = create_pseudotrials(n_conditions, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN_test);
-    
+    pseudo_trials = create_pseudotrials(n_conditions, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
     for objA = 1:n_conditions - 1
         for objB = objA+1:n_conditions
             for time = 1:time_points
-            training_data =[squeeze(pseudo_trials_train(1,1:end-1,:,time)) ; squeeze(pseudo_trials_train(2,1:end-1,:,time))];
-            testing_data  =[squeeze(pseudo_trials_test(1,end,:,time))' ; squeeze(pseudo_trials_test(2,end,:,time))'];
+            training_data =[squeeze(pseudo_trials(1,1:end-1,:,time)) ; squeeze(pseudo_trials(2,1:end-1,:,time))];
+            testing_data  =[squeeze(pseudo_trials(1,end,:,time))' ; squeeze(pseudo_trials(2,end,:,time))'];
             labels_train  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
             labels_test   = [1 2];
 
