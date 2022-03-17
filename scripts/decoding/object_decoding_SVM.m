@@ -118,8 +118,8 @@ for perm = 1:n_permutations
             
             for time = 1:time_points
             %% standard    
-            training_data =[squeeze(pseudo_trials(objA,1:end-1,:,time)) ; squeeze(pseudo_trials(objB,1:end-1,:,time))];
-            testing_data  =[squeeze(pseudo_trials(objA,end,:,time))' ; squeeze(pseudo_trials(objB,end,:,time))'];
+            training_data =[squeeze(pseudo_trials(1,1:end-1,:,time)) ; squeeze(pseudo_trials(2,1:end-1,:,time))];
+            testing_data  =[squeeze(pseudo_trials(1,end,:,time))' ; squeeze(pseudo_trials(2,end,:,time))'];
             labels_train  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
             labels_test   = [1 2];
 
