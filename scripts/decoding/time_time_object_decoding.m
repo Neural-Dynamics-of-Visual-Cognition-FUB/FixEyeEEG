@@ -57,7 +57,7 @@ end
 %% define required information
 n_permutations = 100;
 n_pseudotrials = 6;
-n_conditions = 40; %objects to decode
+n_conditions = 40;time %objects to decode
 time_points = size(preprocessed_data.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
 
@@ -78,10 +78,9 @@ end
 [min_number_of_trials, individual_objects] = get_min_trial_per_object(data);
 
 % Preallocate
-decodingAccuracy_objects_time_time=NaN(n_permutations, n_conditions, n_conditions, time_points, time_points);
 
 for perm = 1:n_permutations
-    %% MVNN 
+    %% MVNN
     min_num_trials_all_conditions = min(min_number_of_trials);
     data_matrix_MVNN = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data, 'object', individual_objects);
     % get inverted covariance matrix
@@ -91,32 +90,32 @@ for perm = 1:n_permutations
     pseudo_trials = create_pseudotrials(n_conditions, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
     for objA = 1:n_conditions - 1
         for objB = objA+1:n_conditions
-            for time = 1:time_points
-            training_data =[squeeze(pseudo_trials(1,1:end-1,:,time)) ; squeeze(pseudo_trials(2,1:end-1,:,time))];
-            testing_data  =[squeeze(pseudo_trials(1,end,:,time))' ; squeeze(pseudo_trials(2,end,:,time))'];
-            labels_train  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
-            labels_test   = [1 2];
-
-            disp('Train the SVM');
-            train_param_str=  '-s 0 -t 0 -b 0 -c 1 -q';
-            model=svmtrain(labels_train',training_data,train_param_str); 
-
-            disp('Test the SVM');
-            [~, accuracy, ~] = svmpredict(labels_test',testing_data,model);  
-            decodingAccuracy_objects_time_time(perm,objB, objA, time)=accuracy(1);                 
+            for time1 = 1:time_points
+                training_data =[squeeze(pseudo_trials(objA,1:end-1,:,time1)) ; squeeze(pseudo_trials(objB,1:end-1,:,time1))];
+                labels_train  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
+                labels_test   = [1 2];
+                
+                disp('Train the SVM');
+                train_param_str=  '-s 0 -t 0 -b 0 -c 1 -q';
+                model=svmtrain(labels_train',training_data,train_param_str);
+                for time2 = 1:time_points
+                    disp('Test the SVM');
+                    testing_data  =[squeeze(pseudo_trials(objA,end,:,time2))' ; squeeze(pseudo_trials(objB,end,:,time2))'];
+                    [~, accuracy, ~] = svmpredict(labels_test',testing_data,model);
+                    decodingAccuracy_objects_time_time(perm,objA, objB, time1,time2)=accuracy(1);
+                end
             end
         end
     end
-end
-
-if strcmp(fixation_condition, 'standard') == 1
-    rdm_avg_standard = squeeze(nanmean(nanmean(decodingAccuracy_objects_time_time,1),2)); %average over permutations and pseudotrials
-    filename = sprintf('objects_%s',fixation_condition);
-    save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_standard');
-elseif strcmp(fixation_condition, 'bulls') == 1
-    rdm_avg_bulls = squeeze(mean(mean(decodingAccuracy_objects_time_time,1),2)); %average over permutations and pseudotrials
-    filename = sprintf('objects_%s',fixation_condition);
-    save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_bulls');
-end
-
+    
+    if strcmp(fixation_condition, 'standard') == 1
+        rdm_avg_standard = squeeze(nanmean(nanmean(decodingAccuracy_objects_time_time,1),2)); %average over permutations and pseudotrials
+        filename = sprintf('objects_%s',fixation_condition);
+        save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_standard');
+    elseif strcmp(fixation_condition, 'bulls') == 1
+        rdm_avg_bulls = squeeze(mean(mean(decodingAccuracy_objects_time_time,1),2)); %average over permutations and pseudotrials
+        filename = sprintf('objects_%s',fixation_condition);
+        save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_bulls');
+    end
+    
 end
