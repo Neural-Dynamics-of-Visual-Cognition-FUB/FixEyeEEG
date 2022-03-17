@@ -114,12 +114,12 @@ for perm = 1:n_permutations
             %%
             num_trials_per_bin = round(min_num_trial/n_pseudotrials);
             %pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB);
-            pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
+            pseudo_trials = create_pseudotrials(n_conditions, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
             
             for time = 1:time_points
             %% standard    
-            training_data =[squeeze(pseudo_trials(1,1:end-1,:,time)) ; squeeze(pseudo_trials(2,1:end-1,:,time))];
-            testing_data  =[squeeze(pseudo_trials(1,end,:,time))' ; squeeze(pseudo_trials(2,end,:,time))'];
+            training_data =[squeeze(pseudo_trials(objA,1:end-1,:,time)) ; squeeze(pseudo_trials(objB,1:end-1,:,time))];
+            testing_data  =[squeeze(pseudo_trials(objA,end,:,time))' ; squeeze(pseudo_trials(objB,end,:,time))'];
             labels_train  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
             labels_test   = [1 2];
 
@@ -129,7 +129,7 @@ for perm = 1:n_permutations
 
             disp('Test the SVM');
             [~, accuracy, ~] = svmpredict(labels_test',testing_data,model);  
-            decodingAccuracy_objects(perm,objB, objA, time)=accuracy(1); 
+            decodingAccuracy_objects(perm,objA, objB, time)=accuracy(1); 
             
             end
         end
