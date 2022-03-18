@@ -69,7 +69,7 @@ end
 
 %% define required information
 
-time_points = size(data.time,2);
+time_points = size(preprocessed_data.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
 if strcmp(fixation_condition, 'standard') == 1
     % standard 
