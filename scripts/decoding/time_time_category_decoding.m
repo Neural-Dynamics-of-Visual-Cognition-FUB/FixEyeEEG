@@ -51,12 +51,12 @@ if method == 1
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
     results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/category_time_time/%s', BASE,subj);
     load(filepath_preprocessed_data)
-    data = data_rej_channel_interpolated_timelocked;
+    preprocessed_data = data_rej_channel_interpolated_timelocked;
 elseif method == 2
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
     results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/category_time_time/%s', BASE,subj);
     load(filepath_preprocessed_data)
-    data = eye_data_baseline_timelocked;
+    preprocessed_data = eye_data_baseline_timelocked;
 end
 
 
@@ -99,7 +99,7 @@ for perm = 1:n_permutations
     %   number of conditioins, M is the number of trials, E is the number of
     %   electrodes and TP is the number of timepoints.
     
-    data_MVNN = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_standard, 'category');  
+    data_MVNN = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data, 'category');  
  
     % actually do the MVNN
     [data_MVNN, ~] = multivariate_noise_normalization(data_MVNN);
