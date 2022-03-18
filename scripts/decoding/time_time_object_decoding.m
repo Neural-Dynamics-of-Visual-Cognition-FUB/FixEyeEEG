@@ -39,12 +39,12 @@ subj = num2str(subj);
 % 1 == EEG, 2 == eyetracking
 if method == 1
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
-    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/pearsson/%s/', BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/object_time_time/%s/', BASE,subj);
     load(filepath_preprocessed_data)
     preprocessed_data = data_rej_channel_interpolated_timelocked;
 elseif method == 2
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
-    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/pearsson/%s', BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/object_time_time/%s', BASE,subj);
     load(filepath_preprocessed_data)
     preprocessed_data = eye_data_baseline_timelocked;
 end
@@ -110,13 +110,13 @@ for perm = 1:n_permutations
     end
     
     if strcmp(fixation_condition, 'standard') == 1
-        rdm_avg_standard = squeeze(nanmean(nanmean(decodingAccuracy_objects_time_time,1),2)); %average over permutations and pseudotrials
+        decodingAccuracy_objects_time_time_avg_standard = squeeze(nanmean(nanmean(decodingAccuracy_objects_time_time,1),2)); %average over permutations and pseudotrials
         filename = sprintf('objects_%s',fixation_condition);
-        save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_standard');
+        save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_objects_time_time_standard');
     elseif strcmp(fixation_condition, 'bulls') == 1
-        rdm_avg_bulls = squeeze(mean(mean(decodingAccuracy_objects_time_time,1),2)); %average over permutations and pseudotrials
+        decodingAccuracy_objects_time_time_avg_bulls = squeeze(mean(mean(decodingAccuracy_objects_time_time,1),2)); %average over permutations and pseudotrials
         filename = sprintf('objects_%s',fixation_condition);
-        save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_bulls');
+        save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_objects_time_time_avg_bulls');
     end
     
 end

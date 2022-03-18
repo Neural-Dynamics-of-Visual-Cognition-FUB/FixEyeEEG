@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 
 #SBATCH --mail-user=haebeg19@zedat.fu-berlin.de
 #SBATCH --job-name=train_test
