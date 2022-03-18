@@ -85,7 +85,7 @@ for perm = 1:n_permutations
     for objA = 1:n_conditions - 1
         for objB = objA+1:n_conditions
             min_num_trials_all_conditions = min(min_number_of_trials);
-            data_matrix_MVNN = create_data_matrix(2, min_num_trial, data, objA, objB, individual_objects);
+            data_matrix_MVNN = create_data_matrix(2, min_number_of_trials, data, objA, objB, individual_objects);
             % get inverted covariance matrix
             [data_objA_objB_MVNN, ~] = multivariate_noise_normalization(data_matrix_MVNN);
             
