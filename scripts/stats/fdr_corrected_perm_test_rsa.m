@@ -1,20 +1,25 @@
 function [SignificantVariables,crit_p,adjusted_pvalues, true_rsa_rdm] = fdr_corrected_perm_test_rsa(eeg,eyetracking, numPermutations, tail, q_value)
+if ismac
+    BASE = '/Users/ghaeberle/Documents/PhD/project/';
+elseif isunix
+    BASE = '/home/haebeg19/';
 
-addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats/fdr_bh/');
-addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats/');
+end
+addpath(sprintf('%sFixEyeEEG/scripts/stats/fdr_bh/',BASE));
+addpath(sprintf('%sFixEyeEEG/scripts/stats/',BASE));
 
 %%%%% CALCULATING THE GROUND TRUTH AND PERMUTATION SAMPLES P-VALUES %%%%%
   
 %% compute true RSA correlation values 
 %%%% TODO ADD FOR BULLS AND DIFFERENCE WAVE ALSO 
 %%  Reshape the matrices: take only the upper diagonal, in vector form for the averaged subejcts 
-avg_subject_RDM_eeg = squeeze(nanmean(eeg,1));
-avg_subject_RDM_eyetracking = squeeze(nanmean(eyetracking,1));
+    avg_subject_RDM_eeg = squeeze(nanmean(eeg,1));
+    avg_subject_RDM_eyetracking = squeeze(nanmean(eyetracking,1));
 
 %%  Reshape the matrices: take only the upper diagonal, in vector form
 %EEG 
 if find(isnan(avg_subject_RDM_eeg)) >0 %full matrix version
-    numTimepoints_eeg = size(avg_subject_RDM_eeg,3);
+   numTimepoints_eeg = size(avg_subject_RDM_eeg,3);
     avg_subject_RDM_eeg(isnan(avg_subject_RDM_eeg)) = 0;
     rdm_flattened_cell_eeg = arrayfun(@(x) squareform(avg_subject_RDM_eeg(:,:,x)+(avg_subject_RDM_eeg(:,:,x))'),...
                 1:numTimepoints_eeg,'UniformOutput',false);
@@ -26,7 +31,7 @@ end
 
 %eyetracking
 if find(isnan(avg_subject_RDM_eyetracking)) >0 %full matrix version
-    numTimepoints_eyetracking = size(avg_subject_RDM_eyetracking,3);
+   numTimepoints_eyetracking = size(avg_subject_RDM_eyetracking,3);
     avg_subject_RDM_eyetracking(isnan(avg_subject_RDM_eyetracking)) = 0;
     rdm_flattened_cell_eyetracking = arrayfun(@(x) squareform(avg_subject_RDM_eyetracking(:,:,x)+(avg_subject_RDM_eyetracking(:,:,x))'),...
                 1:numTimepoints_eyetracking,'UniformOutput',false);
@@ -43,7 +48,7 @@ for time = 1:numTimepoints_eeg
 end
 %%% DO THE ACTUAL PERMUTATION %%%% 
     %% 1)Permute the subject-level RDMs N times and calculate the Spearman's correlation with the other RDM at each timepoint
-    numTimepoints = size(avg_subject_RDM_eeg,3);
+    numTimepoints = numTimepoints_eeg;
     all_rsa_rdm = NaN(numPermutations,numTimepoints);
     all_rsa_rdm(1,:) = true_rsa_rdm;
     for perm = 2:numPermutations
