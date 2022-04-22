@@ -72,6 +72,9 @@ elseif strcmp(fixation_condition, 'bulls') == 1
     data = ft_selectdata(cfg, preprocessed_data);
 end
 
+ cfg=[];
+ cfg.resamplefs=50;
+ data = ft_resampledata(cfg,data);
 
 % minimum number of trials
 
