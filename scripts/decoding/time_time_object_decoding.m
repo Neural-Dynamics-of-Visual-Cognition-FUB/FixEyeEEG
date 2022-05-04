@@ -58,7 +58,7 @@ end
 n_permutations = 100;
 n_pseudotrials = 6;
 n_conditions = 40; %objects to decode
-time_points = size(preprocessed_data.time,2);
+
 %% split data into standard(2) and bullseye(1) fixation cross
 
 if strcmp(fixation_condition, 'standard') == 1
@@ -75,7 +75,7 @@ end
  cfg=[];
  cfg.resamplefs=50;
  data = ft_resampledata(cfg,data);
-
+time_points = size(data.time,2);
 % minimum number of trials
 
 [min_number_of_trials, individual_objects] = get_min_trial_per_object(data);
