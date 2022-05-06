@@ -123,7 +123,7 @@ for perm = 1:n_permutations
                 for c = 1:2
                     for tr = 1:min_num_trial
                         X = squeeze(data_objA_objB_bulls(c,tr,:,t))';
-                        data_objA_objB_MVNN_standard(c,tr,:,t) = X*inverted_sigma_bulls;
+                        data_objA_objB_MVNN_bulls(c,tr,:,t) = X*inverted_sigma_bulls;
                     end
                 end
             end
