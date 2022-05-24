@@ -28,7 +28,7 @@ if strcmp(distance_measure, 'decoding') == 1
 elseif strcmp(distance_measure, 'pearsson') == 1
  %% 1-pearsson    
     load(sprintf('%sdata/FixEyeEEG/main/results/%s_pearsson/%s_decodingAcc_standard_all_%s.mat',BASE,decoding,decoding,methods_flag(1)));
-    load(sprintf('%sFixEyeEEG/main/results/%s_pearsson/%s_decodingAcc_bulls_all_%s.mat',BASE,decoding, decoding,methods_flag(1)));
+    load(sprintf('%sdata/FixEyeEEG/main/results/%s_pearsson/%s_decodingAcc_bulls_all_%s.mat',BASE,decoding, decoding,methods_flag(1)));
     
     decodingAcc_standard_eeg = eval(sprintf('%s_rdm_standard_all',decoding));
     decodingAcc_bulls_eeg = eval(sprintf('%s_rdm_bulls_all',decoding));
@@ -72,10 +72,10 @@ end
 %[SignificantVariables_category_diff_wave,~,adjusted_pvalues_diff_wave, true_rsa_diff_wave] = fdr_corrected_perm_test_rsa(decodingAcc_diff_wave_1,decodingAcc_diff_wave_2, n_perm,'right', q_value);
 
 significant_time_points_standard = find(SignificantVariables_category_standard>0);
-y_significants_standard = repmat(70, size(significant_time_points_standard,2),1)';
+y_significants_standard = repmat(-0.4, size(significant_time_points_standard,2),1)';
 
 significant_time_points_bulls = find(SignificantVariables_category_bulls>0);
-y_significants_bulls = repmat(72, size(significant_time_points_bulls,2),1)';
+y_significants_bulls = repmat(-0.5, size(significant_time_points_bulls,2),1)';
 
 %significant_time_points_diff_wave = find(SignificantVariables_category_diff_wave>0);
 %y_significants_diff_wave = repmat(70, size(significant_time_points_diff_wave,2),1)';
