@@ -5,7 +5,8 @@ function [] = plot_statistics_rsa(split_half, distance_measure,n_perm,q_value,ra
 %
 %
 %
-
+n_perm = 100000;
+q_value = 0.05;
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
     BASE = '/Users/ghaeberle/scratch/';
@@ -19,6 +20,13 @@ out_path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/',BASE);
 out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/rsa/',BASE);
 methods_flag = ["eeg" "eyetracking"];
 
+if ~isfolder(out_path_plots)
+    mkdir(out_path_plots);
+end
+
+if ~isfolder(out_path_results)
+    mkdir(out_path_results);
+end
 %% decoding accuracies
 if  distance_measure == 1
     dist_measure = 'decoding';
