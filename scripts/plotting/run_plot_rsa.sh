@@ -8,12 +8,11 @@
 #SBATCH --qos=standard
 
 # define permutation parameters and qvalues
-perm=100000
-qval=0.05
+
 
 declare -a permutations
 index=0
-for split_half in 0 1 2 
+for split_half in 1 2 3 
 do
     for distance_measure in 1 2
     do
@@ -45,7 +44,7 @@ cd /home/haebeg19/FixEyeEEG/scripts/plotting/
 
 ### Start job
 
-matlab -nosplash -noFigureWindows -r "plot_statistics_rsa(${split_half}, ${distance_measure}, ${perm}, ${qval}, ${random})" > serial.out #this worked
+matlab -nosplash -noFigureWindows -r "plot_statistics_rsa(${split_half}, ${distance_measure}, ${random})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 

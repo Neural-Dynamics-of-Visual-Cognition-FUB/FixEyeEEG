@@ -1,4 +1,4 @@
-function [] = plot_statistics_rsa(split_half, distance_measure,n_perm,q_value,random)
+function [] = plot_statistics_rsa(split_half, distance_measure,random)
 % calculating statistics for RSA analysis
 % split half = 0 or 1
 %  if 1 then split hald analysis if performed
