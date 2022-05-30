@@ -84,67 +84,34 @@ for perm = 1:n_permutations
     min_num_trials_all_conditions = min(min(min_number_of_trials_bulls),min(min_number_of_trials_standard));
     data_matrix_MVNN_standard = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data_standard, 'object', individual_objects_standard);
     % get inverted covariance matrix
-    [~, inverted_sigma_standard] = multivariate_noise_normalization(data_matrix_MVNN_standard);
+    [data_objA_objB_MVNN_standard, ~] = multivariate_noise_normalization(data_matrix_MVNN_standard);
+    
+    num_trials_per_bin_standard = round(min_num_trials_all_conditions/n_pseudotrials);
+    pseudo_trials_standard = create_pseudotrials(n_conditions, num_trials_per_bin_standard, n_pseudotrials, data_objA_objB_MVNN_standard);
     
     data_matrix_MVNN_bulls = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data_bulls, 'object', individual_objects_bulls);
     % get inverted covariance matrix
-    [~, inverted_sigma_bulls] = multivariate_noise_normalization(data_matrix_MVNN_bulls);
+    [data_objA_objB_MVNN_bulls, ~] = multivariate_noise_normalization(data_matrix_MVNN_bulls);
+    
+    num_trials_per_bin_bulls = round(min_num_trials_all_conditions/n_pseudotrials);
+    pseudo_trials_bulls = create_pseudotrials(n_conditions, num_trials_per_bin_bulls, n_pseudotrials, data_objA_objB_MVNN_bulls);
+    
+    if train == 1
+        pseudo_trial_training_data = pseudo_trials_standard;
+        pesudo_trial_testing_data = pseudo_trials_bulls;
+        filename = 'standard_bulls_object';
+    elseif train == 2
+        pseudo_trial_training_data = pseudo_trials_bulls;
+        pesudo_trial_testing_data = pseudo_trials_standard;
+        filename = 'bulls_standard_object';
+    end
     %%
     for objA = 1:n_conditions - 1
         for objB = objA+1:n_conditions
-            %calculate minimum number of trials possible for this specific
-            %pair
-            
-            %% standard
-            min_num_trial_standard = min(min_number_of_trials_standard(objA),min_number_of_trials_standard(objB));
-            min_num_trial_bulls = min(min_number_of_trials_bulls(objA),min_number_of_trials_bulls(objB));
-            min_num_trial=min(min_num_trial_standard,min_num_trial_bulls);
-            data_objA_objB_standard= create_data_matrix(2, min_num_trial, data_standard, objA, objB, individual_objects_standard);
-            data_objA_objB_bulls= create_data_matrix(2, min_num_trial, data_bulls, objA, objB, individual_objects_bulls);
-            
-            %% TODO ASK SOMEONE WHETHER THIS WORKS LIKE THIS normalise data matrix with inverted covariance matrix (MVNN)
-            data_objA_objB_MVNN_standard = NaN(size(data_objA_objB_standard));
-            for t = 1:time_points %and for each condition
-                for c = 1:2
-                    for tr = 1:min_num_trial
-                        X = squeeze(data_objA_objB_standard(c,tr,:,t))';
-                        data_objA_objB_MVNN_standard(c,tr,:,t) = X*inverted_sigma_standard;
-                    end
-                end
-            end
-            %%
-            num_trials_per_bin = round(min_num_trial/n_pseudotrials);
-            %pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB);
-            pseudo_trials_standard = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN_standard);
-            
-            %% bulls
-            data_objA_objB_MVNN_bulls = NaN(size(data_objA_objB_bulls));
-            for t = 1:time_points %and for each condition
-                for c = 1:2
-                    for tr = 1:min_num_trial
-                        X = squeeze(data_objA_objB_bulls(c,tr,:,t))';
-                        data_objA_objB_MVNN_bulls(c,tr,:,t) = X*inverted_sigma_bulls;
-                    end
-                end
-            end
-            %%
-            num_trials_per_bin = round(min_num_trial/n_pseudotrials);
-            %pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB);
-            pseudo_trials_bulls = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN_bulls);
-            
-            if train == 1
-                pseudo_trial_training_data = pseudo_trials_standard;
-                pesudo_trial_testing_data = pseudo_trials_bulls;
-                filename = 'standard_bulls_object';
-            elseif train == 2
-                pseudo_trial_training_data = pseudo_trials_bulls;
-                pesudo_trial_testing_data = pseudo_trials_standard;
-                filename = 'bulls_standard_object';
-            end
             for time = 1:time_points
                 %% standard
-                training_data =[squeeze(pseudo_trial_training_data(1,1:end-1,:,time)) ; squeeze(pseudo_trial_training_data(2,1:end-1,:,time))];
-                testing_data  =[squeeze(pesudo_trial_testing_data(1,end,:,time))' ; squeeze(pesudo_trial_testing_data(2,end,:,time))'];
+                training_data =[squeeze(pseudo_trial_training_data(objA,1:end-1,:,time)) ; squeeze(pseudo_trial_training_data(objB,1:end-1,:,time))];
+                testing_data  =[squeeze(pesudo_trial_testing_data(objA,end,:,time))' ; squeeze(pesudo_trial_testing_data(objB,end,:,time))'];
                 labels_train  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
                 labels_test   = [1 2];
                 
@@ -161,7 +128,7 @@ for perm = 1:n_permutations
     end
 end
 %% Save the decision values + decoding accuracy
-    decodingAccuracy_object_avg = squeeze(nanmean(decodingAccuracy_objects,1));
-    save(fullfile(results_dir,sprintf('%s_decodingAccuracy_train_standard.mat',filename)),'decodingAccuracy_object_avg');
+decodingAccuracy_object_avg = squeeze(nanmean(decodingAccuracy_objects,1));
+save(fullfile(results_dir,sprintf('%s_decodingAccuracy_train_standard.mat',filename)),'decodingAccuracy_object_avg');
 
 end

@@ -72,9 +72,9 @@ elseif strcmp(fixation_condition, 'bulls') == 1
     data = ft_selectdata(cfg, preprocessed_data);
 end
 
- cfg=[];
- cfg.resamplefs=50;
- data = ft_resampledata(cfg,data);
+cfg=[];
+cfg.resamplefs=50;
+data = ft_resampledata(cfg,data);
 time_points = size(data.time,2);
 % minimum number of trials
 
@@ -84,18 +84,18 @@ time_points = size(data.time,2);
 
 for perm = 1:n_permutations
     %% MVNN
+    min_num_trials_all_conditions = min(min_number_of_trials);
+    data_matrix_MVNN = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data, 'object', individual_objects);
+    % get inverted covariance matrix
+    [data_objA_objB_MVNN, ~] = multivariate_noise_normalization(data_matrix_MVNN);
     
+    num_trials_per_bin = round(min_num_trials_all_conditions/n_pseudotrials);
+    pseudo_trials = create_pseudotrials(n_conditions, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
     for objA = 1:n_conditions - 1
         for objB = objA+1:n_conditions
-            min_num_trials_all_conditions = min(min_number_of_trials);
-            data_matrix_MVNN = create_data_matrix(2, min_num_trials_all_conditions, data, objA, objB, individual_objects);
-            % get inverted covariance matrix
-            [data_objA_objB_MVNN, ~] = multivariate_noise_normalization(data_matrix_MVNN);
             
-            num_trials_per_bin = round(min_num_trials_all_conditions/n_pseudotrials);
-            pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
             for time1 = 1:time_points
-                training_data =[squeeze(pseudo_trials(1,1:end-1,:,time1)) ; squeeze(pseudo_trials(2,1:end-1,:,time1))];
+                training_data =[squeeze(pseudo_trials(objA,1:end-1,:,time1)) ; squeeze(pseudo_trials(objB,1:end-1,:,time1))];
                 labels_train  = [ones(1,n_pseudotrials-1) 2*ones(1,n_pseudotrials-1)];
                 labels_test   = [1 2];
                 
@@ -104,16 +104,17 @@ for perm = 1:n_permutations
                 model=svmtrain(labels_train',training_data,train_param_str);
                 for time2 = 1:time_points
                     disp('Test the SVM');
-                    testing_data  =[squeeze(pseudo_trials(1,end,:,time2))' ; squeeze(pseudo_trials(2,end,:,time2))'];
+                    testing_data  =[squeeze(pseudo_trials(objA,end,:,time2))' ; squeeze(pseudo_trials(objB,end,:,time2))'];
                     [~, accuracy, ~] = svmpredict(labels_test',testing_data,model);
                     decodingAccuracy_objects_time_time(perm,objA, objB, time1,time2)=accuracy(1);
                 end
             end
         end
     end
-    
+end 
+
     if strcmp(fixation_condition, 'standard') == 1
-        decodingAccuracy_objects_time_time_avg_standard = squeeze(nanmean(decodingAccuracy_objects_time_time,1)); %average over permutations 
+        decodingAccuracy_objects_time_time_avg_standard = squeeze(nanmean(decodingAccuracy_objects_time_time,1)); %average over permutations
         filename = sprintf('objects_%s',fixation_condition);
         save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_objects_time_time_avg_standard');
     elseif strcmp(fixation_condition, 'bulls') == 1
