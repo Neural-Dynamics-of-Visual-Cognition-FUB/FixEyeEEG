@@ -84,19 +84,19 @@ if random == 1
     effect = 'random_effect';
     [SignificantVariables_category_standard,~,adjusted_pvalues_standard, true_rsa_rdm_standard] = fdr_corrected_perm_test_rsa(decodingAcc_standard_1,decodingAcc_standard_2, n_perm,'right', q_value);
     [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls, true_rsa_rdm_bulls] = fdr_corrected_perm_test_rsa(decodingAcc_bulls_1,decodingAcc_bulls_2,n_perm,'right', q_value);
-    save(sprintf('%ssignificant_variables_standard_%s_%s.m',out_path_results, method, dist_measure),SignificantVariables_category_standard);
-    save(sprintf('%ssignificant_variables_bulls_%s_%s.m',out_path_results, method, dist_measure),SignificantVariables_category_bulls);
-    save(sprintf('%strue_rsa_rdm_standard_%s_%s.m',out_path_results, method, dist_measure),true_rsa_rdm_standard);
-    save(sprintf('%strue_rsa_rdm_bulls_%s_%s.m',out_path_results, method, dist_measure),true_rsa_rdm_bulls);
+    save(sprintf('%ssignificant_variables_standard_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_standard');
+    save(sprintf('%ssignificant_variables_bulls_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_bulls');
+    save(sprintf('%strue_rsa_rdm_standard_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
+    save(sprintf('%strue_rsa_rdm_bulls_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
 elseif random == 2
     effect = 'fixed_effect';
     [SignificantVariables_category_standard,~,adjusted_pvalues_standard, true_rsa_rdm_standard] = fdr_rsa_random_effects_stats(decodingAcc_standard_1,decodingAcc_standard_2, n_perm,'right', q_value);
     [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls, true_rsa_rdm_bulls] = fdr_rsa_random_effects_stats(decodingAcc_bulls_1,decodingAcc_bulls_2,n_perm,'right', q_value);
     
-    save(sprintf('%ssignificant_variables_standard_random_effects_%s_%s.m',out_path_results, method, dist_measure),SignificantVariables_category_standard);
-    save(sprintf('%ssignificant_variables_bulls_random_effects_%s_%s.m',out_path_results, method, dist_measure),SignificantVariables_category_bulls);
-    save(sprintf('%strue_rsa_rdm_standard_random_effects_%s_%s.m',out_path_results, method, dist_measure),true_rsa_rdm_standard);
-    save(sprintf('%strue_rsa_rdm_bulls_random_effects_%s_%s.m',out_path_results, method, dist_measure),true_rsa_rdm_bulls);
+    save(sprintf('%ssignificant_variables_standard_random_effects_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_standard');
+    save(sprintf('%ssignificant_variables_bulls_random_effects_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_bulls');
+    save(sprintf('%strue_rsa_rdm_standard_random_effects_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
+    save(sprintf('%strue_rsa_rdm_bulls_random_effects_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
     
 end
 
