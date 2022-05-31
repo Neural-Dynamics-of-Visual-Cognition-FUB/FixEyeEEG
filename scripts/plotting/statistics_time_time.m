@@ -9,7 +9,8 @@ elseif isunix
 end
 n_perm = 100000;
 q_value = 0.05;
-out_path = sprintf('%sdata/FixEyeEEG/main/results/plots/',BASE);
+out_path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/',BASE);
+out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/time_time/',BASE);
 load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_%s_%s.mat', BASE,decoding,decoding,fixcross,method));
 data= eval(sprintf('decodingAcc_%s_all',fixcross));
 
@@ -47,6 +48,7 @@ if strcmp(decoding, 'objects')==1
 end
 
 [SignificantVariables, pvalues, crit_p, adjusted_pvalues] = fdr_permutation_cluster_1sample_alld(data,n_perm,'right', q_value);
+save(sprintf('%ssignificant_variables_time_time_%s_%s.m',out_path_results, fixcross, method),'SignificantVariables');
 
 if strcmp(decoding, 'standard')==1
 figure
@@ -72,7 +74,7 @@ xline(40,'--w');
 hline = refline([1 0]);
 hline.Color = 'w';
 hline.LineStyle = '--';
-saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics.png',out_path,decoding, method,fixcross));
+saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics.png',out_path_plots,decoding, method,fixcross));
 
 elseif strcmp(decoding, 'objects')==1
 figure
@@ -98,7 +100,7 @@ xline(10,'--w');
 hline = refline([1 0]);
 hline.Color = 'w';
 hline.LineStyle = '--';
-saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics.png',out_path,decoding, method,fixcross));
+saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics.png',out_path_plots,decoding, method,fixcross));
 end
 end
 
