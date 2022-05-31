@@ -1,7 +1,17 @@
 function [] = combine_time_time_all_subjects(decoding)
 %% category decoding
 
-out_path = sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/%s_time_time/', decoding);
+
+if ismac
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
+    BASE = '/Users/ghaeberle/scratch/';
+elseif isunix
+    addpath('/home/haebeg19/FixEyeEEG/scripts/stats');
+    BASE = '/scratch/haebeg19/';
+    
+end
+
+out_path = sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/', BASE,decoding);
 
 if ~isfolder(out_path)
     mkdir(out_path);
@@ -18,11 +28,13 @@ for idx = 1:2
     end
     
     for subj = 1:n_subs
-        results_dir = sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/%s/%s_time_time/%s', methods_flag(idx),decoding,num2str(subs(subj)));
+        results_dir = sprintf('%sdata/FixEyeEEG/main/%s/%s_time_time/%s', BASE,methods_flag(idx),decoding,num2str(subs(subj)));
+        
         fileToRead1 = fullfile(sprintf('%s/%s_standard_time_time_avg.mat',results_dir, decoding));
         load(fileToRead1);
         fileToRead2 = fullfile(sprintf('%s/%s_bulls_time_time_avg.mat',results_dir,decoding));
         load(fileToRead2);
+        
         if strcmp(decoding, 'category') == 1
             decodingAcc_standard_all(subj,:,:) =  decodingAccuracy_avg_standard;
             decodingAcc_bulls_all(subj,:,:) = decodingAccuracy_avg_bulls;
