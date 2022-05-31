@@ -1,4 +1,4 @@
- function [] = statistics_time_time(decoding,fixcross,method,n_perm,q_value)
+ function [] = statistics_time_time(decoding,fixcross,method)
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
     BASE = '/Users/ghaeberle/scratch/';
@@ -7,6 +7,8 @@ elseif isunix
     BASE = '/scratch/haebeg19/';
 
 end
+n_perm = 100000;
+q_value = 0.05;
 out_path = sprintf('%sdata/FixEyeEEG/main/results/plots/',BASE);
 load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_%s_%s.mat', BASE,decoding,decoding,fixcross,method));
 data= eval(sprintf('decodingAcc_%s_all',fixcross));
@@ -21,12 +23,31 @@ data= eval(sprintf('decodingAcc_%s_all',fixcross));
 % load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/category_decodingAcc_within_eyetracking.mat', BASE,decoding));
 % bulls_eyetracking = decodingAcc_bulls_all;
 
+if decoding == 1
+    decoding = 'category';
+elseif decoding == 2
+    decoding = 'objects';
+end
+
+if fixcross == 1 
+    fixcross = 'standard';
+elseif fixcross == 2
+    fixcross = 'bulls';
+end
+
+if method == 1
+    method = 'eeg';
+elseif method == 2
+    method = 'eyetracking';
+end
+
 if strcmp(decoding, 'objects')==1
      data = squeeze(mean(data,2));
      data = squeeze(mean(data,2));
 end
 
 [SignificantVariables, pvalues, crit_p, adjusted_pvalues] = fdr_permutation_cluster_1sample_alld(data,n_perm,'right', q_value);
+
 if strcmp(decoding, 'standard')==1
 figure
 imagesc(squeeze(mean(data,1)))
