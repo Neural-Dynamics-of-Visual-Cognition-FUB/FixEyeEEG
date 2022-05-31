@@ -28,19 +28,30 @@ for idx = 1:2
     end
     
     for subj = 1:n_subs
+        subj
         results_dir = sprintf('%sdata/FixEyeEEG/main/%s/%s_time_time/%s', BASE,methods_flag(idx),decoding,num2str(subs(subj)));
         
         fileToRead1 = fullfile(sprintf('%s/%s_standard_time_time_avg.mat',results_dir, decoding));
         load(fileToRead1);
         fileToRead2 = fullfile(sprintf('%s/%s_bulls_time_time_avg.mat',results_dir,decoding));
         load(fileToRead2);
+        % fill objA = 40, was not filled before because I only calculated
+        % the diagonal 
+        decodingAccuracy_objects_time_time_avg_standard(40,:,:,:) = 0;
+        decodingAccuracy_objects_time_time_avg_bulls(40,:,:,:) = 0;
+
+        % fill lower triangular 
         
+        decodingAccuracy_objects_time_time_avg_standard_filled = decodingAccuracy_objects_time_time_avg_standard+permute(decodingAccuracy_objects_time_time_avg_standard,[2 1 3 4]);
+        decodingAccuracy_objects_time_time_avg_bulls_filled = decodingAccuracy_objects_time_time_avg_bulls+permute(decodingAccuracy_objects_time_time_avg_bulls,[2 1 3 4]);
+        size(decodingAccuracy_objects_time_time_avg_standard)
+        size(decodingAccuracy_objects_time_time_avg_bulls)
         if strcmp(decoding, 'category') == 1
             decodingAcc_standard_all(subj,:,:) =  decodingAccuracy_avg_standard;
             decodingAcc_bulls_all(subj,:,:) = decodingAccuracy_avg_bulls;
         elseif strcmp(decoding, 'objects') == 1
-            decodingAcc_standard_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_standard;
-            decodingAcc_bulls_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_bulls;      
+            decodingAcc_standard_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_standard_filled;
+            decodingAcc_bulls_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_bulls_filled;      
         end
     end
     save(sprintf('%s%s_decodingAcc_standard_%s', out_path, decoding,methods_flag(idx)), 'decodingAcc_standard_all')

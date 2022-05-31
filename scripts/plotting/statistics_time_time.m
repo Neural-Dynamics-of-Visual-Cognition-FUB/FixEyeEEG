@@ -1,4 +1,4 @@
-function [] = statistics_time_time(decoding,fixcross,method,n_perm,q_value)
+ function [] = statistics_time_time(decoding,fixcross,method,n_perm,q_value)
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
     BASE = '/Users/ghaeberle/scratch/';
@@ -10,6 +10,9 @@ end
 out_path = sprintf('%sdata/FixEyeEEG/main/results/plots/',BASE);
 load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_%s_%s.mat', BASE,decoding,decoding,fixcross,method));
 data= eval(sprintf('decodingAcc_%s_all',fixcross));
+
+%fill up lower triangular with upper triangluar 
+
 % load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/category_decodingAcc_between_eyetracking.mat', BASE,decoding));
 % standard_eyetracking = decodingAcc_standard_all;
 % 
@@ -19,7 +22,8 @@ data= eval(sprintf('decodingAcc_%s_all',fixcross));
 % bulls_eyetracking = decodingAcc_bulls_all;
 
 if strcmp(decoding, 'objects')==1
-    data = squeeze(mean(data,2));
+     data = squeeze(mean(data,2));
+     data = squeeze(mean(data,2));
 end
 
 [SignificantVariables, pvalues, crit_p, adjusted_pvalues] = fdr_permutation_cluster_1sample_alld(data,n_perm,'right', q_value);
