@@ -23,7 +23,7 @@ if method == 1
 elseif method == 2
     method = 'eyetracking';
 end
-out_path_results = sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/statistic/%s_decoding/',BASE, decoding);
+out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_decoding/',BASE, decoding);
 
 
 if ~isfolder(out_path_results)

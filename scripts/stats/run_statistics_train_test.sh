@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --mail-user=haebeg19@zedat.fu-berlin.de
-#SBATCH --job-name=decoding_statistics 
+#SBATCH --job-name=train_test_statistics 
 #SBATCH --mail-type=end
 #SBATCH --mem=9000
 #SBATCH --time=03:00:00
@@ -41,7 +41,7 @@ cd /home/haebeg19/FixEyeEEG/scripts/stats/
 
 ### Start job
 
-matlab -nosplash -noFigureWindows -r "statistics_decoding(${decoding}, ${method})" > serial.out #this worked
+matlab -nosplash -noFigureWindows -r "statistics_train_test(${decoding}, ${method})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 
