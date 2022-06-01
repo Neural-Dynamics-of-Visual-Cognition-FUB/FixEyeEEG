@@ -81,7 +81,7 @@ end
 
 % averaged over subjects
 if random == 1
-    effect = 'random_effect';
+    effect = 'fixed_effect';
     [SignificantVariables_category_standard,~,adjusted_pvalues_standard, true_rsa_rdm_standard] = fdr_corrected_perm_test_rsa(decodingAcc_standard_1,decodingAcc_standard_2, n_perm,'right', q_value);
     [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls, true_rsa_rdm_bulls] = fdr_corrected_perm_test_rsa(decodingAcc_bulls_1,decodingAcc_bulls_2,n_perm,'right', q_value);
     save(sprintf('%ssignificant_variables_standard_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_standard');
@@ -89,7 +89,7 @@ if random == 1
     save(sprintf('%strue_rsa_rdm_standard_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
     save(sprintf('%strue_rsa_rdm_bulls_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
 elseif random == 2
-    effect = 'fixed_effect';
+    effect = 'random_effects';
     [SignificantVariables_category_standard,~,adjusted_pvalues_standard, true_rsa_rdm_standard] = fdr_rsa_random_effects_stats(decodingAcc_standard_1,decodingAcc_standard_2, n_perm,'right', q_value);
     [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls, true_rsa_rdm_bulls] = fdr_rsa_random_effects_stats(decodingAcc_bulls_1,decodingAcc_bulls_2,n_perm,'right', q_value);
     
@@ -108,7 +108,16 @@ y_significants_bulls = repmat(-0.5, size(significant_time_points_bulls,2),1)';
 
 %significant_time_points_diff_wave = find(SignificantVariables_category_diff_wave>0);
 %y_significants_diff_wave = repmat(70, size(significant_time_points_diff_wave,2),1)';
+if random == 2
+     x = 1:numel(mean(true_rsa_rdm_standard));
+     true_rsa_rdm_standard_plot = mean(true_rsa_rdm_standard);
+     true_rsa_rdm_bulls_plot = mean(true_rsa_rdm_bulls);
+     
+elseif random == 1
 x = 1:numel(true_rsa_rdm_standard);
+     true_rsa_rdm_standard_plot = true_rsa_rdm_standard;
+     true_rsa_rdm_bulls_plot = true_rsa_rdm_bulls;
+end
 x2 = [x, fliplr(x)];
 c2 = [146/255 0/255 0/255];
 c1 = [0/255 146/255 146/255];
@@ -117,21 +126,21 @@ SEM_standard = std(true_rsa_rdm_standard)/sqrt(size(true_rsa_rdm_standard,1));
 SEM_bulls = std(true_rsa_rdm_bulls)/sqrt(size(true_rsa_rdm_bulls,1));
 
 figure
-upper = true_rsa_rdm_standard + SEM_standard;
-lower = true_rsa_rdm_standard - SEM_standard;
+upper = true_rsa_rdm_standard_plot + SEM_standard;
+lower = true_rsa_rdm_standard_plot - SEM_standard;
 inBetween = [upper, fliplr(lower)];
 fill(x2, inBetween, c1, 'FaceAlpha', 0.2);
 hold on;
-upper = true_rsa_rdm_bulls + SEM_bulls;
-lower = true_rsa_rdm_bulls - SEM_bulls;
+upper = true_rsa_rdm_bulls_plot + SEM_bulls;
+lower = true_rsa_rdm_bulls_plot - SEM_bulls;
 inBetween = [upper, fliplr(lower)];
 fill(x2, inBetween, c2, 'FaceAlpha', 0.2);
 hold on;
-plot(true_rsa_rdm_standard,'Color',c1)
+plot(true_rsa_rdm_standard_plot,'Color',c1)
 hold on
 plot(significant_time_points_standard, y_significants_standard,'*','Color',c1)
 hold on
-plot(true_rsa_rdm_bulls,'Color',c2)
+plot(true_rsa_rdm_bulls_plot,'Color',c2)
 hold on
 plot(significant_time_points_bulls, y_significants_bulls,'*', 'Color',c2)
 title(sprintf("RSA %s %s %s", dist_measure,decoding, method))
