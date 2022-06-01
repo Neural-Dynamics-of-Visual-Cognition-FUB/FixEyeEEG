@@ -9,13 +9,16 @@ addpath(sprintf('%sFixEyeEEG/scripts/stats/fdr_bh/',BASE));
 addpath(sprintf('%sFixEyeEEG/scripts/stats/',BASE));
 
 %%%%% CALCULATING THE GROUND TRUTH AND PERMUTATION SAMPLES P-VALUES %%%%%
-  
+
 %% compute true RSA correlation values 
 %%%% TODO ADD FOR BULLS AND DIFFERENCE WAVE ALSO 
 %%  Reshape the matrices: take only the upper diagonal, in vector form for the averaged subejcts 
     avg_subject_RDM_eeg = squeeze(nanmean(eeg,1));
     avg_subject_RDM_eyetracking = squeeze(nanmean(eyetracking,1));
-
+    
+ %   avg_subject_RDM_eeg = eeg;
+    %avg_subject_RDM_eyetracking = eyetracking;
+%
 %%  Reshape the matrices: take only the upper diagonal, in vector form
 %EEG 
 if find(isnan(avg_subject_RDM_eeg)) >0 %full matrix version
@@ -63,7 +66,7 @@ end
         permuted_rdm_1 = rdm_flattened_1(randperm(size(rdm_flattened_1,1)),:);
         
         %RSA
-        all_rsa_rdm(perm,:) = rdm_analysis_perm(permuted_rdm_1,avg_subject_RDM_eyetracking); %modify the RSA function
+        all_rsa_rdm(perm,:) = rdm_analysis_perm(permuted_rdm_1,rdm_flattened_eyetracking); %modify the RSA function
     end
     
     %% 2) Calculate the p-value of the ground truth and of the permuted samples
