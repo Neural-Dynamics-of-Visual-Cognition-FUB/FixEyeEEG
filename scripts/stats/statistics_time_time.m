@@ -26,23 +26,15 @@ elseif method == 2
     method = 'eyetracking';
 end
 
-n_perm = 100000;
+n_perm = 10000;
 q_value = 0.05;
-out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/time_time/',BASE);
+out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_time_time/',BASE, decoding);
 load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_%s_%s.mat', BASE,decoding,decoding,fixcross,method));
 data= eval(sprintf('decodingAcc_%s_all',fixcross));
 
-%fill up lower triangular with upper triangluar 
-
-% load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/category_decodingAcc_between_eyetracking.mat', BASE,decoding));
-% standard_eyetracking = decodingAcc_standard_all;
-% 
-% load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/category_decodingAcc_within_eeg.mat', BASE,decoding));
-% bulls_EEG = decodingAcc_bulls_all;
-% load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/category_decodingAcc_within_eyetracking.mat', BASE,decoding));
-% bulls_eyetracking = decodingAcc_bulls_all;
-
-
+if ~isfolder(out_path_results)
+    mkdir(out_path_results);
+end
 
 if strcmp(decoding, 'objects')==1
      data = squeeze(mean(data,2));
