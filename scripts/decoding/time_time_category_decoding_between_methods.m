@@ -47,19 +47,18 @@ elseif fixation_condition == 1
     fixation_condition = 'bulls';
 end
 
-if method == 2
-    order = 'eyetracking_EEG';
-elseif method == 1
-    order = 'EEG_eyetracking';
+if method == 1
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/category_train_test_time_time/%s', BASE,subj);
+    load(filepath_preprocessed_data)
+    data = data_rej_channel_interpolated_timelocked;
+elseif method == 2 
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
+    results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/category_train_test_time_time/%s', BASE,subj);
+    load(filepath_preprocessed_data)
+    data = eye_data_baseline_timelocked;
 end
 
-    filepath_preprocessed_data_EEG = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
-    results_dir = sprintf('%sdata/FixEyeEEG/main/eeg_eyetracking/category_time_time/%s', BASE,subj);
-    load(filepath_preprocessed_data_EEG)
-    preprocessed_data_EEG = data_rej_channel_interpolated_timelocked;
-    filepath_preprocessed_data_eyetracking = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
-    load(filepath_preprocessed_data_eyetracking)
-    filepath_preprocessed_data_eyetracking = eye_data_baseline_timelocked;
 
 if ~isfolder(results_dir)
     mkdir(results_dir);
@@ -70,90 +69,91 @@ end
 
 time_points = size(preprocessed_data.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
-    if strcmp(fixation_condition, 'standard') == 1
-        cfg = [];
-        cfg.trials = find(preprocessed_data_EEG.trialinfo(:,5)=='2');
-        data_EEG = ft_selectdata(cfg, preprocessed_data_EEG);
-        cfg = [];
-        cfg.trials = find(preprocessed_data_eyetracking.trialinfo(:,5)=='2');
-        data_eyetracking = ft_selectdata(cfg, preprocessed_data_eyetracking);
-    elseif strcmp(fixation_condition, 'bulls') == 1
-        cfg = [];
-        cfg.trials = find(preprocessed_data_EEG.trialinfo(:,5)=='1');
-        data_EEG = ft_selectdata(cfg, preprocessed_data_EEG);
-        cfg = [];
-        cfg.trials = find(preprocessed_data_eyetracking.trialinfo(:,5)=='1');
-        data_eyetracking = ft_selectdata(cfg, preprocessed_data_eyetracking);
-    end
+   %% define required information 
 
-% minimum number of trials standard
-number_of_trial_animate_EEG = sum(data_EEG.trialinfo(:,3)=='1','all');
-number_of_trial_inanimate_EEG = sum(data_EEG.trialinfo(:,3)=='0','all');
+time_points = size(data.time,2);
+%% split data into standard(2) and bullseye(1) fixation cross
+% standard 
+cfg = [];
+cfg.trials = find(data.trialinfo(:,5)=='2');
+data_standard = ft_selectdata(cfg, data);
+    
+% bullseye 
+cfg = [];
+cfg.trials = find(data.trialinfo(:,5)=='1');
+data_bulls = ft_selectdata(cfg, data);
+    
+% minimum number of trials standard 
+number_of_trial_animate_standard = sum(data_standard.trialinfo(:,3)=='1','all');
+number_of_trial_inanimate_standard = sum(data_standard.trialinfo(:,3)=='0','all');
 
-min_number_of_trials_EEG = min([number_of_trial_animate_EEG,number_of_trial_inanimate_EEG] );
+number_of_trial_animate_bulls = sum(data_bulls.trialinfo(:,3)=='1','all');
+number_of_trial_inanimate_bulls = sum(data_bulls.trialinfo(:,3)=='0','all');
 
-number_of_trial_animate_eyetracking = sum(data_eyetracking.trialinfo(:,3)=='1','all');
-number_of_trial_inanimate_eyetracking = sum(data_eyetracking.trialinfo(:,3)=='0','all');
+min_number_of_trials = min([number_of_trial_animate_standard,number_of_trial_inanimate_standard, number_of_trial_animate_bulls,number_of_trial_inanimate_bulls] );
 
-min_number_of_trials_eyetracking = min([number_of_trial_animate_eyetracking,number_of_trial_inanimate_eyetracking] );
+% Preallocate 
+decodingAccuracy=NaN(n_permutations,time_points);
 
-% Preallocate
-decodingAccuracy=NaN(n_permutations,time_points,time_points);
-
-%% do the actual decoding
+%% do the actual decoding 
 for perm = 1:n_permutations
+
     
-    
-    %%  MVNN
+    %%  MVNN 
     %   create NxMxExTP matrix containing EEG data, where N is the
     %   number of conditioins, M is the number of trials, E is the number of
     %   electrodes and TP is the number of timepoints.
     
-    data_MVNN_EEG = create_data_matrix_MVNN(num_conditions, min_number_of_trials_EEG, data_EEG, 'category');
-    data_MVNN_eyetracking = create_data_matrix_MVNN(num_conditions, min_number_of_trials_eyetracking, data_eyetracking, 'category');
-
-    % actually do the MVNN
-    [data_MVNN_EEG, ~] = multivariate_noise_normalization(data_MVNN_EEG);
-    %% split data into animate and inanimate trials
-    data_animate_EEG = data_MVNN_EEG(1,:,:,:);
-    data_inanimate_EEG = data_MVNN_EEG(2,:,:,:);
+    data_MVNN_standard = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_standard, 'category');
+    data_MVNN_bulls = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_bulls, 'category');
     
-    [data_MVNN_eyetracking, ~] = multivariate_noise_normalization(data_MVNN_eyetracking);
-    %% split data into animate and inanimate trials
-    data_animate_eyetracking = data_MVNN_eyetracking(1,:,:,:);
-    data_inanimate_eyetracking = data_MVNN_eyetracking(2,:,:,:);    
     
+    % actually do the MVNN 
+    [data_MVNN_standard, ~] = multivariate_noise_normalization(data_MVNN_standard); 
+    [data_MVNN_bulls, ~] = multivariate_noise_normalization(data_MVNN_bulls); 
+    %% split data into animate and inanimate trials
+    data_animate_standard = data_MVNN_standard(1,:,:,:); 
+    data_inanimate_standard = data_MVNN_standard(2,:,:,:);
+    
+    data_animate_bulls = data_MVNN_bulls(1,:,:,:); 
+    data_inanimate_bulls = data_MVNN_bulls(2,:,:,:);
     %% create pseudotrials standard
     disp('Permute the trials')
-    data_animate_permuted_EEG = data_animate_EEG(:, randperm(size(data_animate_EEG,2)),:,:);
-    data_inanimate_permuted_EEG = data_inanimate_EEG(:,randperm(size(data_inanimate_EEG,2)),:,:);
-    
-    data_animate_permuted_eyetracking = data_animate_eyetracking(:, randperm(size(data_animate_eyetracking,2)),:,:);
-    data_inanimate_permuted_eyetracking = data_inanimate_eyetracking(:,randperm(size(data_inanimate_eyetracking,2)),:,:);
+    data_animate_standard_permuted = data_animate_standard(:, randperm(size(data_animate_standard,2)),:,:);
+    data_inanimate_standard_permuted = data_inanimate_standard(:,randperm(size(data_inanimate_standard,2)),:,:);
     
     disp('Put both categories into one matrix');
-    data_both_categories_EEG = NaN(size(data_animate_permuted_EEG));
-    data_both_categories_EEG(1,:,:,:) = data_animate_permuted_EEG;
-    data_both_categories_EEG(2,:,:,:) = data_inanimate_permuted_EEG;
-    
-    data_both_categories_eyetracking = NaN(size(data_animate_permuted_eyetracking));
-    data_both_categories_eyetracking(1,:,:,:) = data_animate_permuted_eyetracking;
-    data_both_categories_eyetracking(2,:,:,:) = data_inanimate_permuted_eyetracking;   
+    data_both_categories_standard = NaN([size(data_animate_standard_permuted)]);
+    data_both_categories_standard(1,:,:,:) = data_animate_standard_permuted;
+    data_both_categories_standard(2,:,:,:) = data_inanimate_standard_permuted;
     
     disp('Split into pseudotrials');
-    num_trials_per_bin_EEG = round(min_number_of_trials_EEG/n_pseudotrials);
-    pseudo_trials_EEG = create_pseudotrials(num_conditions, num_trials_per_bin_EEG, n_pseudotrials, data_both_categories_EEG);
+    num_trials_per_bin = round(min_number_of_trials/n_pseudotrials);
+    pseudo_trials_standard = create_pseudotrials(num_conditions, num_trials_per_bin, n_pseudotrials, data_both_categories_standard);
     
-    num_trials_per_bin_eyetracking = round(min_number_of_trials_eyetracking/n_pseudotrials);
-    pseudo_trials_eyetracking = create_pseudotrials(num_conditions, num_trials_per_bin_eyetracking, n_pseudotrials, data_both_categories_eyetracking);
-    %% do the actual decoding
-    if method == 1 
-        pseudo_trials_training = pseudo_trials_EEG;
-        pseudo_trials_testing = pseudo_trials_eyetracking;
-    elseif method == 2
-        pseudo_trials_training = pseudo_trials_eyetracking;
-        pseudo_trials_testing = pseudo_trials_EEG;
-    end 
+    %% create pseudotrials bulls 
+    disp('Permute the trials')
+    data_animate_bulls_permuted = data_animate_bulls(:, randperm(size(data_animate_bulls,2)),:,:);
+    data_inanimate_bulls_permuted = data_inanimate_bulls(:,randperm(size(data_inanimate_bulls,2)),:,:);
+    
+    disp('Put both categories into one matrix');
+    data_both_categories_bulls = NaN([size(data_animate_bulls_permuted)]);
+    data_both_categories_bulls(1,:,:,:) = data_animate_bulls_permuted;
+    data_both_categories_bulls(2,:,:,:) = data_inanimate_bulls_permuted;
+    
+    disp('Split into pseudotrials');
+    num_trials_per_bin = round(min_number_of_trials/n_pseudotrials);
+    pseudo_trials_bulls = create_pseudotrials(num_conditions, num_trials_per_bin, n_pseudotrials, data_both_categories_bulls);
+    
+    if train == 1 
+        pseudo_trials_training = pseudo_trials_standard;
+        pseudo_trials_testing = pseudo_trials_bulls;
+    filename = 'animate_inanimate_standard_bulls_category';
+    elseif train == 2
+        pseudo_trials_training = pseudo_trials_bulls;
+        pseudo_trials_testing = pseudo_trials_standard;  
+        filename = 'animate_inanimate_bulls_standard_category';
+    end
     for time1 = 1:time_points
         
         %% standard
@@ -179,11 +179,9 @@ end
 %% Save the decision values + decoding accuracy
 if strcmp(fixation_condition, 'standard') == 1
     decodingAccuracy_avg_standard = squeeze(mean(decodingAccuracy,1));
-    filename = sprintf('category_%s_%s',fixation_condition,order);
     save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_avg_standard');
 elseif strcmp(fixation_condition, 'bulls') == 1
     decodingAccuracy_avg_bulls = squeeze(mean(decodingAccuracy,1));
-    filename = sprintf('category_%s_%s',fixation_condition,order);
     save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_avg_bulls');
 end
 end
