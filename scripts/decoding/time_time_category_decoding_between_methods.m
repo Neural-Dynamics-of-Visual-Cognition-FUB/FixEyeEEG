@@ -1,4 +1,4 @@
-function [] = time_time_category_decoding_between_methods(subj, fixation_condition, method)
+function [] = time_time_category_decoding_between_methods(subj, train, method)
 %{
     - Multivariate Noise Normalisation
     - category decoding for both fixation crosses for animate versus
@@ -41,11 +41,6 @@ n_permutations = 100;
 n_pseudotrials = 6;
 num_conditions = 2; %categories to decode
 
-if fixation_condition == 2
-    fixation_condition = 'standard';
-elseif fixation_condition == 1
-    fixation_condition = 'bulls';
-end
 
 if method == 1
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
@@ -67,7 +62,6 @@ end
 
 %% define required information
 
-time_points = size(preprocessed_data.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
    %% define required information 
 
@@ -177,13 +171,9 @@ for perm = 1:n_permutations
 end
 
 %% Save the decision values + decoding accuracy
-if strcmp(fixation_condition, 'standard') == 1
     decodingAccuracy_avg_standard = squeeze(mean(decodingAccuracy,1));
     save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_avg_standard');
-elseif strcmp(fixation_condition, 'bulls') == 1
-    decodingAccuracy_avg_bulls = squeeze(mean(decodingAccuracy,1));
-    save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_avg_bulls');
-end
+
 end
 
 

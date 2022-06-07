@@ -1,4 +1,4 @@
-function [] = time_time_object_decoding_between_conditions(subj, method,fixation_condition)
+function [] = time_time_object_decoding_between_conditions(subj, method,train)
 %{
     - Multivariate Noise Normalisation
     - object decoding for both fixation crosses for animate versus
@@ -26,12 +26,6 @@ elseif isunix
     addpath('/home/haebeg19/toolbox/fieldtrip/')
     BASE = '/scratch/haebeg19/';
     ft_defaults
-end
-
-if fixation_condition == 2
-    fixation_condition = 'standard';
-elseif fixation_condition == 1
-    fixation_condition = 'bulls';
 end
 
 subj = num2str(subj);
@@ -137,14 +131,8 @@ for perm = 1:n_permutations
     end
 end 
 
-    if strcmp(fixation_condition, 'standard') == 1
-        decodingAccuracy_objects_time_time_avg_standard = squeeze(nanmean(decodingAccuracy_objects_time_time,1)); %average over permutations
-        filename = sprintf('objects_%s_%s',fixation_condition,filename);
-        save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_objects_time_time_avg_standard');
-    elseif strcmp(fixation_condition, 'bulls') == 1
         decodingAccuracy_objects_time_time_avg_bulls = squeeze(nanmean(decodingAccuracy_objects_time_time,1)); %average over permutations
-        filename = sprintf('objects_%s_%s',fixation_condition,filename);
         save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_objects_time_time_avg_bulls');
-    end
+
     
 end
