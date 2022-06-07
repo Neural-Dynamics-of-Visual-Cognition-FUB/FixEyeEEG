@@ -1,5 +1,5 @@
 function [] = statistics_train_test(decoding,method)
-n_perm = 100000;
+n_perm = 10000;
 q_value = 0.05;
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
@@ -35,14 +35,20 @@ load(sprintf('%sdata/FixEyeEEG/main/results/%s_train_test/%s_decodingAcc_standar
 decodingAcc_bulls_standard = eval(sprintf('%s_decodingAcc_bulls_standard',decoding));
 decodingAcc_standard_bulls = eval(sprintf('%s_decodingAcc_standard_bulls',decoding));
 
+if strcmp(decoding, 'object') == 1
+    decodingAcc_bulls_standard = squeeze(nanmean(squeeze(nanmean(decodingAcc_bulls_standard,2)),2));
+    decodingAcc_standard_bulls = squeeze(nanmean(squeeze(nanmean(decodingAcc_standard_bulls,2)),2));
+end
+
+
 [SignificantVariables_bulls_standard,~,adjusted_pvalues_bulls_standard] = fdr_corrected_perm_test(decodingAcc_bulls_standard, n_perm, q_value);
 [SignificantVariables_standard_bulls,~,adjusted_pvalues_standard_bulls] = fdr_corrected_perm_test(decodingAcc_standard_bulls, n_perm, q_value);
 
-save(sprintf('%ssignificantVariables_bulls_standard_%s_%s.m',out_path_results, method, decoding),'SignificantVariables_bulls_standard');
-save(sprintf('%ssignificantVariables_standard_bulls_%s_%s.m',out_path_results, method, decoding),'SignificantVariables_standard_bulls');
+save(sprintf('%ssignificantVariables_bulls_standard_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls_standard');
+save(sprintf('%ssignificantVariables_standard_bulls_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard_bulls');
 
-save(sprintf('%sadjusted_pvalues_bulls_standard%s_%s.m',out_path_results, method, decoding),'adjusted_pvalues_bulls_standard');
-save(sprintf('%sadjusted_pvalues_standard_bulls%s_%s.m',out_path_results, method, decoding),'adjusted_pvalues_standard_bulls');
+save(sprintf('%sadjusted_pvalues_bulls_standard%s_%s.mat',out_path_results, method, decoding),'adjusted_pvalues_bulls_standard');
+save(sprintf('%sadjusted_pvalues_standard_bulls%s_%s.mat',out_path_results, method, decoding),'adjusted_pvalues_standard_bulls');
 
 
 end
