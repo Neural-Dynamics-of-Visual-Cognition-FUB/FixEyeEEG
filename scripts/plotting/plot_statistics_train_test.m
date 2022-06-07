@@ -9,12 +9,14 @@ elseif isunix
     
 end
 
-path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_decoding/',BASE,decoding);
-path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_decoding/',BASE,decoding);
+path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_train_test/',BASE,decoding);
+path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_train_test/',BASE,decoding);
 
-
-load(sprintf('%sdata/FixEyeEEG/main/results/%s_train_test/%s_decodingAcc_bulls_standard_all_%s.mat',BASE, decoding,decoding,method));
-load(sprintf('%sdata/FixEyeEEG/main/results/%s_train_test/%s_decodingAcc_standard_bulls_all_%s.mat',BASE, decoding,decoding, method));
+fixcross = {'standard'; 'bulls'; 'diff_wave'};
+for idx=1:3
+load(sprintf('%ssignificant_variables_%s_%s_%s.mat',path_results, fixcross{idx}, method,decoding));
+load(sprintf('%sdata/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_%s_all_%s.mat', BASE,decoding,decoding,fixcross{idx},method));
+end 
 
 decodingAcc_bulls_standard = eval(sprintf('%s_decodingAcc_bulls_standard',decoding));
 decodingAcc_standard_bulls = eval(sprintf('%s_decodingAcc_standard_bulls',decoding));
