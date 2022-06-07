@@ -1,41 +1,26 @@
-function [outputArg1,outputArg2] = plot_statistics(decoding, n_permutations, q_value)
+function [outputArg1,outputArg2] = plot_statistics(decoding,method)
 
-out_path = '/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/';
-addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats/');
-addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats/stdshade');
+if ismac
+    addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
+    BASE = '/Users/ghaeberle/scratch/';
+elseif isunix
+    addpath('/home/haebeg19/FixEyeEEG/scripts/stats');
+    BASE = '/scratch/haebeg19/';
 
-methods_flag = ["eeg" "eyetracking"];
-
-if ~isfolder(out_path)
-    mkdir(out_path);
 end
 
-for idx = 1:2
-    
-    if strcmp(decoding, 'category')
-        load(sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_standard_all_%s.mat', decoding,decoding,methods_flag(idx)));
-        load(sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_bulls_all_%s.mat', decoding,decoding, methods_flag(idx)));
-        load(sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/%s_decoding/%s_difference_wave_%s.mat', decoding,decoding,methods_flag(idx)));
-        decodingAcc_standard = category_decodingAcc_standard_all;
-        decodingAcc_bulls = category_decodingAcc_bulls_all;
-        decodingAcc_diff_wave = category_difference_wave;
-        
-    elseif strcmp(decoding, 'object')
-        load(sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_standard_all_%s.mat', decoding,decoding,methods_flag(idx)));
-        load(sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_bulls_all_%s.mat', decoding,decoding, methods_flag(idx)));
-        load(sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/%s_decoding/%s_difference_wave_%s.mat', decoding,decoding,methods_flag(idx)));
-        
-        decodingAcc_standard = squeeze(nanmean(nanmean(object_decodingAcc_standard_all,2),3));
-        decodingAcc_bulls = squeeze(nanmean(nanmean(object_decodingAcc_bulls_all,2),3));
-        decodingAcc_diff_wave = squeeze(nanmean(nanmean(object_difference_wave,2),3));
-    end
-    
-    n_perm=n_permutations;
-    q_value = q_value;
-    [SignificantVariables_category_standard,~,adjusted_pvalues_standard] = fdr_corrected_perm_test(decodingAcc_standard, n_perm, q_value);
-    [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls] = fdr_corrected_perm_test(decodingAcc_bulls, n_perm, q_value);
-    [SignificantVariables_category_diff_wave,~,adjusted_pvalues_diff_wave] = fdr_corrected_perm_test(decodingAcc_diff_wave, n_perm, q_value);
-    
+path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_time_time/',BASE,decoding);
+path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_time_time/',BASE,decoding);
+
+fixcross = {'standard'; 'bulls'};
+for idx=1:2
+load(sprintf('%ssignificant_variables_time_time_%s_%s.mat',path_results, fixcross{idx}, method));
+load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_%s_%s.mat', BASE,decoding,decoding,fixcross{idx},method));
+end 
+
+if ~isfolder(path_plots)
+    mkdir(path_plots);
+end
     significant_time_points_standard = find(SignificantVariables_category_standard>0);
     y_significants_standard = repmat(46, size(significant_time_points_standard,2),1)';
     
@@ -93,5 +78,5 @@ for idx = 1:2
     legend({'standard', 'bullseye', 'difference wave'})
     saveas(gca,sprintf( '%s%s_decoding_%s_statistics.png',out_path, decoding, methods_flag(idx)));
 end
-end
+
 
