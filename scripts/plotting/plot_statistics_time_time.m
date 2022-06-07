@@ -12,10 +12,14 @@ end
 path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_time_time/',BASE,decoding);
 path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_time_time/',BASE,decoding);
 
+if ~isfolder(path_plots)
+    mkdir(path_plots);
+end
+
 load(sprintf('%ssignificant_variables_time_time_%s_%s.mat',path_results, fixcross, method));
 load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_%s_%s.mat', BASE,decoding,decoding,fixcross,method));
 
-data = decodingAcc_standard_all;
+data= eval(sprintf('decodingAcc_%s_all',fixcross));
 
 if strcmp(decoding, 'objects')==1
 data = squeeze(mean(data,2));
@@ -40,12 +44,13 @@ set(gca, 'XTickLabel', [-200 0 200 400 600 800 1000])
 yticks([0 40 80 120 160 200 240])
 set(gca, 'YTickLabel', [-200 0 200 400 600 800 1000])
 colorbar
-caxis([25 40])
+%caxis([25 40])
 yline(40,'--w');
 xline(40,'--w');
 hline = refline([1 0]);
 hline.Color = 'w';
 hline.LineStyle = '--';
+axis square
 saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics.png',path_plots,decoding, method,fixcross));
 
 elseif strcmp(decoding, 'objects')==1
@@ -73,6 +78,7 @@ xline(10,'--w');
 hline = refline([1 0]);
 hline.Color = 'w';
 hline.LineStyle = '--';
+axis square
 saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics.png',path_plots,decoding, method,fixcross));
 end
 end
