@@ -12,8 +12,8 @@ end
 path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_decoding/',BASE,decoding);
 path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_decoding/',BASE,decoding);
 
-fixcross = {'standard'; 'bulls'};
-for idx=1:2
+fixcross = {'standard'; 'bulls'; 'diff_wave'};
+for idx=1:3
 load(sprintf('%ssignificant_variables_%s_%s_%s.mat',path_results, fixcross{idx}, method,decoding));
 load(sprintf('%sdata/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_%s_all_%s.mat', BASE,decoding,decoding,fixcross{idx},method));
 end 
@@ -29,6 +29,16 @@ end
     
     significant_time_points_diff_wave = find(SignificantVariables_diff_wave>0);
     y_significants_diff_wave = repmat(42, size(significant_time_points_diff_wave,2),1)';
+
+    decodingAcc_standard = eval(sprintf('%s_decodingAcc_standard_all',decoding));
+    decodingAcc_bulls = eval(sprintf('%s_decodingAcc_bulls_all',decoding));
+    decodingAcc_diff_wave = eval(sprintf('%s_difference_wave',decoding));
+    
+    if strcmp(decoding, 'object') == 1
+        decodingAcc_standard = squeeze(nanmean(squeeze(nanmean(decodingAcc_standard,2)),2));
+        decodingAcc_bulls = squeeze(nanmean(squeeze(nanmean(decodingAcc_bulls,2)),2));
+        decodingAcc_diff_wave = squeeze(nanmean(squeeze(nanmean(decodingAcc_diff_wave,2)),2));
+    end
     
     x = 1:numel(mean(decodingAcc_standard));
     x2 = [x, fliplr(x)];
@@ -68,7 +78,7 @@ end
     plot(significant_time_points_bulls, y_significants_bulls,'*', 'Color',c2)
     hold on
     plot(significant_time_points_diff_wave, y_significants_diff_wave,'*', 'Color',c3)
-    title(sprintf("%s decoding accuracy %s", decoding, methods_flag(idx)))
+    title(sprintf("%s decoding accuracy %s", decoding, method))
     xlabel('time')
     ylabel('accuracy')
     xticks([0 40 80 120 160 200 240])
@@ -76,7 +86,7 @@ end
     yline(50);
     xline(40);
     legend({'standard', 'bullseye', 'difference wave'})
-    saveas(gca,sprintf('%s%s_decoding_%s_statistics.png',path_plots, decoding, methods_flag(idx)));
+    saveas(gca,sprintf('%s%s_decoding_%s_statistics.png',path_plots, decoding, method));
 end
 
 
