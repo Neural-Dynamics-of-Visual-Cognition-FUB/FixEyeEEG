@@ -21,13 +21,13 @@ end
 if ~isfolder(path_plots)
     mkdir(path_plots);
 end
-    significant_time_points_standard = find(SignificantVariables_category_standard>0);
+    significant_time_points_standard = find(SignificantVariables_standard>0);
     y_significants_standard = repmat(46, size(significant_time_points_standard,2),1)';
     
-    significant_time_points_bulls = find(SignificantVariables_category_bulls>0);
+    significant_time_points_bulls = find(SignificantVariables_bulls>0);
     y_significants_bulls = repmat(44, size(significant_time_points_bulls,2),1)';
     
-    significant_time_points_diff_wave = find(SignificantVariables_category_diff_wave>0);
+    significant_time_points_diff_wave = find(SignificantVariables_diff_wave>0);
     y_significants_diff_wave = repmat(42, size(significant_time_points_diff_wave,2),1)';
     
     x = 1:numel(mean(decodingAcc_standard));
