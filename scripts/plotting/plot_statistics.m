@@ -9,13 +9,13 @@ elseif isunix
 
 end
 
-path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_time_time/',BASE,decoding);
-path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_time_time/',BASE,decoding);
+path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_decoding/',BASE,decoding);
+path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_decoding/',BASE,decoding);
 
 fixcross = {'standard'; 'bulls'};
 for idx=1:2
-load(sprintf('%ssignificant_variables_time_time_%s_%s.mat',path_results, fixcross{idx}, method));
-load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_%s_%s.mat', BASE,decoding,decoding,fixcross{idx},method));
+load(sprintf('%ssignificant_variables_%s_%s_%s.mat',path_results, fixcross{idx}, method,decoding));
+load(sprintf('%sdata/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_%s_all_%s.mat', BASE,decoding,decoding,fixcross{idx},method));
 end 
 
 if ~isfolder(path_plots)
@@ -76,7 +76,7 @@ end
     yline(50);
     xline(40);
     legend({'standard', 'bullseye', 'difference wave'})
-    saveas(gca,sprintf( '%s%s_decoding_%s_statistics.png',out_path, decoding, methods_flag(idx)));
+    saveas(gca,sprintf('%s%s_decoding_%s_statistics.png',path_plots, decoding, methods_flag(idx)));
 end
 
 
