@@ -1,4 +1,4 @@
-function [] = plot_statistics_time_time(decoding, fixcross,method)
+function [] = plot_statistics_time_time(decoding, fixcross,method,train)
 
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
@@ -9,15 +9,22 @@ elseif isunix
 
 end
 
-path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_time_time/',BASE,decoding);
-path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_time_time/',BASE,decoding);
+if train == 1
+    train = 'time_time';
+elseif train == 2
+    train = 'time_time_train_test';
+end 
+
+
+path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_%s/',BASE,decoding,train);
+path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_%s/',BASE,decoding,train);
 
 if ~isfolder(path_plots)
     mkdir(path_plots);
 end
 
 load(sprintf('%ssignificant_variables_time_time_%s_%s.mat',path_results, fixcross, method));
-load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_%s_%s.mat', BASE,decoding,decoding,fixcross,method));
+load(sprintf('%sdata/FixEyeEEG/main/results/%s_%s/%s_decodingAcc_%s_%s.mat', BASE,decoding,train, decoding,fixcross,method));
 
 data= eval(sprintf('decodingAcc_%s_all',fixcross));
 
