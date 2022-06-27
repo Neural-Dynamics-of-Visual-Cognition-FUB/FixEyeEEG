@@ -1,18 +1,18 @@
+
+eyetracking_preprocessing_correct_trialinfo_curta <- function(sub) {
 library("eyelinker")
 library("intervals")
 library("dplyr")
 library("R.matlab")
 # load behavioural data 
 # prepare data frame for collecting responses to empty categories 
-subs = c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32)
 
 category_to_be_deleted_all_subjects <- data.frame(matrix(ncol = 7, nrow = 0))
 
 x <- c("sub", "block", "trial", "cond",  "exemplar", "response", "category")
 colnames(category_to_be_deleted_all_subjects) <- x
 percentage_deleted = double(30)
-for (sub in subs){
-  sub
+
   trials = data.frame(matrix(ncol = 7, nrow = 0))
   
   #file_beh <- paste("/Users/ghaeberle/Downloads/FixCrossExp_s1cfgdata.mat")
@@ -277,16 +277,7 @@ for (sub in subs){
   remove(df_eyetracking_cleaned)
   remove(df_eyetracking_cleaned_witout_trials_with_missing_timepoints)
   remove(trial_numbers_to_be_deleted)
+
 }
-
-
-save(category_to_be_deleted_all_subjects, 
-     file=paste("/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/deleted_categories_all_subs.Rda",sep=""))
-# trial numbers that need to be deleted 
-
-write.csv(percentage_deleted, 
-          file=paste("/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/percentage_deleted.csv",sep=""))
-
-
 
 
