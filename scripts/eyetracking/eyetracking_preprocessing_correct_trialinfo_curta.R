@@ -4,7 +4,7 @@ library("dplyr")
 library("R.matlab")
 # load behavioural data 
 # prepare data frame for collecting responses to empty categories 
-subs = c(28,29,30,31,32)#subs = c(2,3)
+subs = c(2)#subs = c(2,3)
 category_to_be_deleted_all_subjects <- data.frame(matrix(ncol = 7, nrow = 0))
 
 x <- c("sub", "block", "trial", "cond",  "exemplar", "response", "category")
@@ -47,7 +47,7 @@ for (sub in subs){
   msg = dat$msg
   head(msg)
   start_trial = msg$time[which(msg$text=="STARTTIME")]
-  start_first =  which(raw$time == start_trial[1]);
+  start_first =  which(raw$time == start_trial[1]-1);
   trial = rep(1,start_first);
   for (idx in 1:4200){
     if (idx == 4200){
