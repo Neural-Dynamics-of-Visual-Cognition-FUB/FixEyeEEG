@@ -31,7 +31,7 @@ cd /home/haebeg19/FixEyeEEG/scripts/eyetracking/
 
 ### Start job
 
-Rscript eyetracking_preprocessing_correct_trialinfo_curta.R $sub
+Rscript "eyetracking_preprocessing_correct_trialinfo_curta($sub)"
 echo set to run
 
 
