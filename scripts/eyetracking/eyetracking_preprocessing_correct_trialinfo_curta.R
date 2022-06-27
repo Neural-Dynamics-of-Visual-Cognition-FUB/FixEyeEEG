@@ -51,7 +51,7 @@ for (sub in subs){
   trial = rep(1,start_first);
   for (idx in 1:4200){
     if (idx == 4200){
-      tps = nrow(raw) - which(raw$time == start_trial[idx])
+      tps = nrow(raw) - which(raw$time == start_trial[idx]+1)
     }else{
       tps = which(raw$time == start_trial[idx+1]) - which(raw$time == start_trial[idx])
     }
