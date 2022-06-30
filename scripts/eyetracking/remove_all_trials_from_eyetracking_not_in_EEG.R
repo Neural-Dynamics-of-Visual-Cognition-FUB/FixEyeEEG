@@ -10,7 +10,7 @@ subs = c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,2
 for (sub in subs){
   raw_trials = paste("/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/raw_correct_trials/raw_sub00",sub,".csv",sep="")
   raw = read.csv(raw_trials)
-  file_trials_to_keep <- paste('/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/',sub,'/trials_to_keep.mat',sep="")
+  file_trials_to_keep <- paste('/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/',sub,'/timelocked/trials_to_keep.mat',sep="")
   trials = readMat(file_trials_to_keep)
   trials_to_keep = trials$trials.to.keep
   df_eyetracking_cleaned_witout_trials_with_missing_timepoints = raw[raw$block %in%  trials_to_keep,]
