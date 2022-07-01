@@ -22,7 +22,7 @@ for (sub in subs){
   df_eyetracking_cleaned_witout_trials_with_missing_timepoints_tmp = read.csv(cleaned_trials)
   df_eyetracking_cleaned_witout_trials_with_missing_timepoints= df_eyetracking_cleaned_witout_trials_with_missing_timepoints_tmp[-1]
   
-  behav_files = paste("/scratch/haebeg19/data/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_wo_artifacts_sub00",sub,".Rda",sep="" )
+  behav_files = paste("/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_wo_artifacts_sub00",sub,".Rda",sep="" )
   load(behav_files)
   
   # set parameters for algorithm 
