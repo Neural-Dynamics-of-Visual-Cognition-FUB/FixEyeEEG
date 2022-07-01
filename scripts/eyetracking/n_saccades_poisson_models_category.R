@@ -1,5 +1,7 @@
 
 library("lme4")
+library("dplyr")
+
 load(file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/df_all_subj_all_sacs_behav.Rda")
 
 # rename1 column for better understanding of the models 
@@ -41,15 +43,15 @@ category_n_all_saccades_full = glmer(n_occurence ~ 1 + category + (1+cross+categ
 cross_category_n_saccadess_full = glmer(n_occurence ~ 1 + cross + category + (1+cross+category|subj), df_n_saccades, family = "poisson")
 cross_category_interaction_n_saccadess_full = glmer(n_occurence ~ 1 + cross * category + (1+cross*category|subj), df_n_saccades, family = "poisson")
 
-save.lmer.effects(base_n_saccades_full, 
+save(base_n_saccades_full, 
      file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/base_n_saccades_full")
-save.lmer.effects(cross_n_saccades_full, 
+save(cross_n_saccades_full, 
      file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_n_saccades_full")
-save.lmer.effects(category_n_all_saccades_full, 
+save(category_n_all_saccades_full, 
      file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/category_n_all_saccades_full")
-save.lmer.effects(cross_category_n_saccadess_full, 
+save(cross_category_n_saccadess_full, 
      file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_category_n_saccadess_full")
-save.lmer.effects(cross_category_interaction_n_saccadess_full, 
+save(cross_category_interaction_n_saccadess_full, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_category_interaction_n_saccadess_full")
 # microsaccades 
 # set contrast coding to effect coding as we are interested in the main effects 
@@ -64,15 +66,15 @@ category_n_microsaccades = glmer(n_occurence ~ 1 + category + (1+cross+category|
 cross_category_n_microsaccades = glmer(n_occurence ~ 1 + cross + category + (1+cross+category|subj), df_n_microsaccades, family = "poisson")
 cross_category_interaction_n_microsaccades = glmer(n_occurence ~ 1 + cross * category + (1+cross*category|subj), df_n_microsaccades, family = "poisson")
 
-save.lmer.effects(base_n_microsaccades, 
+save(base_n_microsaccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/base_n_microsaccades")
-save.lmer.effects(cross_n_microsaccades, 
+save(cross_n_microsaccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_n_microsaccades")
-save.lmer.effects(category_n_microsaccades, 
+save(category_n_microsaccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/category_n_microsaccades")
-save.lmer.effects(cross_category_n_microsaccades, 
+save(cross_category_n_microsaccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_category_n_microsaccades")
-save.lmer.effects(cross_category_interaction_n_microsaccades, 
+save(cross_category_interaction_n_microsaccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_category_interaction_n_microsaccades")
 
 
@@ -87,13 +89,13 @@ category_n_saccades = glmer(n_occurence ~ 1 + category + (1+cross+category|subj)
 cross_category_n_saccades = glmer(n_occurence ~ 1 + cross + category + (1+cross+category|subj), df_n_saccades, family = "poisson")
 cross_category_interaction_n_saccades = glmer(n_occurence ~ 1 + cross * category + (1+cross*category|subj), df_n_saccades, family = "poisson")
 
-save.lmer.effects(base_n_saccades, 
+save(base_n_saccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/base_n_saccades")
-save.lmer.effects(cross_n_saccades, 
+save(cross_n_saccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_n_saccades")
-save.lmer.effects(category_n_saccades, 
+save(category_n_saccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/category_n_saccades")
-save.lmer.effects(cross_category_n_saccades, 
+save(cross_category_n_saccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_category_n_saccades")
-save.lmer.effects(cross_category_interaction_n_saccades, 
+save(cross_category_interaction_n_saccades, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/cross_category_interaction_n_saccades")

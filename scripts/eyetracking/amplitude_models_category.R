@@ -41,15 +41,15 @@ amplitude_all_category = lmer(amplitude ~ 1 + category + (1+cross|subj), df_all_
 amplitude_all_cross_category = lmer(amplitude ~ 1 + cross+category + (1+cross|subj), df_all_subj_all_sacs_behav, REML = FALSE)
 amplitude_all_cross_category_interaction = lmer(amplitude ~ 1 + cross*category + (1+cross|subj), df_all_subj_all_sacs_behav, REML = FALSE)
 
-save.lmer.effects(base_amplitude_all, 
+save(base_amplitude_all, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/base_amplitude_all")
-save.lmer.effects(amplitude_all_cross, 
+save(amplitude_all_cross, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_all_cross")
-save.lmer.effects(amplitude_all_category, 
+save(amplitude_all_category, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_all_category")
-save.lmer.effects(amplitude_all_cross_category, 
+save(amplitude_all_cross_category, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_all_cross_category")
-save.lmer.effects(amplitude_all_cross_category_interaction, 
+save(amplitude_all_cross_category_interaction, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_all_cross_category_interaction")
 
 
@@ -63,15 +63,15 @@ amplitude_ms_category = lmer(amplitude ~ 1 + category + (1+cross|subj), df_all_s
 amplitude_ms_cross_category = lmer(amplitude ~ 1 + cross+category + (1+cross|subj), df_all_subj_microsaccades, REML = FALSE)
 amplitude_ms_cross_category_interaction = lmer(amplitude ~ 1 + cross*category + (1+cross|subj), df_all_subj_microsaccades, REML = FALSE)
 
-save.lmer.effects(base_amplitude_ms, 
+save(base_amplitude_ms, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/base_amplitude_ms")
-save.lmer.effects(amplitude_ms_cross, 
+save(amplitude_ms_cross, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_ms_cross")
-save.lmer.effects(amplitude_ms_category, 
+save(amplitude_ms_category, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_ms_category")
-save.lmer.effects(amplitude_ms_cross_category, 
+save(amplitude_ms_cross_category, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_ms_cross_category")
-save.lmer.effects(amplitude_ms_cross_category_interaction, 
+save(amplitude_ms_cross_category_interaction, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_ms_cross_category_interaction")
 
 ## saccades 
@@ -85,14 +85,14 @@ amplitude_sac_category = lmer(amplitude ~ 1 + category + (1+cross|subj), df_all_
 amplitude_sac_cross_category = lmer(amplitude ~ 1 + cross+category + (1+cross|subj), df_all_subj_saccades, REML = FALSE)
 amplitude_sac_cross_category_interaction = lmer(amplitude ~ 1 + cross*category + (1+cross|subj), df_all_subj_saccades, REML = FALSE)
 
-save.lmer.effects(base_amplitude_sac, 
+save(base_amplitude_sac, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/base_amplitude_sac")
-save.lmer.effects(amplitude_sac_cross, 
+save(amplitude_sac_cross, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_sac_cross")
-save.lmer.effects(amplitude_sac_category, 
+save(amplitude_sac_category, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_sac_category")
-save.lmer.effects(amplitude_sac_cross_category, 
+save(amplitude_sac_cross_category, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_sac_cross_category")
-save.lmer.effects(amplitude_sac_cross_category_interaction, 
+save(amplitude_sac_cross_category_interaction, 
                   file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/models/category/amplitude_sac_cross_category_interaction")
 
