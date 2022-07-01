@@ -2,8 +2,8 @@ library(dplyr)
 library(data.table)
 library("R.matlab")
 
-source('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/MS_Toolbox_R/microsacc.R')
-source('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/MS_Toolbox_R/vecvel.R')
+source('/home/haebeg19/FixEyeEEG/scripts/MS_Toolbox_R/microsacc.R')
+source('/home/haebeg19/FixEyeEEG/scripts/MS_Toolbox_R/vecvel.R')
 # gather all subjects in one big data frame if the script was run for subjects individually 
 cleaned_trials_all_subjects <- data.frame(matrix(ncol = 10, nrow = 0))
 x <- c("block", "time", "xp", "yp", "ps",  "cr.info", "xp_centered", "yp_centered", "y_visual_angle", "x_visual_angle")
