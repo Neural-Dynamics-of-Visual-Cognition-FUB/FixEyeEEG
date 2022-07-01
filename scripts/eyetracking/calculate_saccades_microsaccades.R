@@ -10,18 +10,18 @@ x <- c("block", "time", "xp", "yp", "ps",  "cr.info", "xp_centered", "yp_centere
 colnames(cleaned_trials_all_subjects) <- x
 subs = c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32)
 # create data frame for all subjects 
-# df_all_subj_all_sacs_behav = data.frame(matrix(ncol=18,nrow =0))
-# colnames(df_all_subj_all_sacs_behav) = c("subj" ,"block" ,'trial', 'onset', 'end', 'peak_velocity',
-#                                          'horizontal_comp', 'vertical_comp',
-#                                          'horizontal_amp', 'vertical_amp',
-#                                          "duration", "amplitude", "cond", "exemplar", "response" ,"category","checkResp", "acc"	)
+df_all_subj_all_sacs_behav = data.frame(matrix(ncol=18,nrow =0))
+colnames(df_all_subj_all_sacs_behav) = c("subj" ,"block" ,'trial', 'onset', 'end', 'peak_velocity',
+                                          'horizontal_comp', 'vertical_comp',
+                                          'horizontal_amp', 'vertical_amp',
+                                          "duration", "amplitude", "cond", "exemplar", "response" ,"category","checkResp", "acc"	)
 
 # calculate accuracy for all subjects 
 for (sub in subs){
   cleaned_trials = paste("/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_same_trials_eeg_eyetracking_sub00",sub,".csv",sep="")
   df_eyetracking_cleaned_witout_trials_with_missing_timepoints_tmp = read.csv(cleaned_trials)
-  df_eyetracking_cleaned_witout_trials_with_missing_timepoints= df_eyetracking_cleaned_witout_trials_with_missing_timepoints_tmp[-1]
-  
+  df_eyetracking_cleaned_witout_trials_with_missing_timepoints= df_eyetracking_cleaned_witout_trials_with_missing_timepoints_tmp[-1][-1]
+
   behav_files = paste("/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_wo_artifacts_sub00",sub,".Rda",sep="" )
   load(behav_files)
   
