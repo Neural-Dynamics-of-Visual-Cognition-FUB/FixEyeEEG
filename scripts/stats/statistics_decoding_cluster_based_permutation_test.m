@@ -47,13 +47,12 @@ decodingAcc_diff_wave = eval(sprintf('%s_decodingAcc_diff_wave_all',decoding));
         decodingAcc_diff_wave = squeeze(nanmean(squeeze(nanmean(decodingAcc_diff_wave,2)),2));
     end
 
-[SignificantVariables_standard,~,adjusted_pvalues_standard] = find_clusters_alld(decodingAcc_standard, n_perm, q_value);
-[SignificantVariables_bulls,~,adjusted_pvalues_bulls] = find_clusters_alld(decodingAcc_bulls, n_perm, q_value);
-[SignificantVariables_diff_wave,~,adjusted_pvalues_diff_wave] = find_clusters_alld(decodingAcc_diff_wave, n_perm, q_value);
 
-%[SignificantVariables_bulls,~,adjusted_pvalues_bulls] = fdr_permutation_cluster_1sample_alld(decodingAcc_bulls, n_perm, 'right',q_value);
+    
 
-%[SignificantVariables_diff_wave,~,adjusted_pvalues_diff_wave] = fdr_permutation_cluster_1sample_alld(decodingAcc_diff_wave, n_perm,'right', q_value);
+[SignificantVariables_standard,~,adjusted_pvalues_standard] = permutation_cluster_1sample_weight_alld(decodingAcc_standard, n_perm, cluster_thr, significance_thr,'right');
+[SignificantVariables_bulls,~,adjusted_pvalues_bulls] = permutation_cluster_1sample_weight_alld(decodingAcc_bulls, n_perm, cluster_thr, significance_thr,'right');
+[SignificantVariables_diff_wave,~,adjusted_pvalues_diff_wave] = permutation_cluster_1sample_weight_alld(decodingAcc_diff_wave, n_perm, cluster_thr, significance_thr,'right');
 
 save(sprintf('%ssignificant_variables_standard_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard');
 save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls');
