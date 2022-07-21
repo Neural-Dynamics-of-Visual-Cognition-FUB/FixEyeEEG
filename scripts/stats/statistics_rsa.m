@@ -16,17 +16,10 @@ elseif isunix
     
 end
 decoding = 'object';
-out_path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/',BASE);
-out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/rsa/',BASE);
+
 methods_flag = ["eeg" "eyetracking"];
 
-if ~isfolder(out_path_plots)
-    mkdir(out_path_plots);
-end
 
-if ~isfolder(out_path_results)
-    mkdir(out_path_results);
-end
 %% decoding accuracies
 if  distance_measure == 1
     dist_measure = 'decoding';
@@ -87,7 +80,11 @@ elseif split_half == 3
     subj = 15;
 end
 
-
+if strcmp(stats, 'perm') == 1
+    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/rsa/',BASE);
+if ~isfolder(out_path_results)
+    mkdir(out_path_results);
+end
 % averaged over subjects
 if random == 1
     effect = 'fixed_effect';
@@ -107,6 +104,20 @@ elseif random == 2
     save(sprintf('%strue_rsa_rdm_standard_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
     save(sprintf('%strue_rsa_rdm_bulls_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
    
+end
+elseif strcmp(stats,'cluster')
+out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/rsa/',BASE);
+if ~isfolder(out_path_results)
+    mkdir(out_path_results);
+end
+    true_rsa_rdm_standard = calculate_ground_truth_rsa(decodingAcc_standard_1,decodingAcc_standard_2);
+    true_rsa_rdm_bull = calculate_ground_truth_rsa(decodingAcc_bulls_1,decodingAcc_bulls_2);
+    cluster_thr = 0.05;
+    significance_thr = 0.05;
+    [SignificantVariables_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(true_rsa_rdm_standard, n_perm, cluster_thr, significance_thr,'right');
+    [SignificantVariables_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(true_rsa_rdm_bull, n_perm, cluster_thr, significance_thr,'right');
+    save(sprintf('%ssignificant_variables_standard_random_effects_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard','significantVarMax_standard','pValWei_standard','pValMax_standard','clusters_standard');
+    save(sprintf('%ssignificant_variables_bulls_random_effects_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls','significantVarMax_bulls','pValWei_bulls','pValMax_bulls','clusters_bulls');
 end
 end
 
