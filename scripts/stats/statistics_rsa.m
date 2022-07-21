@@ -5,7 +5,7 @@ function [] = statistics_rsa(split_half, distance_measure,random)
 %
 %
 %
-n_perm = 100000;
+n_perm = 10000;
 q_value = 0.05;
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
@@ -64,39 +64,48 @@ if split_half == 1
     decodingAcc_bulls_1 = decodingAcc_bulls_eeg;
     decodingAcc_bulls_2 = decodingAcc_bulls_eyetracking;
     method = 'eeg_and_eyetracking';
+    subj = 30;
 elseif split_half == 2
     method = 'eeg';
-    decodingAcc_standard_1 = decodingAcc_standard_eeg(1:15,:,:,:);
-    decodingAcc_standard_2 = decodingAcc_standard_eeg(16:end,:,:,:);
-    decodingAcc_bulls_1 = decodingAcc_bulls_eeg(1:15,:,:,:);
-    decodingAcc_bulls_2 = decodingAcc_bulls_eeg(16:end,:,:,:);
+    
+    [decodingAcc_standard_1,idx] = datasample(decodingAcc_standard_eeg,15, 'Replace', false);
+    decodingAcc_standard_2 = decodingAcc_standard_eeg;
+    decodingAcc_standard_2(idx,:,:,:) = [];
+    [decodingAcc_bulls_1,idx] = datasample(decodingAcc_bulls_eeg,15, 'Replace', false);
+    decodingAcc_bulls_2 = decodingAcc_bulls_eeg;
+    decodingAcc_bulls_2(idx,:,:,:) = [];
+    subj = 15;
 elseif split_half == 3
     method = 'eyetracking';
-    decodingAcc_standard_1 = decodingAcc_standard_eyetracking(1:15,:,:,:);
-    decodingAcc_standard_2 = decodingAcc_standard_eyetracking(16:end,:,:,:);
-    decodingAcc_bulls_1 = decodingAcc_bulls_eyetracking(1:15,:,:,:);
-    decodingAcc_bulls_2 = decodingAcc_bulls_eyetracking(16:end,:,:,:);
+    
+    [decodingAcc_standard_1,idx] = datasample(decodingAcc_standard_eyetracking,15, 'Replace', false);
+    decodingAcc_standard_2 = decodingAcc_standard_eyetracking;
+    decodingAcc_standard_2(idx,:,:,:) = [];
+    [decodingAcc_bulls_1,idx] = datasample(decodingAcc_bulls_eyetracking,15, 'Replace', false);
+    decodingAcc_bulls_2 = decodingAcc_bulls_eyetracking;
+    decodingAcc_bulls_2(idx,:,:,:) = [];
+    subj = 15;
 end
 
 
 % averaged over subjects
 if random == 1
     effect = 'fixed_effect';
-    [SignificantVariables_category_standard,~,adjusted_pvalues_standard, true_rsa_rdm_standard] = fdr_corrected_perm_test_rsa(decodingAcc_standard_1,decodingAcc_standard_2, n_perm,'right', q_value);
-    [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls, true_rsa_rdm_bulls] = fdr_corrected_perm_test_rsa(decodingAcc_bulls_1,decodingAcc_bulls_2,n_perm,'right', q_value);
-    save(sprintf('%ssignificant_variables_standard_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_standard');
-    save(sprintf('%ssignificant_variables_bulls_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_bulls');
-    save(sprintf('%strue_rsa_rdm_standard_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
-    save(sprintf('%strue_rsa_rdm_bulls_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
+    [SignificantVariables_category_standard,~,adjusted_pvalues_standard, true_rsa_rdm_standard] = fdr_corrected_perm_test_rsa_fixed_effects(decodingAcc_standard_1,decodingAcc_standard_2, n_perm,'right', q_value);
+    [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls, true_rsa_rdm_bulls] = fdr_corrected_perm_test_rsa_fixed_effects(decodingAcc_bulls_1,decodingAcc_bulls_2,n_perm,'right', q_value);
+    save(sprintf('%ssignificant_variables_standard_%s_%s.mat',out_path_results, method, dist_measure),'SignificantVariables_category_standard');
+    save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',out_path_results, method, dist_measure),'SignificantVariables_category_bulls');
+    save(sprintf('%strue_rsa_rdm_standard_%s_%s.mat',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
+    save(sprintf('%strue_rsa_rdm_bulls_%s_%s.mat',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
 elseif random == 2
     effect = 'random_effects';
-    [SignificantVariables_category_standard,~,adjusted_pvalues_standard, true_rsa_rdm_standard] = fdr_rsa_random_effects_stats(decodingAcc_standard_1,decodingAcc_standard_2, n_perm,'right', q_value);
-    [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls, true_rsa_rdm_bulls] = fdr_rsa_random_effects_stats(decodingAcc_bulls_1,decodingAcc_bulls_2,n_perm,'right', q_value);
+    [SignificantVariables_category_standard,~,adjusted_pvalues_standard, true_rsa_rdm_standard] = fdr_rsa_random_effects_stats(decodingAcc_standard_1,decodingAcc_standard_2, n_perm,'right', q_value,subj);
+    [SignificantVariables_category_bulls,~,adjusted_pvalues_bulls, true_rsa_rdm_bulls] = fdr_rsa_random_effects_stats(decodingAcc_bulls_1,decodingAcc_bulls_2,n_perm,'right', q_value, subj);
     
-    save(sprintf('%ssignificant_variables_standard_random_effects_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_standard');
-    save(sprintf('%ssignificant_variables_bulls_random_effects_%s_%s.m',out_path_results, method, dist_measure),'SignificantVariables_category_bulls');
-    save(sprintf('%strue_rsa_rdm_standard_random_effects_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
-    save(sprintf('%strue_rsa_rdm_bulls_random_effects_%s_%s.m',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
+    save(sprintf('%ssignificant_variables_standard_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'SignificantVariables_category_standard');
+    save(sprintf('%ssignificant_variables_bulls_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'SignificantVariables_category_bulls');
+    save(sprintf('%strue_rsa_rdm_standard_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
+    save(sprintf('%strue_rsa_rdm_bulls_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
    
 end
 end
