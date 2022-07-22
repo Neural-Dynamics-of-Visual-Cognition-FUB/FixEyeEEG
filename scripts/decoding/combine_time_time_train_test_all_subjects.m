@@ -34,20 +34,20 @@ for idx = 1:2
         
         if strcmp(decoding, 'category') == 1
             
-            fileToRead1 = fullfile(sprintf('%s/%s_%s',results_dir, decoding,file_extension1));
+            fileToRead1 = fullfile(sprintf('%s/animate_inanimate_bulls_standard_category_time_time_avg.mat',results_dir));
             load(fileToRead1);
             decodingAccuracy_avg_file_extension1 = decodingAccuracy_avg_standard;
-            fileToRead2 = fullfile(sprintf('%s/%s_%s',results_dir,decoding,file_extension2));
+            fileToRead2 = fullfile(sprintf('%s/animate_inanimate_standard_bulls_category_time_time_avg.mat',results_dir));
             load(fileToRead2);
             decodingAccuracy_avg_file_extension2 = decodingAccuracy_avg_standard;
             decodingAcc_standard_all(subj,:,:) =  decodingAccuracy_avg_file_extension1;
             decodingAcc_bulls_all(subj,:,:) = decodingAccuracy_avg_file_extension2;
             
-        elseif strcmp(decoding, 'objects') == 1
-            fileToRead1 = fullfile(sprintf('%s/%s_%s',results_dir, decoding,file_extension1));
+        elseif strcmp(decoding, 'object') == 1
+            fileToRead1 = fullfile(sprintf('%s/standard_bulls_object_time_time_avg',results_dir));
             load(fileToRead1);
             decodingAccuracy_objects_time_time_filextension1 = decodingAccuracy_objects_time_time_avg_bulls;
-            fileToRead2 = fullfile(sprintf('%s/%s_%s',results_dir,decoding,file_extension2));
+            fileToRead2 = fullfile(sprintf('%s/bulls_standard_object_time_time_avg',results_dir));
             load(fileToRead2);
             decodingAccuracy_objects_time_time_fileextension2 = decodingAccuracy_objects_time_time_avg_bulls;
             

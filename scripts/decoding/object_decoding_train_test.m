@@ -76,11 +76,7 @@ data_bulls = ft_selectdata(cfg, preprocessed_data);
 decodingAccuracy_objects=NaN(n_permutations, n_conditions, n_conditions, time_points);
 
 for perm = 1:n_permutations
-    %% TODO ASK SOMEONE WHETHER THIS WORKS LIKE THIS create data matrix for smallest possible amount of trials
-    % the idea: calculate inverse covariance matrix for minimum amount of
-    % trials for all conditions and use this matrix to normalize the
-    % differing amounts of trials for each image ---> I am not sure whether
-    % this is mathematically sound WHO TO ASK?
+
     min_num_trials_all_conditions = min(min(min_number_of_trials_bulls),min(min_number_of_trials_standard));
     data_matrix_MVNN_standard = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data_standard, 'object', individual_objects_standard);
     % get inverted covariance matrix

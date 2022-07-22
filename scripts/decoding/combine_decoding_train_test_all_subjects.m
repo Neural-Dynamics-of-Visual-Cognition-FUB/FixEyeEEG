@@ -21,18 +21,18 @@ if ~isfolder(out_path)
 end
 
 methods_flag = ["eeg" "eyetracking"];
-for idx = 1:2
-object_decodingAcc_bulls_standard = NaN(n_subs,n_timepoints);
-object_decodingAcc_standard_bulls = NaN(n_subs,n_timepoints);
+for idx = 1
+category_decodingAcc_bulls_standard = NaN(n_subs,n_timepoints);
+category_decodingAcc_standard_bulls = NaN(n_subs,n_timepoints);
 
     for subj = 1:n_subs
         results_dir = sprintf('%sdata/FixEyeEEG/main/%s/category_train_test/%s/',BASE, methods_flag(idx), num2str(subs(subj)));
         
         load(sprintf("%s/animate_inanimate_bulls_standard_category_decodingAccuracy_train_standard.mat", results_dir));
-        object_decodingAcc_bulls_standard(subj,:) =  decodingAccuracy_avg;
+        category_decodingAcc_bulls_standard(subj,:) =  decodingAccuracy_avg;
         
         load(sprintf("%s/animate_inanimate_standard_bulls_category_decodingAccuracy_train_standard.mat", results_dir));
-        object_decodingAcc_standard_bulls(subj,:) =  decodingAccuracy_avg;
+        category_decodingAcc_standard_bulls(subj,:) =  decodingAccuracy_avg;
     
     end
     save(sprintf('%scategory_decodingAcc_bulls_standard_all_%s', out_path, methods_flag(idx)), 'category_decodingAcc_bulls_standard')
@@ -51,13 +51,13 @@ n_objects = 40;
 n_timepoints = 240;
 methods_flag = ["eeg" "eyetracking"];
 
-for idx = 1:2
+for idx = 1
 object_decodingAcc_bulls_standard = NaN(n_subs,n_objects,n_objects,n_timepoints);
 object_decodingAcc_standard_bulls = NaN(n_subs,n_objects,n_objects,n_timepoints);
 
     for subj = 1:n_subs
         
-    results_dir = sprintf('/Users/ghaeberle/scratch/data/FixEyeEEG/main/%s/object_train_test/%s/', methods_flag(idx), num2str(subs(subj)));
+    results_dir = sprintf('%sdata/FixEyeEEG/main/%s/object_train_test/%s/', BASE, methods_flag(idx), num2str(subs(subj)));
    % filename = 'animate_inanimate_category';
     fileToRead1 = sprintf("%s/objects_bulls_decodingAccuracy.mat", results_dir);
 

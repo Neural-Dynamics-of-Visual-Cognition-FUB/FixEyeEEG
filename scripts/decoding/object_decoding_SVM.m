@@ -113,8 +113,8 @@ for perm = 1:n_permutations
             end
             %%
             num_trials_per_bin = round(min_num_trial/n_pseudotrials);
-            %pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB);
-            pseudo_trials = create_pseudotrials(n_conditions, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
+            pseudo_trials = create_pseudotrials(2, num_trials_per_bin, n_pseudotrials, data_objA_objB);
+            %pseudo_trials = create_pseudotrials(n_conditions, num_trials_per_bin, n_pseudotrials, data_objA_objB_MVNN);
             
             for time = 1:time_points
             %% standard    
