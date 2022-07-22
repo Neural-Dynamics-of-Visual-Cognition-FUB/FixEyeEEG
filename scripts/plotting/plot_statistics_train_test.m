@@ -25,9 +25,13 @@ decodingAcc_standard_bulls = eval(sprintf('%s_decodingAcc_standard_bulls',decodi
 if strcmp(decoding, 'object') == 1
     decodingAcc_bulls = squeeze(nanmean(squeeze(nanmean(decodingAcc_bulls_standard,2)),2));
     decodingAcc_standard = squeeze(nanmean(squeeze(nanmean(decodingAcc_standard_bulls,2)),2));
+    decodingAcc_bulls = decodingAcc_bulls-50;
+    decodingAcc_standard = decodingAcc_standard -50;
 elseif strcmp(decoding, 'category') == 1
     decodingAcc_bulls = decodingAcc_bulls_standard;
     decodingAcc_standard = decodingAcc_standard_bulls;
+    decodingAcc_bulls = decodingAcc_bulls-50;
+    decodingAcc_standard = decodingAcc_standard -50;
 end
     
 
@@ -36,11 +40,11 @@ if ~isfolder(path_plots)
 end
 
 if strcmp(method,'eeg') ==1
-    y_point_standard = 46;
-    y_point_bulls = 44;
+    y_point_standard = -2;
+    y_point_bulls = -4;
 elseif strcmp(method,'eyetracking')
-    y_point_standard = 49.8;
-    y_point_bulls = 49.6;
+    y_point_standard = -0.2;
+    y_point_bulls = -0.3;
 end
 
 significant_time_points_standard = find(SignificantVariables_standard_bulls>0);
@@ -61,19 +65,19 @@ SEM_standard = std(decodingAcc_standard)/sqrt(size(decodingAcc_standard,1));
 SEM_bulls = std(decodingAcc_bulls)/sqrt(size(decodingAcc_bulls,1));
 
 figure
-plot(mean(decodingAcc_standard),'Color',c1)
+plot(mean(decodingAcc_standard),'Color',c1, 'LineWidth', 1.6)
 hold on
-plot(mean(decodingAcc_bulls),'Color',c2)
+plot(mean(decodingAcc_bulls),'Color',c2, 'LineWidth', 1.6)
 hold on
 upper = mean(decodingAcc_standard) + SEM_standard;
 lower = mean(decodingAcc_standard) - SEM_standard;
 inBetween = [upper, fliplr(lower)];
-fill(x2, inBetween, c1, 'FaceAlpha', 0.2);
+fill(x2, inBetween, c1, 'FaceAlpha', 0.16, 'LineStyle', 'none');
 hold on;
 upper = mean(decodingAcc_bulls) + SEM_bulls;
 lower = mean(decodingAcc_bulls) - SEM_bulls;
 inBetween = [upper, fliplr(lower)];
-fill(x2, inBetween, c2, 'FaceAlpha', 0.2);
+fill(x2, inBetween, c2, 'FaceAlpha', 0.16, 'LineStyle', 'none');
 hold on;
 
 plot(significant_time_points_standard, y_significants_standard,'*','Color',c1)
@@ -81,13 +85,14 @@ hold on
 
 plot(significant_time_points_bulls, y_significants_bulls,'*', 'Color',c2)
 title(sprintf("%s decoding accuracy train test %s", decoding, method))
-xlabel('time')
-ylabel('accuracy')
+xlabel('time [ms]')
+ylabel('decoding accuracy - 50 [%]')
 xticks([0 40 80 120 160 200 240])
 set(gca, 'XTickLabel', [-200 0 200 400 600 800 1000])
-yline(50);
+yline(0);
 xline(40);
 legend({'standard --> bulls','bulls --> standard'})
+xlim([0,240])
 saveas(gca,sprintf( '%s%s_decoding_train_test_%s_statistics.png',path_plots, decoding, method));
 end
 
