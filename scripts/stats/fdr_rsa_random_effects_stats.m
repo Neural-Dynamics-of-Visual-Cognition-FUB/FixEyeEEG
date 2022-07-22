@@ -1,4 +1,4 @@
-function [SignificantVariables, crit_p, adjusted_pvalues, true_rsa_rdm] = fdr_rsa_random_effects_stats(eeg, eyetracking,numPermutations,tail,q_value)
+function [SignificantVariables, crit_p, adjusted_pvalues, true_rsa_rdm] = fdr_rsa_random_effects_stats(eeg, eyetracking,numPermutations,tail,q_value,subj)
 %FDR_RSA_RANDOM_EFFECTS_STATS Perform fdr correction stats to calculate the
 %significance of the timepoints in the RSA. Random effects: the
 %subject-level data are randomly multiplied by 1 or -1 (sign permutation test) to create the permutation samples.
@@ -26,7 +26,7 @@ addpath(sprintf('%sFixEyeEEG/scripts/stats/',BASE));
 
 %% compute true RSA correlation values 
 %EEG 
-n_subs = 30;
+n_subs = subj;
 true_rsa_rdm = NaN(n_subs,240);
 for subj = 1:n_subs
     single_subject_RDM_eeg = squeeze(eeg(subj,:,:,:));
@@ -73,8 +73,8 @@ for perm = 2:numPermutations
         fprintf('Permutation sample %d \n',perm);
     end   
     
-    %create samples by randomly multiplying each subject's data by 1 or -1
-    random_vector = single(sign(rand(30,1)-0.5));
+    %create samples by randomly multiplying each conditions's data by 1 or -1
+    random_vector = single(sign(rand(subj,1)-0.5));
     sample = repmat(random_vector,1,numTimepoints).*true_rsa_rdm;
     
     %get the  test statistic (mean ./ std) of each sample
