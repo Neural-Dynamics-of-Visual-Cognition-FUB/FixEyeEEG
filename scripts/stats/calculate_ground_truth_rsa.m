@@ -1,6 +1,6 @@
-function [true_rsa_rdm] = calculate_ground_truth_rsa(rsa1,rsa2)
+function [true_rsa_rdm] = calculate_ground_truth_rsa(rsa1,rsa2, subs)
 %EEG 
-n_subs = 30;
+n_subs = subs;
 true_rsa_rdm = NaN(n_subs,240);
 for subj = 1:n_subs
     single_subject_RDM1 = squeeze(rsa1(subj,:,:,:));
@@ -32,6 +32,5 @@ for time = 1:numTimepoints_RDM1
     true_rsa_rdm(subj,time) = corr(rdm_flattened_RDM1(:,time),rdm_flattened_RDM2(:,time),'type','Spearman');
 end
 end 
-true_rsa_rdm = squeeze(mean(true_rsa_rdm,1));
 end
 

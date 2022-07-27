@@ -1,4 +1,8 @@
 function [rdm_rsa,rdm_flattened_eeg,rdm_flattened_eyetracking] = rdm_analysis_perm(rdm_eeg,rdm_eyetracking)
+
+n_cond = size(rdm_eyetracking,1);
+random_vector = single(sign(rand(n_cond,1)-0.5));
+permuted_rdm = 
 if find(isnan(rdm_eeg)) >0 %full matrix version
     numTimepoints_eeg = size(rdm_eeg,3);
     rdm_eeg(isnan(rdm_eeg)) = 0;
@@ -18,7 +22,7 @@ if find(isnan(rdm_eyetracking)) >0 %full matrix version
     rdm_flattened_eyetracking = reshape(cell2mat(rdm_flattened_cell_eyetracking),[],numTimepoints_eyetracking);
 else
     numTimepoints_eeg = size(rdm_eeg,2);
-    rdm_flattened_eyetracking = rdm_eeg;
+    rdm_flattened_eyetracking = rdm_eyetracking;
 end
 
 %% Perfom RSA at each EEG timepoint
