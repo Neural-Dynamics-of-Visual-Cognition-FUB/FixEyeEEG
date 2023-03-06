@@ -110,7 +110,7 @@ if strcmp(fixation_condition, 'standard') == 1
     filename = sprintf('objects_%s',fixation_condition);
     save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_standard');
 elseif strcmp(fixation_condition, 'bulls') == 1
-    rdm_avg_bulls = squeeze(mean(mean(rdm,1),2)); %average over permutations and pseudotrials
+    rdm_avg_bulls = squeeze(nanmean(nanmean(rdm,1),2)); %average over permutations and pseudotrials
     filename = sprintf('objects_%s',fixation_condition);
     save(fullfile(results_dir,sprintf('%s_rdm_avg.mat',filename)),'rdm_avg_bulls');
 end

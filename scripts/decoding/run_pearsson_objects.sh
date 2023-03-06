@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #SBATCH --mail-user=haebeg19@zedat.fu-berlin.de
-#SBATCH --job-name=objects 
+#SBATCH --job-name=pearsson_objects 
 #SBATCH --mail-type=end
-#SBATCH --mem=9000
-#SBATCH --time=10:00:00
+#SBATCH --mem=8000
+#SBATCH --time=11:00:00
 #SBATCH --qos=standard
 
 declare -a permutations

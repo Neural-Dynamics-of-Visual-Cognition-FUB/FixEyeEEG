@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --mail-user=haebeg19@zedat.fu-berlin.de
-#SBATCH --job-name=objects 
+#SBATCH --job-name=object_decoding 
 #SBATCH --mail-type=end
 #SBATCH --mem=9000
 #SBATCH --time=40:00:00
@@ -9,11 +9,11 @@
 
 declare -a permutations
 index=0
-for sub in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32
+for sub in 6 7
 do
     for cond in 1 2
     do
-        for methods in 1 2
+        for methods in 1
         do
         permutations[$index]="$sub $cond $methods"
         index=$((index + 1))

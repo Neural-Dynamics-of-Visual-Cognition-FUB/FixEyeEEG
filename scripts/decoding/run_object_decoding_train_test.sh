@@ -4,7 +4,7 @@
 #SBATCH --job-name=objects_train_test  
 #SBATCH --mail-type=end
 #SBATCH --mem=9000
-#SBATCH --time=40:00:00
+#SBATCH --time=24:00:00
 #SBATCH --qos=standard
 
 declare -a permutations
