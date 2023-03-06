@@ -112,15 +112,20 @@ if ~isfolder(out_path_results)
 end
     true_rsa_rdm_standard = calculate_ground_truth_rsa(decodingAcc_standard_1,decodingAcc_standard_2, subj);
     true_rsa_rdm_bulls = calculate_ground_truth_rsa(decodingAcc_bulls_1,decodingAcc_bulls_2,subj);
+    diff_rsa = true_rsa_rdm_standard-true_rsa_rdm_bulls;
     cluster_thr = 0.05;
     significance_thr = 0.05;
     [SignificantVariables_category_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(true_rsa_rdm_standard, n_perm, cluster_thr, significance_thr,'right');
     [SignificantVariables_category_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(true_rsa_rdm_bulls, n_perm, cluster_thr, significance_thr,'right');
+    [SignificantVariables_category_diff,significantVarMax_diff,pValWei_diff,pValMax_diff,clusters_diff] = permutation_cluster_1sample_weight_alld(diff_rsa, n_perm, cluster_thr, significance_thr,'right');
+
     save(sprintf('%ssignificant_variables_standard_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'SignificantVariables_category_standard','significantVarMax_standard','pValWei_standard','pValMax_standard','clusters_standard');
     save(sprintf('%ssignificant_variables_bulls_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'SignificantVariables_category_bulls','significantVarMax_bulls','pValWei_bulls','pValMax_bulls','clusters_bulls');
     save(sprintf('%strue_rsa_rdm_standard_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'true_rsa_rdm_standard');
     save(sprintf('%strue_rsa_rdm_bulls_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'true_rsa_rdm_bulls');
-   
+    save(sprintf('%ssignificant_variables_diff_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'SignificantVariables_category_diff','significantVarMax_diff','pValWei_diff','pValMax_diff','clusters_diff');
+    save(sprintf('%sdiff_true_rsa_rdm_random_effects_%s_%s.mat',out_path_results, method, dist_measure),'diff_rsa');
+  
 
 end
 end

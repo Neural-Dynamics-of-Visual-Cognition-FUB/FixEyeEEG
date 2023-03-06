@@ -42,7 +42,7 @@ if strcmp(decoding, 'object') == 1
     decodingAcc_diff_wave = squeeze(nanmean(squeeze(nanmean(decodingAcc_diff_wave,2)),2));
 end
 
-if strcmpr(stats, 'perm')
+if strcmp(stats, 'perm')
     out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_decoding/',BASE, decoding);
 
 
@@ -67,8 +67,10 @@ if strcmpr(stats, 'perm')
     save(sprintf('%sadjusted_pvalues_diff_wave%s_%s.mat',out_path_results, method, decoding),'adjusted_pvalues_diff_wave');
     
 elseif strcmp(stats,'cluster')
-    data = data -50;
-    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_decoding/',BASE, decoding);
+    decodingAcc_standard = decodingAcc_standard -50;
+    decodingAcc_bulls = decodingAcc_bulls - 50;
+    decodingAcc_diff_wave = decodingAcc_diff_wave -50;
+    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/two_tailed/%s_decoding/',BASE, decoding);
 
 
     if ~isfolder(out_path_results)
@@ -76,9 +78,9 @@ elseif strcmp(stats,'cluster')
     end
     cluster_thr = 0.05;
     significance_thr = 0.05;
-    [SignificantVariables_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(decodingAcc_standard, n_perm, cluster_thr, significance_thr,'right');
-    [SignificantVariables_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(decodingAcc_bulls, n_perm, cluster_thr, significance_thr,'right');
-    [SignificantVariables_diff_wave,significantVarMax_diff_wave,pValWei_diff_wave,pValMax_diff_wave,clusters_diff_wave] = permutation_cluster_1sample_weight_alld(decodingAcc_diff_wave, n_perm, cluster_thr, significance_thr,'right');
+  %  [SignificantVariables_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(decodingAcc_standard, n_perm, cluster_thr, significance_thr,'right');
+    %[SignificantVariables_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(decodingAcc_bulls, n_perm, cluster_thr, significance_thr,'right');
+    [SignificantVariables_diff_wave,significantVarMax_diff_wave,pValWei_diff_wave,pValMax_diff_wave,clusters_diff_wave] = permutation_cluster_1sample_weight_alld(decodingAcc_diff_wave, n_perm, cluster_thr, significance_thr,'both');
     
     save(sprintf('%ssignificant_variables_standard_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard','significantVarMax_standard','pValWei_standard','pValMax_standard','clusters_standard');
     save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls','significantVarMax_bulls','pValWei_bulls','pValMax_bulls','clusters_bulls');

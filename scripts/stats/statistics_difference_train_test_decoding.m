@@ -1,4 +1,4 @@
-function [] = statistics_difference_train_test_decoding(decoding, method)
+function [] = statistics_difference_train_test_decoding(decoding, method, stats)
 
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
@@ -25,6 +25,8 @@ if method == 1
 elseif method == 2
     method = 'eyetracking';
 end
+
+
 path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_difference_train_test_decoding/',BASE, decoding);
 
 if ~isfolder(path_results)
@@ -40,7 +42,8 @@ load(sprintf('%sdifference_train_test_bulls_%s.mat',path_results,method));
         difference_standard = squeeze(nanmean(squeeze(nanmean(difference_standard,2)),2));
         difference_bulls = squeeze(nanmean(squeeze(nanmean(difference_bulls,2)),2));
     end
-    
+
+if strcmp(stats, 'perm')
 difference_bulls = difference_bulls +50;
 difference_standard = difference_standard +50;
 [SignificantVariables_standard,~,adjusted_pvalues_standard] = fdr_corrected_perm_test(difference_standard, n_perm, q_value);
@@ -51,6 +54,20 @@ save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',path_results, method, dec
 
 save(sprintf('%sadjusted_pvalues_standard%s_%s.mat',path_results, method, decoding),'adjusted_pvalues_standard');
 save(sprintf('%sadjusted_pvalues_bulls%s_%s.mat',path_results, method, decoding),'adjusted_pvalues_bulls');
+elseif strcmp(stats, 'cluster')
+    path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_difference_train_test_decoding/',BASE, decoding);
 
+if ~isfolder(path_results)
+    mkdir(path_results);
+end
+        cluster_thr = 0.05;
+    significance_thr = 0.05;
+    [SignificantVariables_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(difference_standard, n_perm, cluster_thr, significance_thr,'right');
+    [SignificantVariables_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(difference_bulls, n_perm, cluster_thr, significance_thr,'right');
+    
+    save(sprintf('%ssignificant_variables_standard_%s_%s.mat',path_results, method, decoding),'SignificantVariables_standard','significantVarMax_standard','pValWei_standard','pValMax_standard','clusters_standard');
+    save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',path_results, method, decoding),'SignificantVariables_bulls','significantVarMax_bulls','pValWei_bulls','pValMax_bulls','clusters_bulls');
+    
+end 
 end
 

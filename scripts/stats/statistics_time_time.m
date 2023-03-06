@@ -12,7 +12,7 @@ end
 if decoding == 1
     decoding = 'category';
 elseif decoding == 2
-    decoding = 'object';
+    decoding = 'objects';
 end
 
 if fixcross == 1 
@@ -43,7 +43,7 @@ elseif train == 2
             tmp_bulls = squeeze(decodingAcc_bulls_all(idx,:,:));
          data(idx,:,:)= (tmp_standard+permute(tmp_bulls,[2 1]))/2; 
         end
-    elseif strcmp(decoding,'object')
+    elseif strcmp(decoding,'objects')
          data = NaN(30,40,40,60,60);
         for idx=1:30
             tmp_standard=squeeze(decodingAcc_standard_all(idx,:,:,:,:));
@@ -59,9 +59,9 @@ q_value = 0.05;
 
 
 
-if strcmp(decoding, 'object')==1
-     data = squeeze(mean(data,2));
-     data = squeeze(mean(data,2));
+if strcmp(decoding, 'objects')==1
+     data = squeeze(nanmean(data,2));
+     data = squeeze(nanmean(data,2));
 end
 
 if strcmp(stats, 'perm')
