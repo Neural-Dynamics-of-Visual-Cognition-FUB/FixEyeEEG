@@ -37,7 +37,7 @@ end
 
 if strcmp(stats,'perm')
     
-    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_train_test_decoding/',BASE, decoding);
+    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_train_test/',BASE, decoding);
 
 
 if ~isfolder(out_path_results)
@@ -55,7 +55,7 @@ elseif strcmp(stats,'cluster')
     decodingAcc_bulls_standard = decodingAcc_bulls_standard-50;
     decodingAcc_standard_bulls = decodingAcc_standard_bulls-50;
 
-    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_train_test_decoding/',BASE, decoding);
+    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_train_test/',BASE, decoding);
 
 
     if ~isfolder(out_path_results)
@@ -63,11 +63,11 @@ elseif strcmp(stats,'cluster')
     end
     cluster_thr = 0.05;
     significance_thr = 0.05;
-    [SignificantVariables_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(decodingAcc_bulls_standard, n_perm, cluster_thr, significance_thr,'right');
-    [SignificantVariables_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(decodingAcc_standard_bulls, n_perm, cluster_thr, significance_thr,'right');
+    [SignificantVariables_bulls_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(decodingAcc_bulls_standard, n_perm, cluster_thr, significance_thr,'right');
+    [SignificantVariables_standard_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(decodingAcc_standard_bulls, n_perm, cluster_thr, significance_thr,'right');
     
-    save(sprintf('%ssignificant_variables_standard_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard','significantVarMax_standard','pValWei_standard','pValMax_standard','clusters_standard');
-    save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls','significantVarMax_bulls','pValWei_bulls','pValMax_bulls','clusters_bulls');
+    save(sprintf('%ssignificantVariables_bulls_standard_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls_standard','significantVarMax_standard','pValWei_standard','pValMax_standard','clusters_standard');
+    save(sprintf('%ssignificantVariables_standard_bulls_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard_bulls','significantVarMax_bulls','pValWei_bulls','pValMax_bulls','clusters_bulls');
     
 end
 
