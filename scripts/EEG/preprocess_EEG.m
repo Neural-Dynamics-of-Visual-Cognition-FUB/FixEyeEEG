@@ -27,7 +27,7 @@ function [] = preprocess_EEG(subj, ICA)
 
     filepath_clean_data_noICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/', BASE, subj);
     filepath_clean_data_ICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/ICA/',BASE,subj);
-    filepath_raw_EEGdata = [sprintf('%sdata/FixEyeEEG/main/eeg/raw/%s/fixeye000%s', BASE, num2str(subj), num2str(subj)) '.eeg'];
+    filepath_raw_EEGdata = [sprintf('%sdata/FixEyeEEG/main/eeg/raw/%s/fixeye00%s', BASE, num2str(subj), num2str(subj)) '.eeg'];
     filepath_behav_data = sprintf('%sdata/FixEyeEEG/main/behav_data/FixCrossExp_s%scfgdata.mat', BASE, subj); 
     
     if ICA == 0
@@ -55,8 +55,8 @@ function [] = preprocess_EEG(subj, ICA)
         %% preprocessing EEG data without ICA 
 
         cfg=[];
-        cfg.dataset = filepath_raw_EEGdata;
-
+        cfg.dataset = filepath_raw_EEGdata;   
+       
         %% epoching 
         % only extracat the triggers we are actually interested in
         cfg.trialfun = 'ft_trialfun_general';
@@ -82,9 +82,13 @@ function [] = preprocess_EEG(subj, ICA)
         cfg.hpfilter='no';
         cfg.lpfilter='no';
         cfg.bsfilter='no';
+        cfg.bsfilter = 'yes';
+        cfg.bsfreq = [49 51];
         cfg.demean = 'yes';
         cfg.baselinewindow = [-0.2 0];
         data_baseline=ft_preprocessing(cfg, data);
+        
+        
 
         %% resampling 
         cfg=[];
@@ -119,16 +123,29 @@ function [] = preprocess_EEG(subj, ICA)
         cfg = [];
         cfg.trials = idx_trials_to_keep;
         data_all_trials_cleaned = ft_selectdata(cfg, data_wo_target_trials);
+        
 
+        
         % reject channels with high variance 
         cfg = [];
         cfg.showlabel='yes';
         cfg.method='summary';
-        cfg.layout='easycapM1.lay';
+        cfg.layout='acticap-64ch-standard2.mat';
         ft_layoutplot(cfg);
         data_rej_channel=ft_rejectvisual(cfg,data_all_trials_cleaned);
         subjectinfo.reject_channel =setdiff(data_all_trials_cleaned.label,data_rej_channel.label);
-
+                
+              
+        for idx = 1:size(data_all_trials_cleaned.trialinfo,1)
+            trials_uncleaned{idx,1} = data_all_trials_cleaned.trialinfo{idx,2};
+        end
+        
+        for idx = 1:size(data_rej_channel.trialinfo,1)
+            trials_cleaned{idx,1} = data_rej_channel.trialinfo{idx,2};
+        end
+        
+        rejected_trials = cellfun(@str2num,setdiff(trials_uncleaned, trials_cleaned));
+        subjectinfo.reject_trials = rejected_trials;
         %% interpolate missing channels 
         cfg_neighb        = [];
         cfg_neighb.layout = 'easycapM1.mat';
@@ -144,7 +161,11 @@ function [] = preprocess_EEG(subj, ICA)
         cfg.layout = 'easycapM1.mat';
         cfg.neighbours    = neighbours; 
         data_rej_channel_interpolated_noICA = ft_channelrepair(cfg, data_rej_channel);
-
+        
+        cfg=[];
+        cfg.viewmode = 'vertical';
+        cfg = ft_databrowser(cfg,data_rej_channel_interpolated_noICA);
+        
         % transform to timelocked data 
         cfg.keeptrials='yes';
         data_rej_channel_interpolated_timelocked=ft_timelockanalysis(cfg,data_rej_channel_interpolated_noICA);
@@ -154,7 +175,7 @@ function [] = preprocess_EEG(subj, ICA)
         save([filepath_clean_data_noICA 'preprocessed_rejected_channels.mat'], 'data_rej_channel');
         save([filepath_clean_data_noICA 'preprocessed_noICA.mat'], 'data_rej_channel_interpolated_noICA');
         save([filepath_clean_data_noICA 'preprocessed_noICA_timelocked.mat'], 'data_rej_channel_interpolated_timelocked');
-        save([filepath_behav_data 'subject_meta_info'], 'subjectinfo');
+        save(sprintf('%sdata/FixEyeEEG/main/behav_data/subject%s_meta_info.mat', BASE, subj), 'subjectinfo');
 
     elseif ICA == 1
         if ~isfolder(filepath_clean_data_ICA)
