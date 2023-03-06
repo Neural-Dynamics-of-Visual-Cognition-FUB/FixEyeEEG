@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = plot_statistics_difference_train_test_decoding(decoding,method,fixcross)
+function [outputArg1,outputArg2] = plot_statistics_difference_train_test_decoding(decoding,method,fixcross, stats)
 
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
@@ -9,9 +9,13 @@ elseif isunix
     
 end
 
+if strcmp(stats,'perm')
 path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_difference_train_test_decoding/',BASE,decoding);
 path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_difference_train_test_decoding/',BASE,decoding);
-
+elseif strcmp(stats,'cluster')
+path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_difference_train_test_decoding/',BASE,decoding);
+path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/cluster_based_perm/%s_difference_train_test_decoding/',BASE,decoding);
+end
 % load difference wave 
 load(sprintf('%ssignificant_variables_%s_%s_%s.mat',path_results, fixcross, method,decoding));
 load(sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_difference_train_test_decoding/difference_train_test_%s_%s.mat', BASE,decoding,fixcross,method));
@@ -52,7 +56,7 @@ end
 SignificantVariables = eval(sprintf('SignificantVariables_%s', fixcross));
 
 significant_time_points = find(SignificantVariables>0);
-y_significants = repmat(ys, size(significant_time_points,2),1)';
+y_significants = repmat(ys, size(significant_time_points,1),1)';
 
 x = 1:numel(mean(difference));
 x2 = [x, fliplr(x)];
@@ -86,17 +90,20 @@ lower = mean(difference) - SEM_difference;
 inBetween = [upper, fliplr(lower)];
 fill(x2, inBetween, c3, 'FaceAlpha', 0.16, 'LineStyle', 'none');
 hold on;
-plot(significant_time_points, y_significants,'*','Color',c3)
+plot(significant_time_points, y_significants,'.','Color',c3)
 hold on
-title(sprintf("%s decoding accuracy %s %s", decoding, method, fixcross))
-xlabel('time [ms]')
-ylabel('decoding accuracy - 50 [%]')
+%title(sprintf("%s decoding accuracy %s %s", decoding, method, fixcross))
 xticks([0 40 80 120 160 200 240])
 set(gca, 'XTickLabel', [-200 0 200 400 600 800 1000])
-yline(0);
-xline(40);
+xlabel('time [ms]')
+ylabel('classification accuracy - chance level (%)')
+yline(0,'color', '#808080' ,'LineStyle','--', 'LineWidth', 1.5);
+xline(40, 'color', '#808080', 'LineStyle','--', 'LineWidth', 1.5);
 xlim([0,240])
-
-legend({'decodingAcc', 'avg', 'difference'})
+ylim([-10,15])
+%legend({'standard', 'bullseye', 'difference'})
+set(gca,'box','off')
+legend('boxoff')
+legend({fixcross, 'avg', 'difference'})
 saveas(gca,sprintf('%s%s_decoding_%s_%s_statistics.png',path_plots, decoding, method, fixcross));
 end

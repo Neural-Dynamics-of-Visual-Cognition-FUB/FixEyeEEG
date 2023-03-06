@@ -40,13 +40,16 @@ elseif strcmp(effect, 'random effects') == 1
     load(sprintf('%ssignificant_variables_bulls_random_effects_%s_%s.mat',path_results, method, dist_measure));
     load(sprintf('%strue_rsa_rdm_standard_random_effects_%s_%s.mat',path_results, method, dist_measure));
     load(sprintf('%strue_rsa_rdm_bulls_random_effects_%s_%s.mat',path_results, method, dist_measure));    
+    load(sprintf('%snoise_ceiling_%s_%s.mat',out_path_results, method, fixcross));
+
+
 end
 
 significant_time_points_standard = find(SignificantVariables_category_standard>0);
-y_significants_standard = repmat(-0.05, size(significant_time_points_standard,1),1)';
+y_significants_standard = repmat(-0.04, size(significant_time_points_standard,1),1)';
 
 significant_time_points_bulls = find(SignificantVariables_category_bulls>0);
-y_significants_bulls = repmat(-0.15, size(significant_time_points_bulls,1),1)';
+y_significants_bulls = repmat(-0.045, size(significant_time_points_bulls,1),1)';
 
 
 
@@ -89,7 +92,7 @@ upper = true_rsa_rdm_bulls_plot + SEM_bulls;
 lower = true_rsa_rdm_bulls_plot - SEM_bulls;
 inBetween = [upper, fliplr(lower)];
 fill(x2, inBetween, c2, 'FaceAlpha', 0.16, 'LineStyle', 'none');
-title(sprintf("RSA %s %s %s", dist_measure,effect, method))
+%title(sprintf("RSA %s %s %s", dist_measure,effect, method))
 xlabel('time (ms)')
 ylabel("Spearman's R")
 xticks([0 40 80 120 160 200 240])
@@ -97,7 +100,9 @@ set(gca, 'XTickLabel', [-200 0 200 400 600 800 1000])
 yline(0,'color', '#808080' ,'LineStyle','--', 'LineWidth', 1.5);
 xline(40, 'color', '#808080', 'LineStyle','--', 'LineWidth', 1.5);
 xlim([0,240])
-
+ylim([-0.06 0.55])
+set(gca,'box','off')
+legend('boxoff')
 legend({'standard', 'bullseye'})
 
 saveas(gca,sprintf( '%sRSA_%s_%s_%s_effect_statistics.png',out_path_plots, dist_measure, method, effect));
@@ -127,6 +132,8 @@ yline(0,'color', '#808080' ,'LineStyle','--', 'LineWidth', 1.5);
 xline(40, 'color', '#808080', 'LineStyle','--', 'LineWidth', 1.5);
 legend({'standard', 'bullseye'})
 xlim([0,240])
+set(gca,'box','off')
+legend('boxoff')
 saveas(gca,sprintf( '%sRSA_%s_%s_%s_effect_statistics.png',out_path_plots, dist_measure, method, effect));
 end
 end

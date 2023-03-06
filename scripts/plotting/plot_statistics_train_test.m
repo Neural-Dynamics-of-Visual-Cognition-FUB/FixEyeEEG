@@ -1,4 +1,4 @@
-function [] = plot_statistics_train_test(decoding, method)
+function [] = plot_statistics_train_test(decoding, method, stats)
 
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
@@ -9,8 +9,22 @@ elseif isunix
     
 end
 
+
+if strcmp(stats,'perm')
 path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_train_test/',BASE,decoding);
 path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_train_test/',BASE,decoding);
+
+if ~isfolder(path_plots)
+    mkdir(path_plots);
+end
+elseif strcmp(stats,'cluster')
+    path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_train_test/',BASE,decoding);
+    path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/cluster_based_perm/%s_train_test/',BASE,decoding);
+    if ~isfolder(path_plots)
+        mkdir(path_plots);
+    end
+end
+
 
 load(sprintf('%ssignificantVariables_bulls_standard_%s_%s.mat',path_results, method,decoding));
 load(sprintf('%ssignificantVariables_standard_bulls_%s_%s.mat',path_results, method,decoding));
@@ -44,14 +58,14 @@ if strcmp(method,'eeg') ==1
     y_point_bulls = -4;
 elseif strcmp(method,'eyetracking')
     y_point_standard = -0.2;
-    y_point_bulls = -0.3;
+    y_point_bulls = -0.25;
 end
 
 significant_time_points_standard = find(SignificantVariables_standard_bulls>0);
-y_significants_standard = repmat(y_point_standard, size(significant_time_points_standard,2),1)';
+y_significants_standard = repmat(y_point_standard, size(significant_time_points_standard,1),1)';
 
 significant_time_points_bulls = find(SignificantVariables_bulls_standard>0);
-y_significants_bulls = repmat(y_point_bulls, size(significant_time_points_bulls,2),1)';
+y_significants_bulls = repmat(y_point_bulls, size(significant_time_points_bulls,1),1)';
 
 
 x = 1:numel(mean(decodingAcc_standard));
@@ -80,19 +94,22 @@ inBetween = [upper, fliplr(lower)];
 fill(x2, inBetween, c2, 'FaceAlpha', 0.16, 'LineStyle', 'none');
 hold on;
 
-plot(significant_time_points_standard, y_significants_standard,'*','Color',c1)
+plot(significant_time_points_standard, y_significants_standard,'.','Color',c1)
 hold on
 
-plot(significant_time_points_bulls, y_significants_bulls,'*', 'Color',c2)
-title(sprintf("%s decoding accuracy train test %s", decoding, method))
+plot(significant_time_points_bulls, y_significants_bulls,'.', 'Color',c2)
+%title(sprintf("%s decoding accuracy train test %s", decoding, method))
 xlabel('time [ms]')
 ylabel('decoding accuracy - 50 [%]')
 xticks([0 40 80 120 160 200 240])
 set(gca, 'XTickLabel', [-200 0 200 400 600 800 1000])
-yline(0);
-xline(40);
-legend({'standard --> bulls','bulls --> standard'})
+yline(0,'color', '#808080' ,'LineStyle','--', 'LineWidth', 1.5);
+xline(40, 'color', '#808080', 'LineStyle','--', 'LineWidth', 1.5);
 xlim([0,240])
+ylim([-0.4,0.6])
+legend({'standard --> bulls', 'bulls --> standard'})
+set(gca,'box','off')
+legend('boxoff')
 saveas(gca,sprintf( '%s%s_decoding_train_test_%s_statistics.png',path_plots, decoding, method));
 end
 

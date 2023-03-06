@@ -43,14 +43,14 @@ category_decodingAcc_standard_all = NaN(n_subs,n_timepoints);
     category_decodingAcc_standard_all(subj,:) =  decodingAccuracy_avg_standard;
     
     end
-    category_difference_wave = category_decodingAcc_standard_all - category_decodingAcc_bulls_all + 50;
+    category_decodingAcc_diff_wave_all = category_decodingAcc_standard_all - category_decodingAcc_bulls_all + 50;
     save(sprintf('%scategory_decodingAcc_bulls_all_%s', out_path, methods_flag(idx)), 'category_decodingAcc_bulls_all')
     save(sprintf('%scategory_decodingAcc_standard_all_%s', out_path, methods_flag(idx)), 'category_decodingAcc_standard_all')
-    save(sprintf('%scategory_difference_wave_%s', out_path, methods_flag(idx)), 'category_difference_wave')
+    save(sprintf('%scategory_decodingAcc_diff_wave_all_%s', out_path, methods_flag(idx)), 'category_decodingAcc_diff_wave_all')
 end
  %% object decoding
  
-out_path = sprintf('%sdata/FixEyeEEG/main/results/object_decoding_all_same_trials/',BASE);
+out_path = sprintf('%sdata/FixEyeEEG/main/results/object_decoding/',BASE);
 
 if ~isfolder(out_path)
     mkdir(out_path);
@@ -84,9 +84,9 @@ object_decodingAcc_standard_all = NaN(n_subs,n_objects,n_objects,n_timepoints);
     object_decodingAcc_standard_all(subj,:,:,:) =  decodingAccuracy_object_standard_avg;
 
     end
-    object_difference_wave = object_decodingAcc_standard_all - object_decodingAcc_bulls_all + 50;
+    object_decodingAcc_diff_wave_all = object_decodingAcc_standard_all - object_decodingAcc_bulls_all + 50;
     save(sprintf('%sobject_decodingAcc_bulls_all_%s', out_path, methods_flag(idx)), 'object_decodingAcc_bulls_all')
     save(sprintf('%sobject_decodingAcc_standard_all_%s', out_path, methods_flag(idx)), 'object_decodingAcc_standard_all')
-    save(sprintf('%sobject_difference_wave_%s', out_path, methods_flag(idx)), 'object_difference_wave')
+    save(sprintf('%sobject_decodingAcc_diff_wave_all_%s', out_path, methods_flag(idx)), 'object_decodingAcc_diff_wave_all')
 end
 end

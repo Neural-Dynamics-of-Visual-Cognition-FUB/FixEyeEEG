@@ -9,11 +9,11 @@ elseif isunix
     
 end
 if strcmp(stats,'cluster')
-path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_decoding/',BASE,decoding);
-path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/cluster_based_perm/%s_decoding/',BASE,decoding);
+    path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_decoding/',BASE,decoding);
+    path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/cluster_based_perm/final/%s_decoding/',BASE,decoding);
 elseif strcmp(stats,'perm')
-path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_decoding/',BASE,decoding);
-path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_decoding/',BASE,decoding);
+    path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_decoding/',BASE,decoding);
+    path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_decoding/',BASE,decoding);
 end
 
 
@@ -21,6 +21,21 @@ fixcross = {'standard'; 'bulls'; 'diff_wave'};
 for idx=1:3
     load(sprintf('%ssignificant_variables_%s_%s_%s.mat',path_results, fixcross{idx}, method,decoding));
     load(sprintf('%sdata/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_%s_all_%s.mat', BASE,decoding,decoding,fixcross{idx},method));
+    load(sprintf('%speak_latency_%s_%s_%s.mat',path_results, method, decoding, fixcross{idx}));
+    if idx == 1
+         load(sprintf('%ssignificant_variables_%s_%s_%s.mat',path_results, fixcross{idx}, method,decoding))
+        peak_latency_standard = peak_latency;
+        CI_95_standard = CI_95;
+    elseif idx == 2
+        load(sprintf('%ssignificant_variables_%s_%s_%s.mat',path_results, fixcross{idx}, method,decoding));
+        peak_latency_bulls = peak_latency;
+        CI_95_bulls = CI_95;
+    else 
+        %path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/two_tailed/%s_decoding/',BASE,decoding);
+        load(sprintf('%ssignificant_variables_%s_%s_%s.mat',path_results, fixcross{idx}, method,decoding));
+        peak_latency_diff_wave = peak_latency;
+        CI_95_diff_wave = CI_95;
+    end
 end
 
 if ~isfolder(path_plots)
@@ -39,13 +54,13 @@ if strcmp(decoding, 'object') == 1
     decodingAcc_bulls = decodingAcc_bulls -50;
     decodingAcc_diff_wave = decodingAcc_diff_wave-50;
     if strcmp(method,'eyetracking')==1
-    ys = -2;
-    yb=-3;
-    yw = -4;
+        ys = -2;
+        yb=-2.5;
+        yw = -3;
     elseif strcmp(method,'eeg')==1
-    ys = -2;
-    yb=-3;
-    yw = -4;
+        ys = -2;
+        yb=-3;
+        yw = -4;
     end
 elseif strcmp(decoding, 'category') == 1
     
@@ -79,13 +94,21 @@ SEM_standard = std(decodingAcc_standard)/sqrt(size(decodingAcc_standard,1));
 SEM_bulls = std(decodingAcc_bulls)/sqrt(size(decodingAcc_bulls,1));
 SEM_diff = std(decodingAcc_diff_wave)/sqrt(size(decodingAcc_diff_wave,1));
 
+actual_peak_standard = find(mean(decodingAcc_standard)==max(mean(decodingAcc_standard)));
+actual_peak_bulls = find(mean(decodingAcc_bulls)==max(mean(decodingAcc_bulls)));
+actual_peak_difference = find(mean(decodingAcc_diff_wave)==max(mean(decodingAcc_diff_wave)));
+
 figure
+
+%plot curve 
 plot(mean(decodingAcc_standard),'Color',c1, 'LineWidth', 1.6)
 hold on
 plot(mean(decodingAcc_bulls),'Color',c2, 'LineWidth', 1.6)
 hold on
 plot(mean(decodingAcc_diff_wave),'Color',c3,'LineWidth', 1.6 )
 hold on
+
+% plot SEM
 upper = mean(decodingAcc_standard) + SEM_standard;
 lower = mean(decodingAcc_standard) - SEM_standard;
 inBetween = [upper, fliplr(lower)];
@@ -101,6 +124,32 @@ lower = mean(decodingAcc_diff_wave) - SEM_diff;
 inBetween = [upper, fliplr(lower)];
 fill(x2, inBetween, c3, 'FaceAlpha', 0.15, 'LineStyle', 'none');
 hold on;
+% plot peak latencies & CIs
+%errorbar(actual_peak_standard,6,(CI_95_standard(2)-CI_95_standard(1))/2,'d','horizontal','Color',c1, 'LineWidth', 1.4)
+%hold on
+%errorbar(actual_peak_bulls,5.5,(CI_95_bulls(2)-CI_95_bulls(1))/2,'horizontal','d','Color',c2, 'LineWidth', 1.4)
+%hold on
+%errorbar(actual_peak_difference,5,(CI_95_diff_wave(2)-CI_95_diff_wave(1))/2,'horizontal','d','Color',c3, 'LineWidth', 1.4)
+%hold on
+points_peak_standard = 53;
+points_peak_bulls = 51;
+points_peak_diff = 5;
+plot(actual_peak_standard(1),points_peak_standard,'d', 'Color',c1, 'MarkerFaceColor',c1)
+plot(CI_95_standard,[points_peak_standard points_peak_standard],'Color',c1, 'LineStyle','--','LineWidth', 2)
+plot(CI_95_standard(1),points_peak_standard,'|','Color',c1, 'MarkerSize', 2)
+plot(CI_95_standard(2),points_peak_standard,'|','Color',c1, 'MarkerSize', 2)
+hold on
+plot(actual_peak_bulls,points_peak_bulls,'d', 'Color',c2, 'MarkerFaceColor',c2)
+plot(CI_95_bulls,[points_peak_bulls points_peak_bulls],'Color',c2,'LineStyle','--', 'LineWidth', 2)
+plot(CI_95_bulls(1),points_peak_bulls,'|','Color',c2, 'MarkerSize', 2)
+plot(CI_95_bulls(2),points_peak_bulls,'|','Color',c2, 'MarkerSize', 2)
+hold on
+% plot(actual_peak_difference,points_peak_diff,'d', 'Color',c3, 'MarkerFaceColor',c3)
+% plot(CI_95_diff_wave,[points_peak_diff points_peak_diff],'Color',c3,'LineStyle','--','LineWidth', 1.4)
+% plot(CI_95_diff_wave(1),points_peak_diff,'|','Color',c3)
+% plot(CI_95_diff_wave(2),points_peak_diff,'|','Color',c3)
+% hold on 
+% plot significance marker
 plot(significant_time_points_standard, y_significants_standard,'.','Color',c1)
 hold on
 plot(significant_time_points_bulls, y_significants_bulls,'.', 'Color',c2)
@@ -114,11 +163,11 @@ set(gca, 'XTickLabel', [-200 0 200 400 600 800 1000])
 yline(0,'color', '#808080' ,'LineStyle','--', 'LineWidth', 1.5);
 xline(40, 'color', '#808080', 'LineStyle','--', 'LineWidth', 1.5);
 xlim([0,240])
-ylim([-15,50])
-legend({'standard', 'bullseye', 'difference'})
+ylim([-15,55])
+%legend({'standard', 'bullseye', 'difference'})
 set(gca,'box','off')
-legend('boxoff')
-saveas(gca,sprintf('%s%s_decoding_%s_statistics.png',path_plots, decoding, method));
+%legend('boxoff')
+saveas(gca,sprintf('%s%s_decoding_%s_statistics_only_sig_peaks.png',path_plots, decoding, method));
 end
 
 
