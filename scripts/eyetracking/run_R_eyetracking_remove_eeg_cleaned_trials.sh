@@ -4,7 +4,7 @@
 #SBATCH --job-name=R_script_eyetracking
 #SBATCH --mail-type=end
 #SBATCH --mem=3000
-#SBATCH --time=11:00:00
+#SBATCH --time=01:00:00
 #SBATCH --qos=standard
 
 

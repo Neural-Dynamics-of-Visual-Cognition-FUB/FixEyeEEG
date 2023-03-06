@@ -13,9 +13,10 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
     n_trials = 4200;
     %% load preprocessed eyetracking data from R & behavioral data
     subj = num2str(subj);
+
     filename_asc = sprintf('%sdata/FixEyeEEG/main/eyetracking/raw/%s/eye%s.asc',BASE, subj, subj);
     %data_eye_csv = readmatrix('/Users/ghaeberle/Downloads/tmp/eyetracking_cleaned_wo_artifacts_sub003.csv');
-    data_eye_csv = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_wo_artifacts_and_visual_degree_sub00%s.csv',BASE,subj));
+    data_eye_csv = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_wo_artifacts_and_removed_eeg_trials_and_visual_degree_sub00%s.csv',BASE,subj));
     % remove index column 
     data_eye_csv = data_eye_csv(:,2:end);
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/', BASE, subj);
@@ -46,6 +47,15 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
     timepoint_start_trial(idx) = str2num(split_messages{idx,2});
     end
     
+    idx_end_trial = find(contains(msg, 'TRIAL_RESULT 0'));
+    msg_end_trial = msg(idx_end_trial);
+
+    split_messages_end = cellfun(@(x) strsplit(x, {'\t', ' '}), msg_end_trial, 'UniformOutput', false);
+    split_messages_end = vertcat(split_messages_end{:}); % To remove nesting of cell array newA
+    for idx =1:size(split_messages,1)
+    timepoint_end_trial(idx) = str2num(split_messages_end{idx,2});
+    end
+    
     %% remove trials
       idx_kept_trials = unique(data_eye_csv(:,1));
       timepoint_start_kept_trials = timepoint_start_trial(idx_kept_trials);
@@ -53,28 +63,30 @@ function [outputArg1,outputArg2] = preprocess_eyetracking(subj)
       
  %% create trialand time structures for fieldtrip
     n_trials = size(timepoint_start_kept_trials,2);
-    time = cell(1,n_trials);
-    trial = cell(1,n_trials);
+   % time = cell(1,n_trials);
+   % trial = cell(1,n_trials);
     %pre and post stimulus in ms (-1 for pre and post as 0 also counts as a timepoint )
-    prestim = 199;
+    prestim = 200;
     poststim = 999;
-    
+    step = 0.001;
     for idx =1:n_trials
-       
-        if idx == n_trials 
-            
-            start_idx = find(data_eye_csv(:,2) == timepoint_start_kept_trials(idx));
-            trial{idx} = [data_eye_csv(start_idx-prestim:start_idx,9)' ,data_eye_csv(start_idx:end,9)';
-                          data_eye_csv(start_idx-prestim:start_idx,10)' ,data_eye_csv(start_idx:end,10)'];
-            sampleinfo(idx,1) = data_eye_csv(start_idx-prestim, 2);
-            sampleinfo(idx,2) = data_eye_csv(end, 2);
-            time{idx} = -.2:0.001:(length(trial{n_trials})/1000-0.201);
+       if str2num(trialinfo_kept_trials(idx,2)) == 4200
+           trialinfo_kept_trials(idx,:) = [];
+           break;
+%         if idx == n_trials 
+%             
+%             start_idx = find(data_eye_csv(:,2) == timepoint_start_kept_trials(idx));
+%             trial{idx} = [data_eye_csv(start_idx-prestim:start_idx-1,10)' ,data_eye_csv(start_idx:end,10)';
+%                           data_eye_csv(start_idx-prestim:start_idx-1,11)' ,data_eye_csv(start_idx:end,11)'];
+%             sampleinfo(idx,1) = data_eye_csv(start_idx-prestim, 2);
+%             sampleinfo(idx,2) = data_eye_csv(end, 2);
+%             time{idx} = -.2:step:(length(trial{n_trials})/hdr_eye.Fs-0.201);
         else
         
-            time{idx} = -.2:0.001:0.999 ;
+            time{idx} = -.2:step:0.999 ;
             start_idx = find(data_eye_csv(:,2) == timepoint_start_kept_trials(idx));
-            trial{idx} = [data_eye_csv(start_idx-prestim:start_idx,9)' ,data_eye_csv(start_idx:(start_idx+poststim),9)';
-                          data_eye_csv(start_idx-prestim:start_idx,10)' ,data_eye_csv(start_idx:(start_idx+poststim),10)'];
+            trial{idx} = [data_eye_csv(start_idx-prestim:start_idx-1,10)' ,data_eye_csv(start_idx:(start_idx+poststim),10)';
+                          data_eye_csv(start_idx-prestim:start_idx-1,11)' ,data_eye_csv(start_idx:(start_idx+poststim),11)'];
             sampleinfo(idx,1) = data_eye_csv(start_idx-prestim, 2);
             sampleinfo(idx,2) = data_eye_csv(start_idx+poststim, 2);
         

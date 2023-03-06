@@ -3,8 +3,8 @@
 #SBATCH --mail-user=haebeg19@zedat.fu-berlin.de
 #SBATCH --job-name=category 
 #SBATCH --mail-type=end
-#SBATCH --mem=3000
-#SBATCH --time=00:20:00
+#SBATCH --mem=4000
+#SBATCH --time=00:07:00
 #SBATCH --qos=standard
 
 declare -a permutations
@@ -32,7 +32,7 @@ cd /home/haebeg19/FixEyeEEG/scripts/eyetracking/
 
 ### Start job
 
-matlab -nosplash -noFigureWindows -r "preprocess_eyetracking(${sub})" > serial.out #this worked
+matlab -nosplash -noFigureWindows -r "preprocess_eyetracking_full_data(${sub})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 
