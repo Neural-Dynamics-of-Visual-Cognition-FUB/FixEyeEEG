@@ -3,7 +3,7 @@
 #SBATCH --mail-user=haebeg19@zedat.fu-berlin.de
 #SBATCH --job-name=time_time_statistics
 #SBATCH --mail-type=end
-#SBATCH --mem=9000
+#SBATCH --mem=16000
 #SBATCH --time=03:00:00
 #SBATCH --qos=standard
 

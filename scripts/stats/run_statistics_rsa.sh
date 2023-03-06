@@ -3,7 +3,7 @@
 #SBATCH --mail-user=haebeg19@zedat.fu-berlin.de
 #SBATCH --job-name=objects_pearsson_time_time 
 #SBATCH --mail-type=end
-#SBATCH --mem=9000
+#SBATCH --mem=2000
 #SBATCH --time=03:00:00
 #SBATCH --qos=standard
 
@@ -12,25 +12,25 @@
 
 declare -a permutations
 index=0
-for split_half in 1 2 3 
+for splithalf in 1 2 3 
 do
-    for distance_measure in 1 2
+    for distance in 2
     do
         for random in 1 2
         do
-        permutations[$index]="$split_half $distance_measure $random"
+        permutations[$index]="$splithalf $distance $random"
         index=$((index + 1))
         done
     done
 done
 #Extract parameters
 params=(${permutations[${SLURM_ARRAY_TASK_ID}]})
-split_half=${params[0]}
-distance_measure=${params[1]}
-methods=${params[2]}
+splithalf=${params[0]}
+distance=${params[1]}
+random=${params[2]}
 
-echo split_half $split_half
-echo distance_measure $distance_measure
+echo split_half $splithalf
+echo distance_measure $distance
 echo random $random
 
 ### Set up runtime environment
@@ -44,7 +44,7 @@ cd /home/haebeg19/FixEyeEEG/scripts/stats/
 
 ### Start job
 
-matlab -nosplash -noFigureWindows -r "statistics_rsa(${split_half}, ${distance_measure}, ${random})" > serial.out #this worked
+matlab -nosplash -noFigureWindows -r "statistics_rsa(${splithalf}, ${distance}, ${random})" > serial.out #this worked
 echo set to run
 ### Output core and memory efficiency
 

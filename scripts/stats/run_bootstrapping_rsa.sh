@@ -4,7 +4,7 @@
 #SBATCH --job-name=rsa_boots
 #SBATCH --mail-type=end
 #SBATCH --mem=9000
-#SBATCH --time=10:00:00
+#SBATCH --time=22:00:00
 #SBATCH --qos=standard
 
 # define permutation parameters and qvalues
