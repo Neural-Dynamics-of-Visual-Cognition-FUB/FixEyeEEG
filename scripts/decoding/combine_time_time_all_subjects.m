@@ -1,6 +1,10 @@
 function [] = combine_time_time_all_subjects(decoding)
-%% category decoding
 
+%{
+    - combines decoding accuracies for time-generalized MVPA for all
+    participants
+    - decoding: "category" or "object"
+%}
 
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
@@ -36,25 +40,25 @@ for idx = 2
         fileToRead2 = fullfile(sprintf('%s/%s_bulls_time_time_avg.mat',results_dir,decoding));
         load(fileToRead2);
         % fill objA = 40, was not filled before because I only calculated
-        % the diagonal 
+        % the diagonal
         %decodingAccuracy_objects_time_time_avg_standard(40,:,:,:) = 0;
         %decodingAccuracy_objects_time_time_avg_bulls(40,:,:,:) = 0;
         
-       
+        
         if strcmp(decoding, 'category') == 1
             decodingAcc_standard_all(subj,:,:) =  decodingAccuracy_avg_standard;
             decodingAcc_bulls_all(subj,:,:) = decodingAccuracy_avg_bulls;
         elseif strcmp(decoding, 'objects') == 1
-             decodingAccuracy_objects_time_time_avg_standard(decodingAccuracy_objects_time_time_avg_standard==0) = NaN;
-        decodingAccuracy_objects_time_time_avg_bulls(decodingAccuracy_objects_time_time_avg_bulls==0) = NaN;
-
-        % fill lower triangular 
-       % decodingAccuracy_objects_time_time_avg_standard_filled = decodingAccuracy_objects_time_time_avg_standard+permute(decodingAccuracy_objects_time_time_avg_standard,[2 1 3 4]);
-        %decodingAccuracy_objects_time_time_avg_bulls_filled = decodingAccuracy_objects_time_time_avg_bulls+permute(decodingAccuracy_objects_time_time_avg_bulls,[2 1 3 4]);
-        size(decodingAccuracy_objects_time_time_avg_standard)
-        size(decodingAccuracy_objects_time_time_avg_bulls)
+            decodingAccuracy_objects_time_time_avg_standard(decodingAccuracy_objects_time_time_avg_standard==0) = NaN;
+            decodingAccuracy_objects_time_time_avg_bulls(decodingAccuracy_objects_time_time_avg_bulls==0) = NaN;
+            
+            % fill lower triangular
+            % decodingAccuracy_objects_time_time_avg_standard_filled = decodingAccuracy_objects_time_time_avg_standard+permute(decodingAccuracy_objects_time_time_avg_standard,[2 1 3 4]);
+            %decodingAccuracy_objects_time_time_avg_bulls_filled = decodingAccuracy_objects_time_time_avg_bulls+permute(decodingAccuracy_objects_time_time_avg_bulls,[2 1 3 4]);
+            size(decodingAccuracy_objects_time_time_avg_standard)
+            size(decodingAccuracy_objects_time_time_avg_bulls)
             decodingAcc_standard_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_standard;
-            decodingAcc_bulls_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_bulls;      
+            decodingAcc_bulls_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_bulls;
         end
     end
     save(sprintf('%s%s_decodingAcc_standard_%s', out_path, decoding,methods_flag(idx)), 'decodingAcc_standard_all')

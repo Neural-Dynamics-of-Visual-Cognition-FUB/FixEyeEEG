@@ -1,7 +1,9 @@
 function [] = combine_pearsson()
+%{
+    - combines decoding accuracies for time-resolved MVPA for object
+    decoding with pearson as the distance measure of choice
+%}
 %% object decoding
-
-
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
     BASE = '/Users/ghaeberle/scratch/';
@@ -38,8 +40,7 @@ for idx = 1:2
         object_rdm_standard_all(subj,:,:,:) =  rdm_avg_standard;
         
     end
-    tmp = squeeze(nanmean(object_rdm_standard_all,2));
-    tmp = squeeze(nanmean(tmp,2));
+    
     object_pearsson_difference_wave = object_rdm_standard_all - object_rdm_bulls_all;
     save(sprintf('%sobject_decodingAcc_bulls_all_%s', out_path, methods_flag(idx)), 'object_rdm_bulls_all')
     save(sprintf('%sobject_decodingAcc_standard_all_%s', out_path, methods_flag(idx)), 'object_rdm_standard_all')

@@ -6,8 +6,7 @@ function [] = pearsson_object_decoding(subj, fixation_condition, method)
     - decoding on all channels
     - decoding on pseudotrials
     - leave one pseudotrial out cross validation
-    - decode with SVM
-    - ICA FLAG determines whether decoding is run on ICA or no ICA data
+    - pearson as distance measure
 %}
 
 
@@ -97,8 +96,8 @@ for perm = 1:n_permutations
         for objB = objA+1:n_conditions
             for time = 1:time_points
                 for pseudo = 1:n_pseudotrials
-                %% standard
-                rdm(perm,pseudo, objA,objB,time) = 1-corr(squeeze(pseudo_trials(objA,pseudo,:,time)),squeeze(pseudo_trials(objB,pseudo,:,time)),'type','Pearson');
+                    %% standard
+                    rdm(perm,pseudo, objA,objB,time) = 1-corr(squeeze(pseudo_trials(objA,pseudo,:,time)),squeeze(pseudo_trials(objB,pseudo,:,time)),'type','Pearson');
                 end
             end
         end
