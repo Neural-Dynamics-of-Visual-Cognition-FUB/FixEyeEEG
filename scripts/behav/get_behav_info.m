@@ -1,4 +1,7 @@
 function [outputArg1,outputArg2] = get_behav_info()
+%{
+    - outputs behavioral information for all participants
+%}
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/decoding');
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/decoding/MEG_SVM_decoding_MVNN/');
