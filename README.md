@@ -56,7 +56,15 @@ subj and method (either EEG or eye for eye tracking)
 3. method (either 'eeg' or 'eye' for eye tracking)
 
 ## Representational Similarity Analysis (RSA)
+*/decoding/pearson_object_decoding.m* - calculates RDMs on a subject level using 1-Pearson's r 
+
+*/stats/statistics_rsa.m* calculates ground truth RSA between EEG and eye tracking data and calculates statistics
 
 ## Statistics 
+Scripts to calculate statistics including:
+1. cluster based permutation test for time-resolved and time generalized MVPA 
+2. bootstrapped peak latencies 
+3. representational similarity analysis and the corresponding noise ceilings
 
 ## Plotting
+Code to reproduce plots from the paper 
