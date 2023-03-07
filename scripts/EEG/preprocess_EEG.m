@@ -32,12 +32,6 @@ end
 
 eyetracking_removed = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/cleaned/deleted_trial_numbers_sub00%s.csv', BASE,subj), 'Range', 'B2');
 
-
-
-% read in EEG data
-%filepath_raw_EEGdata = ['/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/fix_new0' num2str(subj) '.eeg'];
-%filepath_behav_data = ['/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/FixCrossExp_s' num2str(subj) 'cfgdata.mat'];
-
 %load behavioral data
 behav_dat = load(filepath_behav_data);
 
@@ -83,13 +77,10 @@ cfg.demean = 'yes';
 cfg.baselinewindow = [-0.2 0];
 data_baseline=ft_preprocessing(cfg, data);
 
-
-
 %% resampling
 cfg=[];
 cfg.resamplefs=200;
 data_res = ft_resampledata(cfg,data_baseline);
-
 
 %% remove trials that are not needed
 % remove target trials
@@ -99,7 +90,6 @@ data_wo_target_trials = ft_selectdata(cfg, data_res);
 
 % remove trials that got rejected during the eyetracking cleaning
 % read csv without indeces
-%eyetracking_removed = readmatrix('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/tmp/trial_n_to_be_deleted.csv', 'Range', 'B2');
 idx_trials_removed = NaN(size(eyetracking_removed,1),1);
 for idx=1:size(eyetracking_removed,1)
     idx_trials_removed(idx) = find(data_wo_target_trials.trialinfo(:,2)== num2str(eyetracking_removed(idx)));
@@ -127,7 +117,6 @@ cfg.layout='acticap-64ch-standard2.mat';
 ft_layoutplot(cfg);
 data_rej_channel=ft_rejectvisual(cfg,data_all_trials_cleaned);
 subjectinfo.reject_channel =setdiff(data_all_trials_cleaned.label,data_rej_channel.label);
-
 
 for idx = 1:size(data_all_trials_cleaned.trialinfo,1)
     trials_uncleaned{idx,1} = data_all_trials_cleaned.trialinfo{idx,2};
@@ -164,7 +153,6 @@ cfg.keeptrials='yes';
 data_rej_channel_interpolated_timelocked=ft_timelockanalysis(cfg,data_rej_channel_interpolated_noICA);
 
 % save without ICA
-%mkdir([filepath_clean_data_noICA, 'preprocessed']);
 save([filepath_clean_data_noICA 'preprocessed_rejected_channels.mat'], 'data_rej_channel');
 save([filepath_clean_data_noICA 'preprocessed_noICA.mat'], 'data_rej_channel_interpolated_noICA');
 save([filepath_clean_data_noICA 'preprocessed_noICA_timelocked.mat'], 'data_rej_channel_interpolated_timelocked');
