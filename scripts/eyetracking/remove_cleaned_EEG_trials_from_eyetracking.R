@@ -31,6 +31,10 @@ for (sub in subs){
   
   df_eyetracking_cleaned_witout_trials_with_missing_timepoints = df_eyetracking_cleaned_witout_trials_with_missing_timepoints[!df_eyetracking_cleaned_witout_trials_with_missing_timepoints$block %in%  rejected_trials,]
   
+  ## remove trials that still contained Nans in baseline and therefore also cannot be used in the eyetracking analysis 
+  file_trials_to_keep <- paste('/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/',sub,'/trials_to_keep.mat',sep="")
+  
+  
   write.csv(df_eyetracking_cleaned_witout_trials_with_missing_timepoints, 
             file=paste("/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_wo_artifacts_and_removed_eeg_trials_and_visual_degree_sub00",sub,".csv",sep=""))
 }

@@ -1,0 +1,234 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library("lme4")
+library("dplyr")
+ set.seed(42)
+#load(file="/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/df_all_subj_all_sacs_behav.Rda")
+load('/Users/ghaeberle/Downloads/df_all_subj_all_sacs_behav-1.Rda')
+# rename1 column for better understanding of the models 
+names(df_all_subj_all_sacs_behav)[names(df_all_subj_all_sacs_behav) == "cond"] <- "cross"
+
+df_all_subj_all_sacs_behav$saccType <- ifelse(df_all_subj_all_sacs_behav$amplitude < 1, 'microsaccade', 'saccade')
+
+df_all_subj_all_sacs_behav$cross = as.character(df_all_subj_all_sacs_behav$cross)
+df_all_subj_all_sacs_behav$cross[df_all_subj_all_sacs_behav$cross == '1'] = 'bullseye' 
+df_all_subj_all_sacs_behav$cross[df_all_subj_all_sacs_behav$cross == '2'] = 'standard' 
+df_all_subj_all_sacs_behav$cross = as.factor(df_all_subj_all_sacs_behav$cross)
+
+df_all_subj_all_sacs_behav$category = as.character(df_all_subj_all_sacs_behav$category)
+df_all_subj_all_sacs_behav$category[df_all_subj_all_sacs_behav$category == '0'] = 'inanimate' 
+df_all_subj_all_sacs_behav$category[df_all_subj_all_sacs_behav$category == '1'] = 'animate' 
+df_all_subj_all_sacs_behav$category = as.factor(df_all_subj_all_sacs_behav$category)
+
+```
+now compute: 
+In addition, to further reduce noise we used a ‘linearity’ crite- rion, which exploits the fact that the trajectory of microsaccadic eye movements measured in the plane is typically straight (e.g. Engbert, 2006). Specifically, for each group of samples that was la- beled a microsaccade according to the initial velocity based analy- sis (Engbert & Kliegl, 2003a), we computed both the sample path
+length (movement path summed across all samples), as well as the sample amplitude (length of the straight line connecting the first and last sample). We then computed the ratio of path length to amplitude, and considered only those groups of samples for which the ratio exceeded 0.5. To compute microsaccade rate in sac- cades per second for each trial, we then divided the number of microsaccades for each trial by the duration of that trial (i.e. dura- tion of samples with blinks removed).
+```{r}
+# compute path_length
+ df_all_subj_all_sacs_behav$path_length = sqrt(df_all_subj_all_sacs_behav$horizontal_comp^2+df_all_subj_all_sacs_behav$vertical_comp^2)
+ df_all_subj_all_sacs_behav$ratio = df_all_subj_all_sacs_behav$path_length/df_all_subj_all_sacs_behav$amplitude
+df_all_subj_all_sacs_behav_ratio = df_all_subj_all_sacs_behav %>% filter(ratio < 0.5) %>% anti_join(df_all_subj_all_sacs_behav,.)
+noise = df_all_subj_all_sacs_behav %>% filter(ratio > 0.5) %>% anti_join(df_all_subj_all_sacs_behav,.)
+
+# all saccades < 1 are classfied as microsaccades 
+df_all_subj_microsaccades = df_all_subj_all_sacs_behav_ratio %>% filter(amplitude <1)
+df_all_subj_saccades = df_all_subj_all_sacs_behav_ratio %>% filter(amplitude >= 1)
+
+# compute occurences in trials 
+#create data frame for number of microsaccades 
+df_n_all_saccades = as.data.frame(table(df_all_subj_all_sacs_behav_ratio$subj,df_all_subj_all_sacs_behav_ratio$trial, df_all_subj_all_sacs_behav_ratio$cross, df_all_subj_all_sacs_behav_ratio$saccType, df_all_subj_all_sacs_behav_ratio$category))
+colnames(df_n_all_saccades) = c('subj','trial','cross','saccType','category','n_occurence')
+
+df_n_microsaccades = df_n_all_saccades %>% filter(saccType == 'microsaccade')
+df_n_saccades = df_n_all_saccades %>% filter(saccType ==  'saccade')
+
+table(df_n_all_saccades$n_occurence)
+```
+
+```{r}
+### amplitudes model cross 
+## all saccades 
+contrasts(df_all_subj_all_sacs_behav$cross) = c(-0.5,0.5)
+contrasts(df_all_subj_all_sacs_behav$category) = c(-0.5,0.5)
+
+base_amplitude_all = lmer(amplitude ~ 1 + (1+cross|subj), df_all_subj_all_sacs_behav, REML = FALSE)
+amplitude_all_cross = lmer(amplitude ~ 1 + cross + (1+cross|subj), df_all_subj_all_sacs_behav, REML = FALSE)
+
+## microsaccades 
+contrasts(df_all_subj_microsaccades$cross) = c(-0.5,0.5)
+contrasts(df_all_subj_microsaccades$category) = c(-0.5,0.5)
+
+base_amplitude_ms = lmer(amplitude ~ 1 + (1+cross|subj), df_all_subj_microsaccades, REML = FALSE)
+amplitude_ms_cross = lmer(amplitude ~ 1 + cross + (1+cross|subj), df_all_subj_microsaccades, REML = FALSE)
+
+## saccades 
+
+contrasts(df_all_subj_saccades$cross) = c(-0.5,0.5)
+contrasts(df_all_subj_saccades$category) = c(-0.5,0.5)
+
+base_amplitude_sac = lmer(amplitude ~ 1 + (1+cross|subj), df_all_subj_saccades, REML = FALSE)
+amplitude_sac_cross = lmer(amplitude ~ 1 + cross + (1+cross|subj), df_all_subj_saccades, REML = FALSE)
+
+## n occurence model cross
+# set contrast coding to effect coding as we are interested in the main effects 
+contrasts(df_n_all_saccades$cross) = c(-0.5,0.5)
+contrasts(df_n_all_saccades$category) = c(-0.5,0.5)
+
+# #these would be the full models which do not converge 
+base_n_saccades_full = glmer(n_occurence ~ 1 + (1+cross|subj), df_n_saccades,family = "poisson")
+cross_n_saccades_full = glmer(n_occurence ~ 1 + cross + (1+cross|subj), df_n_saccades, family = "poisson")
+
+# microsaccades 
+# set contrast coding to effect coding as we are interested in the main effects 
+contrasts(df_n_microsaccades$cross) = c(-0.5,0.5)
+contrasts(df_n_microsaccades$category) = c(-0.5,0.5)
+
+#these would be the full models which do not converge 
+base_n_microsaccades = glmer(n_occurence ~ 1 + (1+cross|subj), df_n_microsaccades,family = "poisson")
+cross_n_microsaccades = glmer(n_occurence ~ 1 + cross + (1+cross|subj), df_n_microsaccades, family = "poisson")
+
+
+# set contrast coding to effect coding as we are interested in the main effects 
+contrasts(df_n_saccades$cross) = c(-0.5,0.5)
+contrasts(df_n_saccades$category) = c(-0.5,0.5)
+
+#these would be the full models which do not converge 
+base_n_saccades = glmer(n_occurence ~ 1 + (1+cross|subj), df_n_saccades,family = "poisson")
+cross_n_saccades = glmer(n_occurence ~ 1 + cross + (1+cross|subj), df_n_saccades, family = "poisson")
+
+```
+
+```{r}
+anova(base_amplitude_all, amplitude_all_cross)
+anova(base_amplitude_sac, amplitude_sac_cross)
+anova(base_amplitude_ms, amplitude_ms_cross)
+
+anova(base_n_saccades_full, cross_n_saccades_full)
+anova(base_n_saccades, cross_n_saccades)
+anova(base_n_microsaccades, cross_n_microsaccades)
+```
+
+```{r}
+stargazer(base_amplitude_sac,amplitude_sac_cross,
+          base_n_saccades, 
+          cross_n_saccades,
+          type = 'text', 
+          ci = TRUE, 
+         # p = list(1,1,1,1,1),
+          intercept.top	= TRUE, 
+          intercept.bottom = FALSE,
+        
+        #  title = 'Saccade occurences',
+          dep.var.labels = c('saccade amplitudes','saccade occurences'), 
+          out = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/writing/cross_saccade_table.html', covariate.labels  = c('Intercept',"fixationcross","category","interaction"))
+```
+
+```{r}
+stargazer(base_amplitude_ms,amplitude_ms_cross,
+          base_n_microsaccades, 
+          cross_n_microsaccades,
+          type = 'text', 
+          ci = TRUE, 
+         # p = list(1,1,1,1,1),
+          intercept.top	= TRUE, 
+          intercept.bottom = FALSE,
+        #  title = ' occurences',
+          dep.var.labels = c('microsaccade amplitudes','microsaccade occurences'), 
+          out = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/writing/cross_microsaccade_table.html', covariate.labels  = c('Intercept',"fixationcross","category","interaction"))
+```
+Based on our models we can find a 
+```{r}
+stargazer(base_amplitude_sac,
+          amplitude_sac_cross,
+          base_amplitude_ms,
+          amplitude_ms_cross,
+          type = 'text', 
+          ci = TRUE, 
+         # p = list(1,1,1,1,1),
+          intercept.top	= TRUE, 
+          intercept.bottom = FALSE,
+         no.space = TRUE,
+        #apply.coef = exp,
+        #apply.ci = exp,
+        #  title = 'Saccade occurences',
+          dep.var.labels = c('saccade amplitudes','saccade amplitudes','microsaccade amplitudes','microsaccade amplitudes'), 
+          out = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/writing/cross_saccade_microsaccdes_table_combined.html', covariate.labels  = c('Intercept',"fixation cross"))
+
+stargazer(base_n_saccades, 
+          cross_n_saccades,
+          base_n_microsaccades, 
+          cross_n_microsaccades,
+          type = 'text', 
+          ci = TRUE, 
+         # p = list(1,1,1,1,1),
+          intercept.top	= TRUE, 
+          intercept.bottom = FALSE,
+         no.space = TRUE,
+        apply.coef = exp,
+       # apply.ci = exp,
+        #  title = 'Saccade occurences',
+          dep.var.labels = c('saccade rate', 'microsaccade rate'), 
+          out = '/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/writing/cross_saccade_microsaccdes_table_combined.html', covariate.labels  = c('Intercept',"fixationcross","category","interaction"))
+```
+```{r}
+library('sjPlot')
+tab_model(base_n_microsaccades,cross_n_microsaccades)
+```
+
+```{r}
+library('flexplot')
+flexplot(amplitude ~ 1 + cross,data=df_all_subj_all_sacs_behav)
+flexplot(amplitude ~ 1 + cross,data=df_all_subj_saccades)
+flexplot(amplitude ~ 1 + cross,data=df_all_subj_microsaccades)
+
+flexplot(n_occurence ~ 1 + cross,data=df_n_all_saccades)
+flexplot(n_occurence ~ 1 + cross,data=df_n_saccades)
+flexplot(n_occurence ~ 1 + cross,data=df_n_microsaccades)
+
+
+```
+```{r}
+flexplot(n_occurence ~ cross + category, data = df_n_all_saccades,
+         method = "poisson",
+jitter = c(0.3,0), spread = "std", sample = 500)
+```
+```{r}
+visualize(cross_n_saccades_full)
+visualize(cross_n_microsaccades)
+visualize(cross_n_saccades)
+
+visualize(amplitude_all_cross)
+estimates(amplitude_all_cross)
+```
+```{r}
+table(df_n_all_saccades$n_occurence)
+```
+```{r}
+library('ggplot2')
+ggplot(df_all_subj_all_sacs_behav_ratio, aes(y = amplitude, x=saccType, color=cross))+
+         geom_violin() + 
+  theme_bw()
+
+ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/amplitudes.png")
+
+ggplot(df_n_all_saccades, aes(y = n_occurence, x=cross, color = cross))+
+         geom_count() + facet_grid(cols = vars(saccType))+
+  theme_bw()
+
+ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/n_occurences.png")
+df_all_subj_all_sacs_behav_ratio_test <- subset(df_all_subj_all_sacs_behav_ratio,!trial ==1)
+ggplot(df_all_subj_all_sacs_behav_ratio_test, aes(y = onset, x=saccType, color=cross))+
+         geom_violin() + 
+  theme_bw()
+ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/onsets.png")
+```
+

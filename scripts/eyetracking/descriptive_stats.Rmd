@@ -1,0 +1,247 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Descriptive Statistics
+##1.) Behavioural performance
+```{r}
+library('dplyr')
+library('lme4')
+load('/Users/ghaeberle/Downloads/df_all_subj_all_sacs_behav-1.Rda')
+accuracy = df_all_subj_all_sacs_behav$acc
+acc_table = table(df_all_subj_all_sacs_behav$subj,df_all_subj_all_sacs_behav$acc)
+which(acc_table != 0, arr.ind = T)
+sort(unique(accuracy))
+tmp = sort(unique(accuracy))
+(sum(tmp)+tmp[7]+tmp[11]+tmp[12]+tmp[14]+tmp[14]+tmp[17]+tmp[17]+tmp[21])/30
+```
+
+## prepare data properly  
+```{r}
+names(df_all_subj_all_sacs_behav)[names(df_all_subj_all_sacs_behav) == "cond"] <- "cross"
+
+df_all_subj_all_sacs_behav$saccType <- ifelse(df_all_subj_all_sacs_behav$amplitude < 1, 'microsaccade', 'saccade')
+
+df_all_subj_all_sacs_behav$cross = as.character(df_all_subj_all_sacs_behav$cross)
+df_all_subj_all_sacs_behav$cross[df_all_subj_all_sacs_behav$cross == '1'] = 'bullseye' 
+df_all_subj_all_sacs_behav$cross[df_all_subj_all_sacs_behav$cross == '2'] = 'standard' 
+df_all_subj_all_sacs_behav$cross = as.factor(df_all_subj_all_sacs_behav$cross)
+
+df_all_subj_all_sacs_behav$category = as.character(df_all_subj_all_sacs_behav$category)
+df_all_subj_all_sacs_behav$category[df_all_subj_all_sacs_behav$category == '0'] = 'inanimate' 
+df_all_subj_all_sacs_behav$category[df_all_subj_all_sacs_behav$category == '1'] = 'animate' 
+df_all_subj_all_sacs_behav$category = as.factor(df_all_subj_all_sacs_behav$category)
+
+# compute path_length
+ df_all_subj_all_sacs_behav$path_length = sqrt(df_all_subj_all_sacs_behav$horizontal_comp^2+df_all_subj_all_sacs_behav$vertical_comp^2)
+ df_all_subj_all_sacs_behav$ratio = df_all_subj_all_sacs_behav$path_length/df_all_subj_all_sacs_behav$amplitude
+df_all_subj_all_sacs_behav_ratio = df_all_subj_all_sacs_behav %>% filter(ratio < 0.5) %>% anti_join(df_all_subj_all_sacs_behav,.)
+noise = df_all_subj_all_sacs_behav %>% filter(ratio > 0.5) %>% anti_join(df_all_subj_all_sacs_behav,.)
+
+# all saccades < 1 are classfied as microsaccades 
+df_all_subj_microsaccades = df_all_subj_all_sacs_behav_ratio %>% filter(amplitude <1)
+df_all_subj_saccades = df_all_subj_all_sacs_behav_ratio %>% filter(amplitude >= 1)
+
+# compute occurences in trials 
+#create data frame for number of microsaccades 
+df_n_all_saccades = as.data.frame(table(df_all_subj_all_sacs_behav_ratio$subj,df_all_subj_all_sacs_behav_ratio$trial, df_all_subj_all_sacs_behav_ratio$cross, df_all_subj_all_sacs_behav_ratio$saccType, df_all_subj_all_sacs_behav_ratio$category))
+colnames(df_n_all_saccades) = c('subj','trial','cross','saccType','category','n_occurence')
+
+df_n_microsaccades = df_n_all_saccades %>% filter(saccType == 'microsaccade')
+df_n_saccades = df_n_all_saccades %>% filter(saccType ==  'saccade')
+
+table(df_n_all_saccades$n_occurence)
+tmp = table(df_n_saccades$n_occurence)
+```
+
+```{r}
+library('plyr')
+head(df_all_subj_all_sacs_behav_ratio)
+# mean & SD of saccade rate per trial
+# mean % SD of microsaccade rate per trial 
+table_microsaccades = table(df_n_microsaccades$n_occurence)
+table_saccades=table(df_n_saccades$n_occurence)
+
+ddply(df_n_all_saccades,c('saccType'), summarise,
+               N    = length(n_occurence),
+               mean = mean(n_occurence),
+               sd   = sd(n_occurence),
+               se   = sd / sqrt(N))
+               
+ddply(df_n_all_saccades,c('saccType', 'cross'), summarise,
+               N    = length(n_occurence),
+               mean = mean(n_occurence),
+               sd   = sd(n_occurence),
+               se   = sd / sqrt(N))
+
+ddply(df_all_subj_all_sacs_behav,c('saccType', 'cross'), summarise,
+               N    = length(amplitude),
+               mean = mean(amplitude),
+               sd   = sd(amplitude),
+               se   = sd / sqrt(N))
+
+ddply(df_all_subj_all_sacs_behav_ratio,c('saccType', 'cross'), summarise,
+               N    = length(onset),
+               mean = mean(onset),
+               sd   = sd(onset),
+               se   = sd / sqrt(N))
+
+ddply(df_all_subj_all_sacs_behav_ratio,c('saccType'), summarise,
+               N    = length(onset),
+               mean = mean(onset),
+               sd   = sd(onset),
+               se   = sd / sqrt(N))
+
+ddply(df_all_subj_all_sacs_behav_ratio,c('saccType'), summarise,
+               N    = length(onset),
+               mean = min(onset),
+               sd   = sd(onset),
+               se   = sd / sqrt(N))
+
+table(df_all_subj_all_sacs_behav_ratio$onset)
+# find first saccade onsets for all trials and calculate mean & std? 
+ddply(df_all_subj_all_sacs_behav_ratio,c('trial'), summarise,
+               min = min(onset)) %>% ggplot(geom_point())
+
+onsets = ddply(df_all_subj_all_sacs_behav_ratio,c('trial'), summarise,
+               min = min(onset),
+              mean = mean(onset))
+
+onsets_microsacs = ddply(df_all_subj_microsaccades,c('trial','cross'), summarise,
+               min = min(onset),
+              mean = mean(onset))
+
+onsets_sacs = ddply(df_all_subj_saccades,c('trial','cross'), summarise,
+               min = min(onset),
+              mean = mean(onset))
+
+onsets_sacs_max = ddply(df_all_subj_saccades,c('trial'), summarise,
+               min = max(onset),
+              mean = mean(onset))
+
+# how many are before 200ms?
+onsets_sacs_standard = subset(onsets_sacs,cross == 'standard')
+onsets_sacs_bulls = subset(onsets_sacs,cross == 'bullseye')
+
+onsets_microsacs_standard = subset(onsets_microsacs,cross == 'standard')
+onsets_microsacs_bulls = subset(onsets_microsacs,cross == 'bullseye')
+df_all_subj_microsaccades_standard = subset(df_all_subj_microsaccades,cross == 'standard')
+df_all_subj_microsaccades_bulls = subset(df_all_subj_microsaccades,cross == 'bullseye')
+sum(df_all_subj_microsaccades_standard$onset<200)/nrow(df_all_subj_microsaccades_standard)
+sum(df_all_subj_microsaccades_bulls$onset<200)/nrow(df_all_subj_microsaccades_bulls)
+
+df_all_subj_saccades_standard = subset(df_all_subj_saccades,cross == 'standard')
+df_all_subj_saccades_bulls = subset(df_all_subj_saccades,cross == 'bullseye')
+sum(df_all_subj_saccades_standard$onset<200)/nrow(df_all_subj_saccades_standard)
+sum(df_all_subj_saccades_bulls$onset<200)/nrow(df_all_subj_saccades_bulls)
+
+
+sum(onsets_sacs_standard$min<200)/nrow(onsets_sacs_standard)
+sum(onsets_sacs_bulls$min<200)/nrow(onsets_sacs_bulls)
+sum(df_all_subj_saccades$onset<200)/nrow(df_all_subj_saccades)
+
+sum(onsets_microsacs_standard$min<200)/nrow(onsets_microsacs_standard)
+sum(onsets_sacs_bulls$min<200)/nrow(onsets_sacs_bulls)
+sum(df_all_subj_microsaccades$onset<200)/nrow(df_all_subj_microsaccades)
+
+
+sum(df_all_subj_microsaccades$onset<200)/nrow(df_all_subj_microsaccades)
+sum(df_all_subj_saccades$onset<200)/nrow(df_all_subj_saccades)
+
+plot(onsets_microsacs$min)
+plot(onsets_sacs$min)
+```
+
+ratios of micro and macro saccades 
+```{r}
+ddply(df_n_all_saccades,c('saccType'), summarise,
+               N    = length(n_occurence),
+               sum = sum(n_occurence),
+               sd   = sd(n_occurence),
+               se   = sd / sqrt(N))
+
+# Thaler classified eveything > 2% as a microsaccade
+df_all_subj_all_sacs_behav_thaler = df_all_subj_all_sacs_behav_ratio
+df_all_subj_all_sacs_behav_thaler$saccType <- ifelse(df_all_subj_all_sacs_behav_ratio$amplitude < 2, 'microsaccade', 'saccade')
+df_n_all_saccades_thaler = as.data.frame(table(df_all_subj_all_sacs_behav_thaler$subj,df_all_subj_all_sacs_behav_thaler$trial, df_all_subj_all_sacs_behav_thaler$cross, df_all_subj_all_sacs_behav_thaler$saccType, df_all_subj_all_sacs_behav_thaler$category))
+colnames(df_n_all_saccades_thaler) = c('subj','trial','cross','saccType','category','n_occurence')
+
+ddply(df_n_all_saccades_thaler,c('saccType'), summarise,
+               N    = length(n_occurence),
+               sum = sum(n_occurence),
+               sd   = sd(n_occurence),
+               se   = sd / sqrt(N))
+# compute occurences in trials 
+#create data frame for number of microsaccades 
+```
+```{r}
+library('ggplot2')
+ggplot(df_all_subj_all_sacs_behav_ratio, aes(y = amplitude, x=saccType, color=cross))+
+         geom_violin() +
+        scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
+                                "standard"=rgb(0/255, 146/255, 146/255))) +
+                     theme_classic()
+
+ggplot(df_all_subj_all_sacs_behav_ratio, aes(y = amplitude, x=cross, color = cross,fill=cross))+
+  geom_violin(aes(alpha = 0.7)) + 
+  facet_grid(cols = vars(saccType))+
+  scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
+                                "standard"=rgb(0/255, 146/255, 146/255))) +
+  scale_fill_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
+                                "standard"=rgb(0/255, 146/255, 146/255))) +
+
+  theme_classic()              
+ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/amplitudes.png")
+
+ggplot(df_n_all_saccades, aes(y = n_occurence, x=cross, color = cross))+
+         geom_count(aes(alpha = 0.7)) + facet_grid(cols = vars(saccType))+   
+          scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
+                                "standard"=rgb(0/255, 146/255, 146/255))) +
+
+          theme_classic()
+
+ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/n_occurences.png")
+
+ggplot(df_all_subj_all_sacs_behav_ratio, aes(y = amplitude, x=cross, color = cross))+
+         geom_bar(stat=) + facet_grid(cols = vars(saccType))+  
+          scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
+                                "standard"=rgb(0/255, 146/255, 146/255))) +
+          theme_classic()
+ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/amplitudes.png")
+
+ggplot(df_n_all_saccades, aes(y = n_occurence, x=cross, color = cross))+
+         geom_bar(stat='identity') + facet_grid(cols = vars(saccType))+   
+          scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
+                                "standard"=rgb(0/255, 146/255, 146/255))) +
+          theme_classic()
+
+ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/n_occurences.png")
+
+
+df_all_subj_all_sacs_behav_ratio_test <- subset(df_all_subj_all_sacs_behav_ratio,!trial ==1)
+ggplot(df_all_subj_all_sacs_behav_ratio_test, aes(y = onset, x=saccType, color=cross))+
+         geom_violin() + 
+  theme_bw()
+ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/onsets.png")
+```
+
+```{r}
+
+trials_category = ddply(df_all_subj_all_sacs_behav_ratio,c('category','subj'), summarise,
+               n_trials = length(unique(trial)))
+cat = aggregate(trials_category$n_trials, by=list(category=trials_category$category), FUN=sum)
+
+sum(cat$x)/2/30
+df_all_subj_all_sacs_behav_ratio$tmp = unlist(df_all_subj_all_sacs_behav_ratio$exemplar)
+trials_exemplar = ddply(df_all_subj_all_sacs_behav_ratio,c('tmp','subj'), summarise,
+               n_trials = length(unique(trial)))
+ex = aggregate(trials_exemplar$n_trials, by=list(exemplar=trials_exemplar$tmp), FUN=sum)
+
+sum(ex$x)/40/30
+trials_category %>% subset(category=='animate') %>% sum()
+sum(trials_category$n_trials[])
+```
+
+```
+
