@@ -17,7 +17,8 @@ To clone the repository use the following link:
 
 ### EEG
 
-**IMPORTANT eye tracking preprocessing needs to run before EEG preprocessing**
+**IMPORTANT eye tracking preprocessing needs to run before EEG preprocessing**. 
+
 */EEG/preprocess_EEG.m* preprocesses EEG data according to the steps outlined in the paper. 
 
 
