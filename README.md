@@ -11,7 +11,7 @@ To clone the repository use the following link:
 Preprocessing relies on function from the *[Fieldtrip Toolbox](https://www.fieldtriptoolbox.org/download/)*
 ### Eye tracking
 
-*/eyetracking/eyetracking_preprocessing.Rmd preprocesses eye tracking data according to the outlined steps in the paper for the saccade and microsaccade detection algorithm 
+*/eyetracking/eyetracking_preprocessing.Rmd* preprocesses eye tracking data according to the outlined steps in the paper for the saccade and microsaccade detection algorithm 
 
 */eyetracking/eyetracking_preprocessing.m* brings preprocessed eye tracking data in the correct format for MVPA and filters at 200 Hz.
 
