@@ -37,12 +37,12 @@ subj = num2str(subj);
 
 % 1 == EEG, 2 == eyetracking
 if method == 1
-    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/preprocessed_noICA_timelocked.mat',BASE,subj);
     results_dir = sprintf('%sdata/FixEyeEEG/main/eeg/pearsson/%s/', BASE,subj);
     load(filepath_preprocessed_data)
     preprocessed_data = data_rej_channel_interpolated_timelocked;
 elseif method == 2
-    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
     results_dir = sprintf('%sdata/FixEyeEEG/main/eyetracking/pearsson/%s', BASE,subj);
     load(filepath_preprocessed_data)
     preprocessed_data = eye_data_baseline_timelocked;

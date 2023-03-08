@@ -21,13 +21,12 @@ elseif isunix
 end
 
 
-filepath_clean_data_noICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/', BASE, subj);
-filepath_clean_data_ICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/ICA/',BASE,subj);
+filepath_clean_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/', BASE, subj);
 filepath_raw_EEGdata = [sprintf('%sdata/FixEyeEEG/main/eeg/raw/%s/fixeye00%s', BASE, num2str(subj), num2str(subj)) '.eeg'];
 filepath_behav_data = sprintf('%sdata/FixEyeEEG/main/behav_data/FixCrossExp_s%scfgdata.mat', BASE, subj);
 
-if ~isfolder(filepath_clean_data_noICA)
-    mkdir(filepath_clean_data_noICA);
+if ~isfolder(filepath_clean_data)
+    mkdir(filepath_clean_data);
 end
 
 eyetracking_removed = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/cleaned/deleted_trial_numbers_sub00%s.csv', BASE,subj), 'Range', 'B2');
@@ -153,9 +152,9 @@ cfg.keeptrials='yes';
 data_rej_channel_interpolated_timelocked=ft_timelockanalysis(cfg,data_rej_channel_interpolated_noICA);
 
 % save without ICA
-save([filepath_clean_data_noICA 'preprocessed_rejected_channels.mat'], 'data_rej_channel');
-save([filepath_clean_data_noICA 'preprocessed_noICA.mat'], 'data_rej_channel_interpolated_noICA');
-save([filepath_clean_data_noICA 'preprocessed_noICA_timelocked.mat'], 'data_rej_channel_interpolated_timelocked');
+save([filepath_clean_data 'preprocessed_rejected_channels.mat'], 'data_rej_channel');
+save([filepath_clean_data 'preprocessed_noICA.mat'], 'data_rej_channel_interpolated_noICA');
+save([filepath_clean_data 'preprocessed_noICA_timelocked.mat'], 'data_rej_channel_interpolated_timelocked');
 save(sprintf('%sdata/FixEyeEEG/main/behav_data/subject%s_meta_info.mat', BASE, subj), 'subjectinfo');
 
 

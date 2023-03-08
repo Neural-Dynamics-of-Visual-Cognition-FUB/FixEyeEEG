@@ -19,7 +19,7 @@ function [outputArg1,outputArg2] = preprocess_eyetracking_full_data(subj)
     data_eye_csv = readmatrix(sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/raw_correct_trials/raw_sub00%s.csv',BASE,subj));
     % remove index column 
     data_eye_csv = data_eye_csv(:,2:end);
-    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/', BASE, subj);
+    filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/', BASE, subj);
     filepath_behav_data = sprintf('%sdata/FixEyeEEG/main/behav_data/FixCrossExp_s%scfgdata.mat', BASE, subj); 
     %filepath_behav_data = '/Users/ghaeberle/Downloads/tmp/FixCrossExp_s1cfgdata.mat';
     

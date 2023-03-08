@@ -7,10 +7,10 @@ function [] = time_time_category_decoding(subj, fixation_condition, method)
     - decoding on pseudotrials
     - leave one pseudotrial out cross validation
     - decode with SVM
-    - within 0 = train on standard test on bulls 
+    - within 0 = train on standard test on bulls
     - within 1 = train on bulls test on standard
-    - within 2 = within standard 
-    - within 3 = within bulls 
+    - within 2 = within standard
+    - within 3 = within bulls
     
 %}
 
@@ -45,7 +45,7 @@ if fixation_condition == 2
     fixation_condition = 'standard';
 elseif fixation_condition == 1
     fixation_condition = 'bulls';
-end 
+end
 % 1 = EEG, 2 = Eyetracking
 if method == 1
     filepath_preprocessed_data = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
@@ -59,20 +59,16 @@ elseif method == 2
     preprocessed_data = eye_data_baseline_timelocked;
 end
 
-
-
 if ~isfolder(results_dir)
     mkdir(results_dir);
 end
-
-
 
 %% define required information
 
 time_points = size(preprocessed_data.time,2);
 %% split data into standard(2) and bullseye(1) fixation cross
 if strcmp(fixation_condition, 'standard') == 1
-    % standard 
+    % standard
     cfg = [];
     cfg.trials = find(preprocessed_data.trialinfo(:,5)=='2');
     data = ft_selectdata(cfg, preprocessed_data);
@@ -80,7 +76,8 @@ elseif strcmp(fixation_condition, 'bulls') == 1
     cfg = [];
     cfg.trials = find(preprocessed_data.trialinfo(:,5)=='1');
     data = ft_selectdata(cfg, preprocessed_data);
-end  
+end
+
 % minimum number of trials standard
 number_of_trial_animate = sum(data.trialinfo(:,3)=='1','all');
 number_of_trial_inanimate = sum(data.trialinfo(:,3)=='0','all');
@@ -99,8 +96,8 @@ for perm = 1:n_permutations
     %   number of conditioins, M is the number of trials, E is the number of
     %   electrodes and TP is the number of timepoints.
     
-    data_MVNN = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data, 'category');  
- 
+    data_MVNN = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data, 'category');
+    
     % actually do the MVNN
     [data_MVNN, ~] = multivariate_noise_normalization(data_MVNN);
     %% split data into animate and inanimate trials
@@ -145,15 +142,15 @@ for perm = 1:n_permutations
 end
 
 %% Save the decision values + decoding accuracy
- if strcmp(fixation_condition, 'standard') == 1
+if strcmp(fixation_condition, 'standard') == 1
     decodingAccuracy_avg_standard = squeeze(mean(decodingAccuracy,1));
     filename = sprintf('category_%s',fixation_condition);
     save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_avg_standard');
- elseif strcmp(fixation_condition, 'bulls') == 1
+elseif strcmp(fixation_condition, 'bulls') == 1
     decodingAccuracy_avg_bulls = squeeze(mean(decodingAccuracy,1));
     filename = sprintf('category_%s',fixation_condition);
     save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_avg_bulls');
- end 
+end
 end
 
 
