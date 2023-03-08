@@ -8,7 +8,7 @@ To clone the repository use the following link:
 
 
 ## Preprocessing
-
+Preprocessing relies on function from the *[Fieldtrip Toolbox](https://www.fieldtriptoolbox.org/download/)*
 ### Eye tracking
 
 */eyetracking/eyetracking_preprocessing.Rmd preprocesses eye tracking data according to the outlined steps in the paper for the saccade and microsaccade detection algorithm 
@@ -26,10 +26,13 @@ To clone the repository use the following link:
 
 ## Saccade and microsaccade detection and modelling 
 
+Saccade and microsaccade detection has been performed with the *[Microsaccade Toolbox for R](http://read.psych.uni-potsdam.de/index.php?option=com_content&view=article&id=140:engbert-et-al-2015-microsaccade-toolbox-for-r&catid=26:publications&Itemid=34)*.
+
 */eyetracking/cross_models.Rmd* calculates GLMMs for number of saccades and microsaccades as well as their amplitudes. 
 
 
 ## Multivariate Pattern Analysis (MVPA)
+Scripts for MVPA relie on the *[libsvm toolbox](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)*. 
 
 ### Time-resolved object decoding 
 */decoding/category_decoding_SVM.m* - time-resolved animate versus inanimate category decoding with two flags:
