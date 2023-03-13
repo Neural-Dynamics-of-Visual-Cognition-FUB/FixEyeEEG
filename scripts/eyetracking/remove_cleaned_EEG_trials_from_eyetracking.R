@@ -1,4 +1,4 @@
-## reject additonal trials from EEG analysis 
+## reject trials that were rejected during EEG preproceccesing 
 library(dplyr)
 library(data.table)
 library("R.matlab")

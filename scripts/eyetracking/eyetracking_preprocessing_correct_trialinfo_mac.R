@@ -2,6 +2,7 @@ library("eyelinker")
 library("intervals")
 library("dplyr")
 library("R.matlab")
+## Preprocessing of eye tracking data including the removal of blinks and coordinates outside of the screen range
 # load behavioural data 
 # prepare data frame for collecting responses to empty categories 
 subs = c(28,29,30,31,32)#subs = c(2,3)
@@ -68,9 +69,6 @@ for (sub in subs){
   pauses_end = msg$time[which(msg$text=="PAUSE")+2]
   pauses = cbind(pauses_start, pauses_end)
   
-  # between excludes everything >= value, but the end of our pause is already the beginning of the next trial!! 
-  #raw_without_pauses = raw_without_catch %>% dplyr::filter((!(dplyr::between(time, pauses[,1],pauses[,2]-1))))
-  #raw_without_pauses = raw_without_catch %>% dplyr::filter(!(pauses %in% time))
   raw_without_pauses = raw_without_catch 
   remove(raw_without_catch)
   for (idx in 1:nrow(pauses)){
@@ -100,15 +98,6 @@ for (sub in subs){
   hundreths_ncy = Intervals(tmp_ncy) %>% expand(100, "absolute")
   
   
-  # actual exclusion of all values 
-  # # raw_without_pauses = raw_without_catch %>% filter(!(between(time, pauses[,1],pauses[,2])))
-  #  df_eyetracking_cleaned = raw_without_pauses %>% 
-  #    filter(!(dplyr::between(time,hundretMS_blinks[,1], hundretMS_blinks[,2]))) %>% 
-  #    filter(!(dplyr::between(time,hundreths_cx[,1], hundreths_cx[,2]))) %>% 
-  #    filter(!(dplyr::between(time,hundreths_cy[,1], hundreths_cy[,2]))) %>% 
-  #    filter(!(dplyr::between(time,hundreths_ncx[,1], hundreths_ncx[,2]))) %>% 
-  #    filter(!(dplyr::between(time,hundreths_ncy[,1], hundreths_ncy[,2]))) 
-  # check how many trials we would in principle lose 
   df_eyetracking_cleaned = raw_without_pauses
   remove(raw_without_pauses)
   if (nrow(hundretMS_blinks) > 0) {
@@ -193,10 +182,6 @@ for (sub in subs){
   trials_nan = df_eyetracking_cleaned[unique_nan_rows,]
   unique_trials = unique(trials_nan$block)
   df_eyetracking_cleaned = na.omit(df_eyetracking_cleaned)
-  
-  #unique_blocks_with = unique(df_eyetracking_cleaned_nas$block)
-  # missing_trials  = subset(df_eyetracking_cleaned, !(block %in% df_eyetracking_cleaned_nas$block))
-  
   
   # how many trials are remaining after deleting these trials 
   remaining = length(unique(df_eyetracking_cleaned$block)) - 

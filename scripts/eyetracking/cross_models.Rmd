@@ -29,9 +29,9 @@ df_all_subj_all_sacs_behav$category[df_all_subj_all_sacs_behav$category == '1'] 
 df_all_subj_all_sacs_behav$category = as.factor(df_all_subj_all_sacs_behav$category)
 
 ```
-now compute: 
-In addition, to further reduce noise we used a ‘linearity’ crite- rion, which exploits the fact that the trajectory of microsaccadic eye movements measured in the plane is typically straight (e.g. Engbert, 2006). Specifically, for each group of samples that was la- beled a microsaccade according to the initial velocity based analy- sis (Engbert & Kliegl, 2003a), we computed both the sample path
-length (movement path summed across all samples), as well as the sample amplitude (length of the straight line connecting the first and last sample). We then computed the ratio of path length to amplitude, and considered only those groups of samples for which the ratio exceeded 0.5. To compute microsaccade rate in sac- cades per second for each trial, we then divided the number of microsaccades for each trial by the duration of that trial (i.e. dura- tion of samples with blinks removed).
+We used a linearity criterion which was described in the following way by Thaler et al (2013):
+"In addition, to further reduce noise we used a ‘linearity’ criterion, which exploits the fact that the trajectory of microsaccadic eye movements measured in the plane is typically straight (e.g. Engbert, 2006). Specifically, for each group of samples that was labeled a microsaccade according to the initial velocity based analysis (Engbert & Kliegl, 2003a), we computed both the sample path
+length (movement path summed across all samples), as well as the sample amplitude (length of the straight line connecting the first and last sample). We then computed the ratio of path length to amplitude, and considered only those groups of samples for which the ratio exceeded 0.5. To compute microsaccade rate in sac- cades per second for each trial, we then divided the number of microsaccades for each trial by the duration of that trial (i.e. duration of samples with blinks removed)."
 ```{r}
 # compute path_length
  df_all_subj_all_sacs_behav$path_length = sqrt(df_all_subj_all_sacs_behav$horizontal_comp^2+df_all_subj_all_sacs_behav$vertical_comp^2)

@@ -1,5 +1,8 @@
-function [outputArg1,outputArg2] = preprocess_eyetracking_full_data(subj)
-
+function [] = preprocess_eyetracking_full_data(subj)
+%{
+Preprocesses eye tracking data for MVPA and changes eye tracking data into
+fieldtrip format
+%}
     %% set up prereqs
     if ismac
         addpath('/Users/ghaeberle/Documents/MATLAB/fieldtrip-20210928/')

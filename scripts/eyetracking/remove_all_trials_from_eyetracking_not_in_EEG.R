@@ -1,4 +1,4 @@
-## reject additonal trials from EEG analysis 
+## double check whether there are any additional trials left that differ and remove if that is the case 
 library(dplyr)
 library(data.table)
 library("R.matlab")
