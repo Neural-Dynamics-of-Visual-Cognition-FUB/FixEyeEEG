@@ -1,5 +1,7 @@
 function [true_rsa_rdm] = calculate_ground_truth_rsa(rsa1,rsa2, subs)
-%EEG 
+%{
+helper function that calculates ground truth for RSA
+%}
 n_subs = subs;
 true_rsa_rdm = NaN(n_subs,240);
 for subj = 1:n_subs

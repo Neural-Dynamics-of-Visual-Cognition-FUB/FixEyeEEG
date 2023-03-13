@@ -1,4 +1,8 @@
-function [outputArg1,outputArg2] = bootstrapping_peak_latency_rsa(fixcross)
+function [] = bootstrapping_peak_latency_rsa(fixcross)
+%{
+Uses bootstrapping to calculate peak latencies for RSA analysis
+inspirede by a script from Agnessa Karapetian 
+%}
 
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
@@ -28,9 +32,6 @@ load(sprintf('%sdata/FixEyeEEG/main/results/%s_pearsson/%s_decodingAcc_%s_all_ey
 
 
 decodingAcc_eyetracking = eval(sprintf('%s_rdm_%s_all',decoding,fixcross));
-
-
-%true_rsa_rdm = calculate_ground_truth_rsa(decodingAcc_standard_1,decodingAcc_standard_2, subj);
 
 bootstrap_samples = 10000;
 peak_latency_samples = NaN(bootstrap_samples,2);

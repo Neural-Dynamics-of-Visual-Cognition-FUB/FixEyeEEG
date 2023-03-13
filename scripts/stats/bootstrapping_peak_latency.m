@@ -1,5 +1,11 @@
-function [outputArg1,outputArg2] = bootstrapping_peak_latency(decoding,fixcross, method, time)
-
+function [] = bootstrapping_peak_latency(decoding,fixcross, method, time)
+%{
+Bootstrapping to calculate peak latencies
+- decoding : 1 or 2
+- fixcross: 1 or 2
+- method: 1 or 2
+- time : 1 or 2
+%}
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
     BASE = '/Users/ghaeberle/scratch/';
@@ -32,12 +38,8 @@ end
 
 if time == 1
     
-    if strcmp(fixcross,'difference')
-        
-    else
-        load(sprintf('%sdata/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_%s_all_%s.mat', BASE,decoding,decoding,fixcross,method));
-        data = eval(sprintf('%s_decodingAcc_%s_all',decoding,fixcross));
-    end
+    load(sprintf('%sdata/FixEyeEEG/main/results/%s_decoding/%s_decodingAcc_%s_all_%s.mat', BASE,decoding,decoding,fixcross,method));
+    data = eval(sprintf('%s_decodingAcc_%s_all',decoding,fixcross));
     out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/%s_decoding/',BASE, decoding);
 elseif time == 2
     train = 'time_time';

@@ -1,9 +1,11 @@
-function [] = statistics_decoding(decoding, method, stats )
-
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
+function [] = statistics_decoding(decoding, method)
+%{
+   - calculates statistics for time-resolved MVPA
+   - decoding: "1" or "2"
+   - method: "1" or "2"
+%}
 n_perm = 10000;
-q_value = 0.05;
+
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
     BASE = '/Users/ghaeberle/scratch/';
@@ -42,50 +44,26 @@ if strcmp(decoding, 'object') == 1
     decodingAcc_diff_wave = squeeze(nanmean(squeeze(nanmean(decodingAcc_diff_wave,2)),2));
 end
 
-if strcmp(stats, 'perm')
-    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_decoding/',BASE, decoding);
+
+decodingAcc_standard = decodingAcc_standard -50;
+decodingAcc_bulls = decodingAcc_bulls - 50;
+decodingAcc_diff_wave = decodingAcc_diff_wave -50;
+out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/two_tailed/%s_decoding/',BASE, decoding);
 
 
-    if ~isfolder(out_path_results)
-        mkdir(out_path_results);
-    end
-    
-    [SignificantVariables_standard,~,adjusted_pvalues_standard] = fdr_corrected_perm_test(decodingAcc_standard, n_perm, q_value);
-    [SignificantVariables_bulls,~,adjusted_pvalues_bulls] = fdr_corrected_perm_test(decodingAcc_bulls, n_perm, q_value);
-    [SignificantVariables_diff_wave,~,adjusted_pvalues_diff_wave] = fdr_corrected_perm_test(decodingAcc_diff_wave, n_perm, q_value);
-    
-    [SignificantVariables_bulls,~,adjusted_pvalues_bulls] = fdr_permutation_cluster_1sample_alld(decodingAcc_bulls, n_perm, 'right',q_value);
-    
-    [SignificantVariables_diff_wave,~,adjusted_pvalues_diff_wave] = fdr_permutation_cluster_1sample_alld(decodingAcc_diff_wave, n_perm,'right', q_value);
-    
-    save(sprintf('%ssignificant_variables_standard_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard');
-    save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls');
-    save(sprintf('%ssignificant_variables_diff_wave_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_diff_wave');
-    
-    save(sprintf('%sadjusted_pvalues_standard%s_%s.mat',out_path_results, method, decoding),'adjusted_pvalues_standard');
-    save(sprintf('%sadjusted_pvalues_bulls%s_%s.mat',out_path_results, method, decoding),'adjusted_pvalues_bulls');
-    save(sprintf('%sadjusted_pvalues_diff_wave%s_%s.mat',out_path_results, method, decoding),'adjusted_pvalues_diff_wave');
-    
-elseif strcmp(stats,'cluster')
-    decodingAcc_standard = decodingAcc_standard -50;
-    decodingAcc_bulls = decodingAcc_bulls - 50;
-    decodingAcc_diff_wave = decodingAcc_diff_wave -50;
-    out_path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/two_tailed/%s_decoding/',BASE, decoding);
-
-
-    if ~isfolder(out_path_results)
-        mkdir(out_path_results);
-    end
-    cluster_thr = 0.05;
-    significance_thr = 0.05;
-  %  [SignificantVariables_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(decodingAcc_standard, n_perm, cluster_thr, significance_thr,'right');
-    %[SignificantVariables_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(decodingAcc_bulls, n_perm, cluster_thr, significance_thr,'right');
-    [SignificantVariables_diff_wave,significantVarMax_diff_wave,pValWei_diff_wave,pValMax_diff_wave,clusters_diff_wave] = permutation_cluster_1sample_weight_alld(decodingAcc_diff_wave, n_perm, cluster_thr, significance_thr,'both');
-    
-    save(sprintf('%ssignificant_variables_standard_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard','significantVarMax_standard','pValWei_standard','pValMax_standard','clusters_standard');
-    save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls','significantVarMax_bulls','pValWei_bulls','pValMax_bulls','clusters_bulls');
-    save(sprintf('%ssignificant_variables_diff_wave_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_diff_wave','significantVarMax_diff_wave','pValWei_diff_wave','pValMax_diff_wave','clusters_diff_wave');
-    
+if ~isfolder(out_path_results)
+    mkdir(out_path_results);
 end
+cluster_thr = 0.05;
+significance_thr = 0.05;
+[SignificantVariables_standard,significantVarMax_standard,pValWei_standard,pValMax_standard,clusters_standard] = permutation_cluster_1sample_weight_alld(decodingAcc_standard, n_perm, cluster_thr, significance_thr,'right');
+[SignificantVariables_bulls,significantVarMax_bulls,pValWei_bulls,pValMax_bulls,clusters_bulls] = permutation_cluster_1sample_weight_alld(decodingAcc_bulls, n_perm, cluster_thr, significance_thr,'right');
+[SignificantVariables_diff_wave,significantVarMax_diff_wave,pValWei_diff_wave,pValMax_diff_wave,clusters_diff_wave] = permutation_cluster_1sample_weight_alld(decodingAcc_diff_wave, n_perm, cluster_thr, significance_thr,'both');
+
+save(sprintf('%ssignificant_variables_standard_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_standard','significantVarMax_standard','pValWei_standard','pValMax_standard','clusters_standard');
+save(sprintf('%ssignificant_variables_bulls_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_bulls','significantVarMax_bulls','pValWei_bulls','pValMax_bulls','clusters_bulls');
+save(sprintf('%ssignificant_variables_diff_wave_%s_%s.mat',out_path_results, method, decoding),'SignificantVariables_diff_wave','significantVarMax_diff_wave','pValWei_diff_wave','pValMax_diff_wave','clusters_diff_wave');
+
+
 end
 

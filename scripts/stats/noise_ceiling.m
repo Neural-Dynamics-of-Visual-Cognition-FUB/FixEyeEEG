@@ -1,4 +1,12 @@
-function [outputArg1,outputArg2] = noise_ceiling(fixcross, method)
+function [] = noise_ceiling(fixcross, method)
+%{
+NOISE_CEILING_RSA Calculate the noise ceiling for the representational similarity analysis
+of object decoding. 
+modified from a script by Agnessa Karapetian, 2021
+- fixcross = "standard" or "bulls"
+- method = "eeg" or "eyetracking"
+%}
+
 
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');

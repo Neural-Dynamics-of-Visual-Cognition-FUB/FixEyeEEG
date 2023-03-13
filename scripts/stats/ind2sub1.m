@@ -1,4 +1,4 @@
-function sub = ind2sub1(siz, ind)
+function sub = ind2sub_v(siz, ind)
 %
 %   Created 2007-03-26   Paul A.M. Bune, Alcatel-Lucent Deutschland AG
 %   LastMod 2008-04-08   Paul A.M. Bune, Alcatel-Lucent Deutschland AG
