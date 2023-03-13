@@ -1,8 +1,7 @@
 function [] = pearsson_object_decoding(subj, fixation_condition, method)
 %{
     - Multivariate Noise Normalisation
-    - object decoding for both fixation crosses for animate versus
-    inanimate objects
+    - object decoding for both fixation crosses
     - decoding on all channels
     - decoding on pseudotrials
     - leave one pseudotrial out cross validation
@@ -80,11 +79,6 @@ end
 rdm=NaN(n_permutations,n_pseudotrials, n_conditions, n_conditions, time_points);
 
 for perm = 1:n_permutations
-    %% TODO ASK SOMEONE WHETHER THIS WORKS LIKE THIS create data matrix for smallest possible amount of trials
-    % the idea: calculate inverse covariance matrix for minimum amount of
-    % trials for all conditions and use this matrix to normalize the
-    % differing amounts of trials for each image ---> I am not sure whether
-    % this is mathematically sound WHO TO ASK?
     min_num_trials_all_conditions = min(min_number_of_trials);
     data_matrix_MVNN = create_data_matrix_MVNN(n_conditions, min_num_trials_all_conditions, data, 'object', individual_objects);
     % get inverted covariance matrix

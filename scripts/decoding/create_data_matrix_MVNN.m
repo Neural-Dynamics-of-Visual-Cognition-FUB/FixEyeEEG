@@ -1,5 +1,7 @@
 function [data] = create_data_matrix_MVNN(num_conditions, min_number_of_trials, data_timelock, decoding, individual_objects)
-    
+    %{
+    - creates structure needed for MVNN
+%}
     if strcmp(decoding, 'category') == 1
         % preallocate data matrix 
         % NxMxExTP matrix containing EEG data, where N is the

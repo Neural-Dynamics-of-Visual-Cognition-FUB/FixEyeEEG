@@ -6,12 +6,7 @@ function [] = time_time_category_decoding(subj, fixation_condition, method)
     - decoding on all channels
     - decoding on pseudotrials
     - leave one pseudotrial out cross validation
-    - decode with SVM
-    - within 0 = train on standard test on bulls
-    - within 1 = train on bulls test on standard
-    - within 2 = within standard
-    - within 3 = within bulls
-    
+    - decode with SVM    
 %}
 
 %% set up prereqs
@@ -34,8 +29,6 @@ end
 
 
 %% load data
-%%%%TODO add the subject information for the loop here
-
 subj = num2str(subj);
 n_permutations = 100;
 n_pseudotrials = 6;

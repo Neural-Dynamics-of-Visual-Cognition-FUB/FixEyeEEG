@@ -1,4 +1,8 @@
-function [outputArg1,outputArg2] = compare_trial_EEG_eyetracking(subj)
+function [] = compare_trial_EEG_eyetracking(subj)
+%{
+    - small helper file that double checks that the same trials are
+    present in both, the EEG and eye tracking data 
+%}
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
     BASE = '/Users/ghaeberle/scratch/';
@@ -9,11 +13,11 @@ elseif isunix
 end
 
     subj = num2str(subj);
-    filepath_clean_data_noICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/', BASE, subj);
-    filepath_preprocessed_data_eeg = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/noICA/preprocessed_noICA_timelocked.mat',BASE,subj);
+    filepath_clean_data_noICA = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/', BASE, subj);
+    filepath_preprocessed_data_eeg = sprintf('%sdata/FixEyeEEG/main/eeg/preprocessed/%s/preprocessed_noICA_timelocked.mat',BASE,subj);
     load(filepath_preprocessed_data_eeg)
 
-    filepath_preprocessed_data_eyetracking = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/timelocked/eyetracking_data_timelocked.mat',BASE,subj);
+    filepath_preprocessed_data_eyetracking = sprintf('%sdata/FixEyeEEG/main/eyetracking/preprocessed/%s/eyetracking_data_timelocked.mat',BASE,subj);
     load(filepath_preprocessed_data_eyetracking)
     eyetracking_data = eye_data_baseline_timelocked;
     

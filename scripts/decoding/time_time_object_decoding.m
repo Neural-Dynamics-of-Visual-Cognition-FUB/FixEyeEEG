@@ -1,13 +1,11 @@
 function [] = time_time_object_decoding(subj, fixation_condition, method)
 %{
     - Multivariate Noise Normalisation
-    - object decoding for both fixation crosses for animate versus
-    inanimate objects
+    - object decoding for both fixation crosses 
     - decoding on all channels
     - decoding on pseudotrials
     - leave one pseudotrial out cross validation
     - decode with SVM
-    - ICA FLAG determines whether decoding is run on ICA or no ICA data
 %}
 
 

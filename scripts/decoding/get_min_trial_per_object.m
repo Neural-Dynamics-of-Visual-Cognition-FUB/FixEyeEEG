@@ -1,5 +1,7 @@
 function [min_number_of_trials, individual_objects] = get_min_trial_per_object(data)
-
+%{
+    - helper function to find min amount of trials per objects
+%}
     [individual_objects, idx] = unique(data.trialinfo(:,4));
     [~, idx_category_sorted] = sort(data.trialinfo(idx,3));
     individual_objects = individual_objects(idx_category_sorted);

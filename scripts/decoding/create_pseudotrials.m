@@ -1,5 +1,7 @@
 function [pseudo_trials] = create_pseudotrials(num_conditions, num_trials_per_bin,n_pseudotrials, data)
-%UNTITLED4 Summary of this function goes here
+%{
+    - creates pseudotrials for decoding
+%}
     
 
     %preallocate for pseudotrials 
