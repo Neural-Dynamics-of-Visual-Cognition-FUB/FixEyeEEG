@@ -11,7 +11,13 @@ To clone the repository use the following link:
 Preprocessing relies on function from the *[Fieldtrip Toolbox](https://www.fieldtriptoolbox.org/download/)*
 ### Eye tracking
 
-*/eyetracking/eyetracking_preprocessing.Rmd* preprocesses eye tracking data according to the outlined steps in the paper for the saccade and microsaccade detection algorithm 
+*/eyetracking/fix_trials_eyetracking.R* deals with an issue with the trial definition during the recording. 
+
+*/eyetracking/eyetracking_preprocessing_correct_trialinfo_mac.R* preprocesses eye tracking data according to the outlined steps in the paper for the saccade and microsaccade detection algorithm   
+
+*/eyetracking/remove_cleaned_EEG_trials_from_eyetracking.R* reject trials that were rejected during EEG preproceccesing   
+
+*/eyetracking/remove_all_trials_from_eyetracking_not_in_EEG.R/* double check whether there are any additional trials left that differ and remove if that is the case   
 
 */eyetracking/eyetracking_preprocessing.m* brings preprocessed eye tracking data in the correct format for MVPA and filters at 200 Hz.
 
