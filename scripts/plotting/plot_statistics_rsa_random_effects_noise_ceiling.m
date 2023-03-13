@@ -1,8 +1,10 @@
 function [] = plot_statistics_rsa_random_effects_noise_ceiling(eyetracking, stats)
-%%
-% dist_meausre = decoding or pearsson
-% effect = fixed or random
-% method = eeg, eyetracking or eeg_and_eyetracking
+%{
+    - reproduces RSA plot with noise ceiling
+    - Input:
+        -decoding: "category" or "object"
+        - method: "eeg" or "eyetracking"
+%}
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
     BASE = '/Users/ghaeberle/scratch/';
@@ -12,20 +14,12 @@ elseif isunix
     
 end
 
-if strcmp(stats,'perm')
-    out_path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/rsa/',BASE);
-    path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/rsa/',BASE);
-    
-    if ~isfolder(out_path_plots)
-        mkdir(out_path_plots);
-    end
-elseif strcmp(stats,'cluster')
-    out_path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/cluster_based_perm/final/rsa/',BASE);
-    path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/rsa/',BASE);
-    
-    if ~isfolder(out_path_plots)
-        mkdir(out_path_plots);
-    end
+
+out_path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/cluster_based_perm/final/rsa/',BASE);
+path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/rsa/',BASE);
+
+if ~isfolder(out_path_plots)
+    mkdir(out_path_plots);
 end
 
 if eyetracking == 1
@@ -58,7 +52,6 @@ if eyetracking == 1
     % add noise ceiling
     inBetween = [noise_ceiling_upper_bound, fliplr(noise_ceiling_lower_bound)];
     fill(x2, inBetween,c3, 'FaceAlpha', 0.16);
-    %title(sprintf("RSA %s %s %s", dist_measure,effect, method))
     xlabel('time (ms)')
     ylabel("Spearman's R")
     xticks([0 40 80 120 160 200 240])
@@ -130,14 +123,10 @@ else
     hold on
     plot(true_rsa_rdm_bulls_plot,'Color',c2, 'LineWidth', 1.6)
     hold on
-%     plot(true_rsa_rdm_diff_plot,'Color',c3,'LineWidth',1.6)
-%     hold on
     plot(significant_time_points_bulls, y_significants_bulls,'.', 'Color',c2)
     hold on
     plot(significant_time_points_standard, y_significants_standard,'.','Color',c1)
     hold on
-    %plot(significant_time_points_diff, y_significants_diff_wave,'.','Color',c3)
-    %hold on
     upper = true_rsa_rdm_standard_plot + SEM_standard;
     lower = true_rsa_rdm_standard_plot - SEM_standard;
     inBetween = [upper, fliplr(lower)];
@@ -148,28 +137,19 @@ else
     inBetween = [upper, fliplr(lower)];
     fill(x2, inBetween, c2, 'FaceAlpha', 0.16, 'LineStyle', 'none');
     hold on;
-%     upper = true_rsa_rdm_diff_plot + SEM_diff;
-%     lower = true_rsa_rdm_diff_plot - SEM_diff;
-%     inBetween = [upper, fliplr(lower)];
-%     fill(x2, inBetween, c3, 'FaceAlpha', 0.16, 'LineStyle', 'none');
-%     hold on
     % add noise ceiling
     inBetween = [eyetracking_noise_ceiling_upper_bounds, fliplr(eyetracking_noise_ceiling_lower_bounds)];
     fill(x2, inBetween,c4, 'FaceAlpha', 0.16);
     hold on
     inBetween = [eeg_noise_ceiling_upper_bounds, fliplr(eeg_noise_ceiling_lower_bounds)];
     fill(x2, inBetween,c5, 'FaceAlpha', 0.16);
-    %add peak latency 
-    %errorbar(actual_peak_standard,0.22,(CI_95_standard(2,2)-CI_95_standard(2,1))/2,'d','horizontal','Color',c1, 'LineWidth',1.3)
+    %add peak latency
     plot(actual_peak_standard,-0.07,'d', 'Color',c1, 'MarkerFaceColor',c1)
     plot(CI_95_standard,[-0.07 -0.07],'Color',c1, 'LineWidth', 1.4, 'LineStyle','--')
     plot(CI_95_standard(1,2),-0.07,'|','Color',c1)
     plot(CI_95_standard(2,2),-0.07,'|','Color',c1)
     hold on
-    % hold on
-    %errorbar(peak_latency_bulls(2),0.2,(CI_95_bulls(2,2)-CI_95_bulls(2,1))/2,'horizontal','d','Color',c2)
-    hold on 
-    %title(sprintf("RSA %s %s %s", dist_measure,effect, method))
+    hold on
     xlabel('time (ms)')
     ylabel("Spearman's R")
     xticks([0 40 80 120 160 200 240])

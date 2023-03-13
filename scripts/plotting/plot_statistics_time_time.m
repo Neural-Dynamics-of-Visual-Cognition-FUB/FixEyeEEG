@@ -1,4 +1,12 @@
-function [] = plot_statistics_time_time(decoding, fixcross,method,train, stats)
+function [] = plot_statistics_time_time(decoding, fixcross,method)
+
+%{
+    - reproduces time-generalized plots
+    - Input:
+        -decoding: "category" or "object"
+        - fixcross: "standard", "bulls" or "difference"
+        - method: "eeg" or "eyetracking"
+%}
 
 if ismac
     addpath('/Users/ghaeberle/Documents/PhD/project/FixEyeEEG/scripts/stats');
@@ -9,28 +17,15 @@ elseif isunix
     
 end
 
-if train == 1
-    train = 'time_time';
-elseif train == 2
-    train = 'time_time_train_test';
+train = 'time_time';
+path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/two_tailed/%s_%s/',BASE,decoding,train);
+path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/cluster_based_perm/final/%s_%s/',BASE,decoding,train);
+% load(sprintf('%speak_latency_%s_%s_%s.mat',path_results, method, decoding, fixcross));
+
+if ~isfolder(path_plots)
+    mkdir(path_plots);
 end
 
-if strcmp(stats, 'perm')
-    path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/%s_%s/',BASE,decoding,train);
-    path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/%s_%s/',BASE,decoding,train);
-    
-    if ~isfolder(path_plots)
-        mkdir(path_plots);
-    end
-elseif strcmp(stats, 'cluster')
-    path_results = sprintf('%sdata/FixEyeEEG/main/results/statistic/cluster_based_perm/two_tailed/%s_%s/',BASE,decoding,train);
-    path_plots = sprintf('%sdata/FixEyeEEG/main/results/plots/cluster_based_perm/final/%s_%s/',BASE,decoding,train);
-   % load(sprintf('%speak_latency_%s_%s_%s.mat',path_results, method, decoding, fixcross));
-
-    if ~isfolder(path_plots)
-        mkdir(path_plots);
-    end
-end
 
 if strcmp(fixcross, 'difference') == 1
     load(sprintf('%ssignificant_variables_time_time_diff_curve_%s.mat',path_results, method));
@@ -46,22 +41,24 @@ else
         data = squeeze(nanmean(data,2));
     end
 end
-%data = data-50;
+
+
+data = data-50;
 [peaks_x, peaks_y] = find(squeeze(mean(data,1))==max(squeeze(mean(data,1)),[],'all'));
 actual_peak = [peaks_x, peaks_y];
 if strcmp(decoding, 'category')==1
     figure
     imagesc(squeeze(nanmean(data,1)))
     hold on
-   
+    
     [B,~] = bwboundaries(SignificantVariables);
-     hold on
-
+    hold on
+    
     for k = 1:length(B)
         boundary = B{k};
         plot(boundary(:,2), boundary(:,1), 'w', 'LineWidth', 2)
     end
-    %peak latency 
+    %peak latency
     set(gca,'YDir','normal');
     %title(sprintf("%s time time %s %s", decoding, method,fixcross))
     xlabel(sprintf('training time - %s (ms)',fixcross))
@@ -81,11 +78,8 @@ if strcmp(decoding, 'category')==1
     hline.Color = '#FFFFFF';
     hline.LineStyle = '--';
     hline.LineWidth = 1.5;
-       plot(actual_peak(1,1),actual_peak(1,2),'d','MarkerFaceColor','#A2142F','MarkerEdgeColor','#A2142F', 'MarkerSize',4)
+    plot(actual_peak(1,1),actual_peak(1,2),'d','MarkerFaceColor','#A2142F','MarkerEdgeColor','#A2142F', 'MarkerSize',4)
     hold on
-   % plot(CI_95(1,:),CI_95(2,:),'Color','#A2142F', 'LineWidth', 1.4, 'LineStyle','--')
-   % plot(CI_95(2,:),-0.07,'|','Color','#A2142F')
-  %  plot(CI_95(2,1),-0.07,'|','Color','#A2142F')
     set(gca,'box','off')
     axis square
     saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics_only_sig_peaks.png',path_plots,decoding, method,fixcross));
@@ -118,14 +112,8 @@ elseif strcmp(decoding, 'objects')==1
     hline.Color = '#FFFFFF';
     hline.LineStyle = '--';
     hline.LineWidth = 1.5;
-  plot(actual_peak(1,1),actual_peak(1,2),'d','MarkerFaceColor','#A2142F','MarkerEdgeColor','#A2142F', 'MarkerSize',4)
+    plot(actual_peak(1,1),actual_peak(1,2),'d','MarkerFaceColor','#A2142F','MarkerEdgeColor','#A2142F', 'MarkerSize',4)
     hold on
-   % dist_x = pdist([actual_peak; CI_95(1,:)], 'euclidean');
-   % dist_y = pdist([actual_peak; CI_95(2,:)], 'euclidean');
-   % h = plotEllipses(actual_peak,[dist_x dist_y]);
-   % h.EdgeColor = '#A2142F';
-   % h.LineWidth= 2;
-    %viscircles([peak_latency(1,1) peak_latency(1,2)],(CI_95(2)-CI_95(1))/2, 'Color', '#A2142F', 'LineWidth',1)
     set(gca,'box','off')
     axis square
     saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics_only_sig_peaks.png',path_plots,decoding, method,fixcross));
