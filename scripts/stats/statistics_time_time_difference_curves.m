@@ -19,7 +19,7 @@ n_perm = 10000;
 load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_standard_%s.mat', BASE,decoding, decoding,method));
 load(sprintf('%sdata/FixEyeEEG/main/results/%s_time_time/%s_decodingAcc_bulls_%s.mat', BASE,decoding, decoding,method));
 
-if strcmp(decoding, 'objects')==1
+if strcmp(decoding, 'object')==1
     decodingAcc_standard_all = squeeze(nanmean(decodingAcc_standard_all,2));
     decodingAcc_standard_all = squeeze(nanmean(decodingAcc_standard_all,2));
     

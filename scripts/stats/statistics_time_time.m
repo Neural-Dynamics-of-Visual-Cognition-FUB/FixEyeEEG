@@ -19,7 +19,7 @@ end
 if decoding == 1
     decoding = 'category';
 elseif decoding == 2
-    decoding = 'objects';
+    decoding = 'object';
 end
 
 if fixcross == 1
@@ -43,7 +43,7 @@ data= eval(sprintf('decodingAcc_%s_all',fixcross));
 
 n_perm = 10000;
 
-if strcmp(decoding, 'objects')==1
+if strcmp(decoding, 'object')==1
     data = squeeze(nanmean(data,2));
     data = squeeze(nanmean(data,2));
 end

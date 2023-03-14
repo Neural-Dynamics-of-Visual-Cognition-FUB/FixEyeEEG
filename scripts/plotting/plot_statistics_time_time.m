@@ -36,7 +36,7 @@ else
     load(sprintf('%ssignificant_variables_time_time_%s_%s.mat',path_results, fixcross, method));
     load(sprintf('%sdata/FixEyeEEG/main/results/%s_%s/%s_decodingAcc_%s_%s.mat', BASE,decoding,train, decoding,fixcross,method));
     data= eval(sprintf('decodingAcc_%s_all',fixcross));
-    if strcmp(decoding, 'objects')==1
+    if strcmp(decoding, 'object')==1
         data = squeeze(nanmean(data,2));
         data = squeeze(nanmean(data,2));
     end
@@ -84,7 +84,7 @@ if strcmp(decoding, 'category')==1
     axis square
     saveas(gca,sprintf( '%s%s_time_time_%s_%s_statistics_only_sig_peaks.png',path_plots,decoding, method,fixcross));
     
-elseif strcmp(decoding, 'objects')==1
+elseif strcmp(decoding, 'object')==1
     
     figure
     imagesc(squeeze(nanmean(data,1)))

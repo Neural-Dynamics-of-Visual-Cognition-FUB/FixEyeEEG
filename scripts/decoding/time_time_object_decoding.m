@@ -113,11 +113,11 @@ end
 
     if strcmp(fixation_condition, 'standard') == 1
         decodingAccuracy_object_time_time_avg_standard = squeeze(nanmean(decodingAccuracy_object_time_time,1)); %average over permutations
-        filename = sprintf('objects_%s',fixation_condition);
+        filename = sprintf('object_%s',fixation_condition);
         save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_object_time_time_avg_standard');
     elseif strcmp(fixation_condition, 'bulls') == 1
         decodingAccuracy_object_time_time_avg_bulls = squeeze(nanmean(decodingAccuracy_object_time_time,1)); %average over permutations
-        filename = sprintf('objects_%s',fixation_condition);
+        filename = sprintf('object_%s',fixation_condition);
         save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_object_time_time_avg_bulls');
     end
     

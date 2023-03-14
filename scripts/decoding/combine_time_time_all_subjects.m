@@ -48,17 +48,17 @@ for idx = 2
         if strcmp(decoding, 'category') == 1
             decodingAcc_standard_all(subj,:,:) =  decodingAccuracy_avg_standard;
             decodingAcc_bulls_all(subj,:,:) = decodingAccuracy_avg_bulls;
-        elseif strcmp(decoding, 'objects') == 1
-            decodingAccuracy_objects_time_time_avg_standard(decodingAccuracy_objects_time_time_avg_standard==0) = NaN;
-            decodingAccuracy_objects_time_time_avg_bulls(decodingAccuracy_objects_time_time_avg_bulls==0) = NaN;
+        elseif strcmp(decoding, 'object') == 1
+            decodingAccuracy_object_time_time_avg_standard(decodingAccuracy_object_time_time_avg_standard==0) = NaN;
+            decodingAccuracy_object_time_time_avg_bulls(decodingAccuracy_object_time_time_avg_bulls==0) = NaN;
             
             % fill lower triangular
             % decodingAccuracy_objects_time_time_avg_standard_filled = decodingAccuracy_objects_time_time_avg_standard+permute(decodingAccuracy_objects_time_time_avg_standard,[2 1 3 4]);
             %decodingAccuracy_objects_time_time_avg_bulls_filled = decodingAccuracy_objects_time_time_avg_bulls+permute(decodingAccuracy_objects_time_time_avg_bulls,[2 1 3 4]);
-            size(decodingAccuracy_objects_time_time_avg_standard)
-            size(decodingAccuracy_objects_time_time_avg_bulls)
-            decodingAcc_standard_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_standard;
-            decodingAcc_bulls_all(subj,:,:,:,:) =  decodingAccuracy_objects_time_time_avg_bulls;
+            size(decodingAccuracy_object_time_time_avg_standard)
+            size(decodingAccuracy_object_time_time_avg_bulls)
+            decodingAcc_standard_all(subj,:,:,:,:) =  decodingAccuracy_object_time_time_avg_standard;
+            decodingAcc_bulls_all(subj,:,:,:,:) =  decodingAccuracy_object_time_time_avg_bulls;
         end
     end
     save(sprintf('%s%s_decodingAcc_standard_%s', out_path, decoding,methods_flag(idx)), 'decodingAcc_standard_all')
