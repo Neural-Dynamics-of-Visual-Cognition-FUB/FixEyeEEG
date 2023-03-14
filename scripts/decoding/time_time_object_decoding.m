@@ -104,7 +104,7 @@ for perm = 1:n_permutations
                     disp('Test the SVM');
                     testing_data  =[squeeze(pseudo_trials(objA,end,:,time2))' ; squeeze(pseudo_trials(objB,end,:,time2))'];
                     [~, accuracy, ~] = svmpredict(labels_test',testing_data,model);
-                    decodingAccuracy_objects_time_time(perm,objA, objB, time1,time2)=accuracy(1);
+                    decodingAccuracy_object_time_time(perm,objA, objB, time1,time2)=accuracy(1);
                 end
             end
         end
@@ -112,13 +112,13 @@ for perm = 1:n_permutations
 end 
 
     if strcmp(fixation_condition, 'standard') == 1
-        decodingAccuracy_objects_time_time_avg_standard = squeeze(nanmean(decodingAccuracy_objects_time_time,1)); %average over permutations
+        decodingAccuracy_object_time_time_avg_standard = squeeze(nanmean(decodingAccuracy_object_time_time,1)); %average over permutations
         filename = sprintf('objects_%s',fixation_condition);
-        save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_objects_time_time_avg_standard');
+        save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_object_time_time_avg_standard');
     elseif strcmp(fixation_condition, 'bulls') == 1
-        decodingAccuracy_objects_time_time_avg_bulls = squeeze(nanmean(decodingAccuracy_objects_time_time,1)); %average over permutations
+        decodingAccuracy_object_time_time_avg_bulls = squeeze(nanmean(decodingAccuracy_object_time_time,1)); %average over permutations
         filename = sprintf('objects_%s',fixation_condition);
-        save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_objects_time_time_avg_bulls');
+        save(fullfile(results_dir,sprintf('%s_time_time_avg.mat',filename)),'decodingAccuracy_object_time_time_avg_bulls');
     end
     
 end
