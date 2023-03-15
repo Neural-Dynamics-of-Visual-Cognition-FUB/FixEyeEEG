@@ -1,4 +1,4 @@
-# FixEyeEEG 
+# The influence of the bullseye versus standard fixation cross on eye movements and classifying natural images from EEG
 
 This code was used to produce the results for the paper **The influence of the bullseye versus standard fixation cross on eye movements and classifying natural images from EEG** by Häberle et al. (2023). The code was written in MATLAB 2021 and R version 1.3.109331
 
