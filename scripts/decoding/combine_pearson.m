@@ -1,4 +1,4 @@
-function [] = combine_pearsson()
+function [] = combine_pearson()
 %{
     - combines decoding accuracies for time-resolved MVPA for object
     decoding with pearson as the distance measure of choice

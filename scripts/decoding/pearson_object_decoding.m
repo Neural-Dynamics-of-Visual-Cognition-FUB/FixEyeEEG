@@ -1,4 +1,4 @@
-function [] = pearsson_object_decoding(subj, fixation_condition, method)
+function [] = pearson_object_decoding(subj, fixation_condition, method)
 %{
     - Multivariate Noise Normalisation
     - object decoding for both fixation crosses
