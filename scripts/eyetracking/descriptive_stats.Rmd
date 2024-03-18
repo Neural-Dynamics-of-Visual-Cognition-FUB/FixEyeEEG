@@ -176,72 +176,43 @@ ddply(df_n_all_saccades_thaler,c('saccType'), summarise,
 #create data frame for number of microsaccades 
 ```
 ```{r}
+options(max.print=2000000)
+df = subset(df_all_subj_all_sacs_behav_ratio, select = -c(exemplar))
+write.table(df,"saccades_amplitude.csv",sep=",")
+write.table(df_n_all_saccades,"saccades_occurrences.csv",sep=",")
+
 library('ggplot2')
-ggplot(df_all_subj_all_sacs_behav_ratio, aes(y = amplitude, x=saccType, color=cross))+
-         geom_violin() +
-        scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
-                                "standard"=rgb(0/255, 146/255, 146/255))) +
-                     theme_classic()
 
-ggplot(df_all_subj_all_sacs_behav_ratio, aes(y = amplitude, x=cross, color = cross,fill=cross))+
-  geom_violin(aes(alpha = 0.7)) + 
-  facet_grid(cols = vars(saccType))+
-  scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
-                                "standard"=rgb(0/255, 146/255, 146/255))) +
-  scale_fill_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
-                                "standard"=rgb(0/255, 146/255, 146/255))) +
+# (micro)saccades amplitude
+ddply(df_all_subj_all_sacs_behav_ratio, .(cross), summarize, mean = round(mean(amplitude), 4))
+p<-ggplot(df_all_subj_all_sacs_behav_ratio, aes(x=amplitude, fill=cross, color=cross)) +
+  geom_histogram(position="dodge")+
+scale_color_manual(values=c("#941425", "#2e797b")) +
+labs(x="Saccade amplitude (degrees)", y = "Frequency") +
+theme_minimal()+theme_classic()+theme(legend.position="top")+
+theme(text = element_text(size=10), axis.text.x = element_text(size=10),
+axis.text.y = element_text(size=10))+
+geom_vline(aes(xintercept=0.504), color="#941425", linetype="dashed", linewidth=.6)+
+geom_vline(aes(xintercept=0.548), color="#2e797b", linetype="dashed", linewidth=.6)
+#geom_vline(data=mu, aes(xintercept=grp.mean, color=cross), linetype="dashed")
+save_dir = "saccades_amplitude.png"
+ggsave(plot = p, file = save_dir, device = "png", width = 4, 
+    height = 4, units = "in", dpi = 1000, family = "ArialMT")
 
-  theme_classic()              
-ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/amplitudes.png")
-
-ggplot(df_n_all_saccades, aes(y = n_occurence, x=cross, color = cross))+
-         geom_count(aes(alpha = 0.7)) + facet_grid(cols = vars(saccType))+   
-          scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
-                                "standard"=rgb(0/255, 146/255, 146/255))) +
-
-          theme_classic()
-
-ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/n_occurences.png")
-
-ggplot(df_all_subj_all_sacs_behav_ratio, aes(y = amplitude, x=cross, color = cross))+
-         geom_bar(stat=) + facet_grid(cols = vars(saccType))+  
-          scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
-                                "standard"=rgb(0/255, 146/255, 146/255))) +
-          theme_classic()
-ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/amplitudes.png")
-
-ggplot(df_n_all_saccades, aes(y = n_occurence, x=cross, color = cross))+
-         geom_bar(stat='identity') + facet_grid(cols = vars(saccType))+   
-          scale_color_manual(values = c("bullseye" = rgb(146/255, 0/255, 0/255),
-                                "standard"=rgb(0/255, 146/255, 146/255))) +
-          theme_classic()
-
-ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/n_occurences.png")
-
-
-df_all_subj_all_sacs_behav_ratio_test <- subset(df_all_subj_all_sacs_behav_ratio,!trial ==1)
-ggplot(df_all_subj_all_sacs_behav_ratio_test, aes(y = onset, x=saccType, color=cross))+
-         geom_violin() + 
-  theme_bw()
-ggsave("/Users/ghaeberle/scratch/data/FixEyeEEG/main/results/plots/onsets.png")
-```
-
-```{r}
-
-trials_category = ddply(df_all_subj_all_sacs_behav_ratio,c('category','subj'), summarise,
-               n_trials = length(unique(trial)))
-cat = aggregate(trials_category$n_trials, by=list(category=trials_category$category), FUN=sum)
-
-sum(cat$x)/2/30
-df_all_subj_all_sacs_behav_ratio$tmp = unlist(df_all_subj_all_sacs_behav_ratio$exemplar)
-trials_exemplar = ddply(df_all_subj_all_sacs_behav_ratio,c('tmp','subj'), summarise,
-               n_trials = length(unique(trial)))
-ex = aggregate(trials_exemplar$n_trials, by=list(exemplar=trials_exemplar$tmp), FUN=sum)
-
-sum(ex$x)/40/30
-trials_category %>% subset(category=='animate') %>% sum()
-sum(trials_category$n_trials[])
-```
-
+# (micro)saccades occurrences
+ddply(df_n_all_saccades, .(cross), summarize, mean = round(mean(n_occurence), 4))
+p<-ggplot(df_n_all_saccades, aes(x=n_occurence, fill=cross, color=cross)) +
+  geom_bar(position="dodge")+
+scale_color_manual(values=c("#941425", "#2e797b")) +
+labs(x="Saccades per trial", y = "Frequency") +
+theme_minimal()+theme_classic()+theme(legend.position="top")+
+theme(text = element_text(size=10), axis.text.x = element_text(size=10),
+axis.text.y = element_text(size=10))+
+scale_y_log10()+
+geom_vline(aes(xintercept=0.096), color="#941425", linetype="dashed", linewidth=.6)+
+geom_vline(aes(xintercept=0.099), color="#2e797b", linetype="dashed", linewidth=.6)
+save_dir = "saccades_per_trial.png"
+ggsave(plot = p, file = save_dir, device = "png", width = 4, 
+    height = 4, units = "in", dpi = 1000, family = "ArialMT")
 ```
 
