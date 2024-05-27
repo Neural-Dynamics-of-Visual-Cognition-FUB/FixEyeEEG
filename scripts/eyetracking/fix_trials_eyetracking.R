@@ -69,8 +69,8 @@ for (sub in subs){
   raw$yp_centered <- raw$yp - y_size_monitor/2
   mmy <- raw$yp_centered / conversion_px_degree_monitor
   mmx <- raw$xp_centered / conversion_px_degree_monitor
-  raw$x_visual_angle <- atan2(raw$xp_centered*mmx,distance_to_monitor)
-  raw$y_visual_angle <- atan2(raw$yp_centered*mmy,distance_to_monitor)
+  raw$x_visual_angle <- atan2(raw$xp_centered*mmx,distance_to_monitor)*180/pi
+  raw$y_visual_angle <- atan2(raw$yp_centered*mmy,distance_to_monitor)*180/pi
   
   write.csv(raw, 
             file=paste("/scratch/haebeg19/data/FixEyeEEG/main/eyetracking/preprocessed/raw_correct_trials/raw_sub00",sub,".csv",sep=""))
