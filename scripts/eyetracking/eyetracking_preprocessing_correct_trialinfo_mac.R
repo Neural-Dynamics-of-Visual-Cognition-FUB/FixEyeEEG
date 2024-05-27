@@ -241,8 +241,8 @@ for (sub in subs){
   df_eyetracking_cleaned_witout_trials_with_missing_timepoints$yp_centered <- df_eyetracking_cleaned_witout_trials_with_missing_timepoints$yp - y_size_monitor/2
   mmy <- df_eyetracking_cleaned_witout_trials_with_missing_timepoints$yp_centered / conversion_px_degree_monitor
   mmx <- df_eyetracking_cleaned_witout_trials_with_missing_timepoints$xp_centered / conversion_px_degree_monitor
-  df_eyetracking_cleaned_witout_trials_with_missing_timepoints$x_visual_angle <- atan2(df_eyetracking_cleaned_witout_trials_with_missing_timepoints$xp_centered*mmx,distance_to_monitor)
-  df_eyetracking_cleaned_witout_trials_with_missing_timepoints$y_visual_angle <- atan2(df_eyetracking_cleaned_witout_trials_with_missing_timepoints$yp_centered*mmy,distance_to_monitor)
+  df_eyetracking_cleaned_witout_trials_with_missing_timepoints$x_visual_angle <- atan2(df_eyetracking_cleaned_witout_trials_with_missing_timepoints$xp_centered*mmx,distance_to_monitor)*180/pi
+  df_eyetracking_cleaned_witout_trials_with_missing_timepoints$y_visual_angle <- atan2(df_eyetracking_cleaned_witout_trials_with_missing_timepoints$yp_centered*mmy,distance_to_monitor)*180/pi
   
   save(df_eyetracking_cleaned_witout_trials_with_missing_timepoints, 
        file=paste("/Users/ghaeberle/scratch/data/FixEyeEEG/main/eyetracking/preprocessed/cleaned/eyetracking_cleaned_wo_artifacts_and_visual_degree_sub00",sub,".Rda",sep=""))
